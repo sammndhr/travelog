@@ -1,7 +1,10 @@
 var express = require('express')
 var router = express.Router()
 var multer = require('multer')
+var S3 = require('aws-sdk/clients/s3')
+
 const db = require('../models/psql.config')
+
 const { createImageExif } = db
 router.get('/', function(req, res, next) {
 	res.json({ message: 'Get request received for /upload' })
@@ -12,12 +15,12 @@ router.get('/', function(req, res, next) {
 // 	res.json({ message: 'Recieved post req' })
 // })
 
-router.post('/', createImageExif)
+// router.post('/', createImageExif)
 
-// const upload = multer({ dest: './uploads' })
+const upload = multer({ dest: './uploads' })
 
-// router.post('/', upload.single('file'), function(req, res, next) {
-// 	res.json({ file: req.file })
-// })
+router.post('/', upload.single('file'), function(req, res, next) {
+	res.json({ file: req.file })
+})
 
 module.exports = router
