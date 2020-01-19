@@ -12,6 +12,8 @@
 </template>
 
 <script>
+	/* eslint-disable */
+	import { supportsFileReader, readExif } from '../utils/getExif'
 	import axios from 'axios'
 	export default {
 		name: 'Upload',
@@ -21,23 +23,33 @@
 			}
 		},
 		methods: {
-			readMultipleFiles: function(files) {
-				return files
-			},
 			async handleChange(e) {
+				if (!supportsFileReader()) {
+					console.log('Sorry, your web browser does not support the FileReader API.')
+					return
+				}
 				const formData = new FormData(),
-					files = e.target.files
-				formData.append('file', files[0])
+					files = e.target.files,
+					allExif = await readExif(files)
+
+				console.log(allExif)
+
+				// for (const exif of allExif) {
+				// 	formData.append(0, exif)
+				// }
+				const dataToSend = allExif[0]
+				// formData.append(0, exif)
 				try {
-					const getReq = await axios.post('/upload', formData)
-					console.log(getReq)
+					const getReq = await axios.post('/uploads', dataToSend)
+					console.log(getReq.data)
 					this.message = 'Uploaded!!'
 				} catch (err) {
 					console.log(err.response)
-					this.message = 'Something went wrongs!!'
+					this.message = 'Something went wrong!!'
 				}
 			}
-		}
+		},
+		mounted() {}
 	}
 </script>
 

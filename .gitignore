@@ -108,3 +108,8 @@ dist
 
 # image uploads
 server/uploads
+
+
+.vscode
+
+DO_NOT_COMMIT.env.vars.js
