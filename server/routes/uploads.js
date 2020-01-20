@@ -28,6 +28,7 @@ var upload = multer({
 
 // const upload = multer({ dest: './uploads' })
 router.post('/', upload.array('photos', 20), function(req, res, next) {
+	console.log(JSON.parse(req.body.exif)[0])
 	res.send('Successfully uploaded ' + req.files.length + ' files!')
 })
 

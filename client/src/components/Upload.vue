@@ -36,6 +36,7 @@
 				for (const file of files) {
 					formData.append('photos', file)
 				}
+				formData.append('exif', JSON.stringify(allExif))
 				// Testing for pushing exif data to amazon psql
 				// const dataToSend = allExif[0]
 
