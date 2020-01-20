@@ -1,26 +1,38 @@
 var express = require('express')
 var router = express.Router()
 var multer = require('multer')
-var S3 = require('aws-sdk/clients/s3')
+var multerS3 = require('multer-s3')
 
-const db = require('../models/psql.config')
+const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = require('../config/DO_NOT_COMMIT.env.vars').s3
+var AWS = require('aws-sdk')
 
-const { createImageExif } = db
-router.get('/', function(req, res, next) {
-	res.json({ message: 'Get request received for /upload' })
+AWS.config.update({ region })
+var s3 = new AWS.S3({
+	apiVersion,
+	accessKeyId,
+	secretAccessKey
 })
 
-// router.post('/', function(req, res, next) {
-// 	console.log(req.body)
-// 	res.json({ message: 'Recieved post req' })
+var upload = multer({
+	storage: multerS3({
+		s3,
+		bucket,
+		metadata: function(req, file, cb) {
+			cb(null, { fieldName: file.fieldname })
+		},
+		key: function(req, file, cb) {
+			cb(null, file.originalname)
+		}
+	})
+})
+
+// const upload = multer({ dest: './uploads' })
+router.post('/', upload.array('photos', 20), function(req, res, next) {
+	res.send('Successfully uploaded ' + req.files.length + ' files!')
+})
+
+// router.post('/', upload.single('file'), function(req, res, next) {
+// 	res.json({ file: req.file })
 // })
-
-// router.post('/', createImageExif)
-
-const upload = multer({ dest: './uploads' })
-
-router.post('/', upload.single('file'), function(req, res, next) {
-	res.json({ file: req.file })
-})
 
 module.exports = router

@@ -30,17 +30,18 @@
 				}
 				const formData = new FormData(),
 					files = e.target.files,
-					allExif = await readExif(files)
+					allExif = await readExif(files),
+					exif = allExif[0].exif
 
-				console.log(allExif)
+				for (const file of files) {
+					formData.append('photos', file)
+				}
+				// Testing for pushing exif data to amazon psql
+				// const dataToSend = allExif[0]
 
-				// for (const exif of allExif) {
-				// 	formData.append(0, exif)
-				// }
-				const dataToSend = allExif[0]
-				// formData.append(0, exif)
 				try {
-					const getReq = await axios.post('/uploads', dataToSend)
+					// const getReq = await axios.post('/uploads', dataToSend)
+					const getReq = await axios.post('/uploads', formData)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
 				} catch (err) {

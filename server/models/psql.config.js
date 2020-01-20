@@ -1,11 +1,7 @@
 const { Client, Pool } = require('pg')
-const db = require('../config/DO_NOT_COMMIT.env.vars')
+const { connectionString } = require('../config/DO_NOT_COMMIT.env.vars')
 
-const pool = new Pool(db)
-
-// const pool = new Pool({
-// 	connectionString: ''
-// })
+const pool = new Pool({ connectionString })
 
 // client.connect()
 
