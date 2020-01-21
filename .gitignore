@@ -113,3 +113,5 @@ server/uploads
 .vscode
 
 DO_NOT_COMMIT.env.vars.js
+
+test_images

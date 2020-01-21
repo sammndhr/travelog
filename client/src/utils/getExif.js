@@ -22,7 +22,7 @@ function readFile(file) {
 async function readMultipleFiles(files) {
 	const promises = Object.values(files).map(async file => {
 		const data = await readFile(file)
-		return { data, name: file.name }
+		return data
 	})
 	return Promise.all(promises).then(results => {
 		return results
@@ -32,11 +32,10 @@ async function readMultipleFiles(files) {
 async function readExif(files) {
 	const imgsExifData = []
 	const readFiles = await readMultipleFiles(files)
-	for (const file of readFiles) {
-		const { name, data } = file
+	for (const data of readFiles) {
 		var tags = ExifReader.load(data)
 		delete tags['MakerNote']
-		imgsExifData.push({ name, exif: listTags(tags) })
+		imgsExifData.push(listTags(tags))
 	}
 	return imgsExifData
 }
