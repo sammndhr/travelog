@@ -1,17 +1,16 @@
 <template>
 	<div id="app">
-		<Upload />
+		<router-view></router-view>
+		<router-link to="/signup">Sign Up!</router-link>
+		<router-link to="/signin">Sign In!</router-link>
+		<router-link to="/upload">Upload</router-link>
 	</div>
 </template>
 
 <script>
-	import Upload from './components/Upload.vue'
-
 	export default {
 		name: 'app',
-		components: {
-			Upload
-		}
+		components: {}
 	}
 </script>
 
@@ -23,5 +22,9 @@
 		text-align: center;
 		color: #2c3e50;
 		margin-top: 60px;
+		max-width: 100vw;
+	}
+	a {
+		display: block;
 	}
 </style>
