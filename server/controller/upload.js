@@ -1,18 +1,18 @@
-const pool = require('../models/psql.config')
+const { query } = require('../models/psql.config')
 
 const handleError = err => new Error(err)
 
 const getUserId = async userId => {
-	let results = await pool
-		.query('SELECT exists (SELECT true from users where user_id=$1);', [userId])
-		.catch(handleError)
+	let results = await query('SELECT exists (SELECT true from users where user_id=$1);', [userId]).catch(handleError)
 	return results
 }
 
-const addImageData = async ({ exif, userId }) => {
-	let results = await pool
-		.query('INSERT INTO images (user_id ,url , exif) VALUES ($1, $2, $3) RETURNING *', [userId, 'http://someUrl', exif])
-		.catch(handleError)
+const addImageData = async ({ exif, userId, key }) => {
+	let results = await query('INSERT INTO images (user_id ,key , exif) VALUES ($1, $2, $3) RETURNING *', [
+		userId,
+		key,
+		exif
+	]).catch(handleError)
 
 	return results
 }
@@ -24,17 +24,18 @@ const saveImagesAndExif = async (request, response) => {
 		queryUserId = await getUserId(userId)
 
 	if (queryUserId instanceof Error) {
-		response.status(500).send({ message: 'Something went wrong!' })
+		response.status(500).send({ message: 'Could not locate user. Something went wrong!' })
 	} else {
 		const userExists = queryUserId.rows[0].exists
 
 		if (userExists === false) {
-			response.status(404).send({ message: 'User not found!' })
+			response.status(404).send({ message: 'User does not exist.' })
 		} else {
-			let imagesAdded = await addImageData({ userId, exif }).catch(handleError)
+			const key = 'somerandomkey134'
+			let imagesAdded = await addImageData({ userId, exif, key }).catch(handleError)
 
 			if (imagesAdded instanceof Error) {
-				response.status(500).send({ message: 'Something went wrong!' })
+				response.status(500).send({ message: 'Could not add images. Something went wrong.' })
 			} else {
 				response.status(201).send(imagesAdded)
 			}
