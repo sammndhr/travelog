@@ -19,7 +19,8 @@
 		name: 'Upload',
 		data() {
 			return {
-				file: ''
+				file: '',
+				userId: 1
 			}
 		},
 		methods: {
@@ -32,15 +33,14 @@
 					files = e.target.files,
 					allExif = await readExif(files)
 
-				console.log(allExif)
+				for (const file of files) {
+					formData.append('photos', file)
+				}
+				formData.append('allExif', JSON.stringify(allExif))
+				formData.append('userId', JSON.stringify(1))
 
-				// for (const exif of allExif) {
-				// 	formData.append(0, exif)
-				// }
-				const dataToSend = allExif[0]
-				// formData.append(0, exif)
 				try {
-					const getReq = await axios.post('/uploads', dataToSend)
+					const getReq = await axios.post('/upload', formData)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
 				} catch (err) {
