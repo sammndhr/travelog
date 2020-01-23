@@ -60,7 +60,6 @@ const createAllTables = async () => {
 		console.error(images)
 		return
 	}
-	console.log(users, images)
 	pool.end()
 }
 

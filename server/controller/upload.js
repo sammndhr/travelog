@@ -31,7 +31,11 @@ const saveImagesAndExif = async (request, response) => {
 		if (userExists === false) {
 			response.status(404).send({ message: 'User does not exist.' })
 		} else {
-			const key = 'somerandomkey134'
+			// TODO
+			//Some random key for now.
+			const key = Math.random()
+				.toString()
+				.slice(1, 6)
 			let imagesAdded = await addImageData({ userId, exif, key }).catch(handleError)
 
 			if (imagesAdded instanceof Error) {
