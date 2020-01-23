@@ -11,7 +11,9 @@ router.post('/authenticate', (req, res) => {
 		username: 'testo',
 		token: 'fake-jwt-token'
 	}
-	res.status(200).send({ user: JSON.stringify(responseJson), success: 'You are logged in.' })
+	res
+		.status(200)
+		.send({ user: JSON.stringify(responseJson), success: 'You are logged in.' })
 })
 
 /* GET users listing. */

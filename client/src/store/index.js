@@ -8,9 +8,9 @@ import { users } from './users.module'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  modules: {
-    alerts,
-    account,
-    users
-  }
+	modules: {
+		alerts,
+		account,
+		users
+	}
 })
