@@ -1,18 +1,28 @@
 const { query } = require('../models/psql.config')
 
-const handleError = err => new Error(err)
-
 const getUserId = async userId => {
-	let results = await query('SELECT exists (SELECT true from users where user_id=$1);', [userId]).catch(handleError)
+	let results
+	try {
+		results = await query(
+			'SELECT exists (SELECT true from users where user_id=$1);',
+			[userId]
+		)
+	} catch (error) {
+		console.error(error)
+	}
 	return results
 }
 
 const addImageData = async ({ exif, userId, key }) => {
-	let results = await query('INSERT INTO images (user_id ,key , exif) VALUES ($1, $2, $3) RETURNING *', [
-		userId,
-		key,
-		exif
-	]).catch(handleError)
+	let results
+	try {
+		results = await query(
+			'INSERT INTO images (user_id ,key , exif) VALUES ($1, $2, $3) RETURNING *',
+			[userId, key, exif]
+		)
+	} catch (error) {
+		console.error(error)
+	}
 
 	return results
 }
@@ -24,21 +34,34 @@ const saveImagesAndExif = async (request, response) => {
 		queryUserId = await getUserId(userId)
 
 	if (queryUserId instanceof Error) {
-		response.status(500).send({ message: 'Could not locate user. Something went wrong!' })
+		response
+			.status(500)
+			.send({ message: 'Could not locate user. Something went wrong!' })
 	} else {
 		const userExists = queryUserId.rows[0].exists
 
 		if (userExists === false) {
 			response.status(404).send({ message: 'User does not exist.' })
 		} else {
-			const key = 'somerandomkey134'
-			let imagesAdded = await addImageData({ userId, exif, key }).catch(handleError)
+			// TODO
+			//Some random key for now.
+			const key = Math.random()
+				.toString()
+				.slice(1, 6)
 
-			if (imagesAdded instanceof Error) {
-				response.status(500).send({ message: 'Could not add images. Something went wrong.' })
-			} else {
-				response.status(201).send(imagesAdded)
+			let imagesAdded
+
+			try {
+				imagesAdded = await addImageData({ userId, exif, key })
+			} catch (error) {
+				console.error(error)
+				response
+					.status(500)
+					.send({ message: 'Could not add images. Something went wrong.' })
+				return
 			}
+
+			response.status(201).send(imagesAdded)
 		}
 	}
 }

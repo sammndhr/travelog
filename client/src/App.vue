@@ -1,21 +1,26 @@
 <template>
 	<div id="app">
-		<Upload />
+		<router-view></router-view>
+		<router-link v-if="!status.loggedIn" to="/register">Register!</router-link>
+		<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
+		<router-link to="/upload">Upload</router-link>
+		<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
 	</div>
 </template>
 
 <script>
-	import Upload from './components/Upload.vue'
-
+	import { mapState } from 'vuex'
 	export default {
 		name: 'app',
-		components: {
-			Upload
+		components: {},
+
+		computed: {
+			...mapState('account', ['status'])
 		}
 	}
 </script>
 
-<style>
+<style lang="scss">
 	#app {
 		font-family: 'Avenir', Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
@@ -23,5 +28,9 @@
 		text-align: center;
 		color: #2c3e50;
 		margin-top: 60px;
+		max-width: 100vw;
+	}
+	a {
+		display: block;
 	}
 </style>

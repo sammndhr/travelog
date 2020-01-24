@@ -35,7 +35,8 @@ const createUserTable = async () => {
 	const queryText = `CREATE TABLE IF NOT EXISTS
 		users(
 			user_id SERIAL PRIMARY KEY,
-			username VARCHAR(80) NOT NULL UNIQUE
+			email VARCHAR(128) UNIQUE NOT NULL,
+			password VARCHAR(128) NOT NULL
 		);`
 
 	const res = await pool.query(queryText).catch(handleError)
@@ -60,7 +61,6 @@ const createAllTables = async () => {
 		console.error(images)
 		return
 	}
-	console.log(users, images)
 	pool.end()
 }
 

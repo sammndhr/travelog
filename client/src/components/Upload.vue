@@ -5,7 +5,13 @@
 				<label className="button" htmlFor="upload-images">
 					<span>Upload Images</span>
 				</label>
-				<input id="upload-images" type="file" accept="image/*, image/heic" multiple="{true}" @change="handleChange" />
+				<input
+					id="upload-images"
+					type="file"
+					accept="image/*, image/heic"
+					multiple="{true}"
+					@change="handleChange"
+				/>
 			</fieldset>
 		</div>
 	</div>
@@ -26,7 +32,9 @@
 		methods: {
 			async handleChange(e) {
 				if (!supportsFileReader()) {
-					console.log('Sorry, your web browser does not support the FileReader API.')
+					console.log(
+						'Sorry, your web browser does not support the FileReader API.'
+					)
 					return
 				}
 				const formData = new FormData(),

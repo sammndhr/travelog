@@ -4,6 +4,6 @@ const express = require('express'),
 const upload = require('../models/s3.config'),
 	{ saveImagesAndExif } = require('../controller/upload')
 
-router.post('/', upload.array('photos', 10), saveImagesAndExif)
+router.post('/', upload.array('photos', 20), saveImagesAndExif)
 
 module.exports = router

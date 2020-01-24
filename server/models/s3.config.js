@@ -2,7 +2,13 @@ const AWS = require('aws-sdk'),
 	multer = require('multer'),
 	multerS3 = require('multer-s3')
 
-const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = require('../config/DO_NOT_COMMIT.env.vars').s3
+const {
+	accessKeyId,
+	secretAccessKey,
+	region,
+	apiVersion,
+	bucket
+} = require('../config/DO_NOT_COMMIT.env.vars').s3
 
 AWS.config.update({ region })
 

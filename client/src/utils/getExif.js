@@ -6,7 +6,6 @@ function supportsFileReader() {
 
 function readFile(file) {
 	const reader = new FileReader()
-	// console.log(file)
 	return new Promise((resolve, reject) => {
 		reader.onload = function(evt) {
 			try {
