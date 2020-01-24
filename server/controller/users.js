@@ -1,6 +1,3 @@
-// const moment = require('moment'),
-// 	uuidv4 = require('uuid/v4'),
-// 	db = require('../db')
 const { createError } = require('../utils')
 const db = require('./../models/psql.config')
 const {
@@ -14,22 +11,22 @@ const User = {
 	async create(req, res) {
 		const email = req.body.email,
 			password = req.body.password
+
 		if (!email || !password) {
 			return res.status(400).send({ message: 'Some values are missing' })
 		}
+
 		if (!isValidEmail(email)) {
 			return res
 				.status(400)
 				.send({ message: 'Please enter a valid email address' })
 		}
 
-		const hashedPassword = hashPassword(password)
-
-		// users(id, email, password, created_date, modified_date)
 		const createQuery = `INSERT INTO
       users (email, password)
 			VALUES ($1, $2)
-			returning *;`,
+			returning *;`
+		const hashedPassword = hashPassword(password),
 			values = [email, hashedPassword]
 
 		try {
@@ -48,12 +45,15 @@ const User = {
 		if (!req.body.email || !req.body.password) {
 			return res.status(400).send({ message: 'Some values are missing' })
 		}
+
 		if (!isValidEmail(req.body.email)) {
 			return res
 				.status(400)
 				.send({ message: 'Please enter a valid email address' })
 		}
+
 		const text = 'SELECT * FROM users WHERE email = $1'
+
 		try {
 			const { rows } = await db.query(text, [req.body.email])
 			if (!rows[0]) {

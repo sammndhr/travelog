@@ -1,5 +1,12 @@
 import axios from 'axios'
 
+const createErrorMessage = error => {
+	const errorMessage =
+		error.response.data.message === undefined
+			? 'Something went wrong.'
+			: `${error.response.data.message}`
+	return errorMessage
+}
 const authHeader = () => {
 	let user = JSON.parse(localStorage.getItem('user'))
 
@@ -26,7 +33,7 @@ const _update = async user => {
 		res = await axios(options)
 		return handleResponse(res)
 	} catch (error) {
-		return `${error.response.status}: ${error.response.data.message}`
+		return `${error.response.status}: ${createErrorMessage(error)}`
 	}
 }
 
@@ -41,7 +48,7 @@ const _delete = async id => {
 		res = await axios(options)
 		return handleResponse(res)
 	} catch (error) {
-		return `${error.response.status}: ${error.response.data.message}`
+		return `${error.response.status}: ${createErrorMessage(error)}`
 	}
 }
 
@@ -56,4 +63,4 @@ const handleResponse = response => {
 	return data
 }
 
-export { _logout, _update, _delete, handleResponse }
+export { _logout, _update, _delete, createErrorMessage, handleResponse }

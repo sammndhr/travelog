@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from '../router'
-import { handleResponse, _logout } from '../utils/auth'
+import { createErrorMessage, handleResponse, _logout } from '../utils/auth'
 
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -56,7 +56,8 @@ const actions = {
 			router.push('/')
 		} catch (error) {
 			console.log(error)
-			const errorMessage = `${error.response.data.message}`
+			const errorMessage = createErrorMessage(error)
+
 			commit('LOGIN_FAILURE', errorMessage)
 			dispatch('alert/error', errorMessage, { root: true })
 		}
@@ -85,7 +86,8 @@ const actions = {
 				dispatch('alert/success', 'Registration successful', { root: true })
 			})
 		} catch (error) {
-			const errorMessage = `${error.response.data.message}`
+			console.log(error)
+			const errorMessage = createErrorMessage(error)
 			commit('REGISTER_FAILURE', errorMessage)
 			dispatch('alert/error', errorMessage, { root: true })
 		}

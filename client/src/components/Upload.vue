@@ -48,7 +48,7 @@
 				formData.append('userId', JSON.stringify(1))
 
 				try {
-					const getReq = await axios.post('/upload', formData)
+					const getReq = await axios.post('/uploads', formData)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
 				} catch (err) {

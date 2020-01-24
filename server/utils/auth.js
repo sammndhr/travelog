@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt'),
-	jwt = require('jsonwebtoken')
-// db = require('../db')
+	jwt = require('jsonwebtoken'),
+const	db = require('./../models/psql.config')
 
 const AuthHelper = {
 	hashPassword(password) {
