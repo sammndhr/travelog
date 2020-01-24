@@ -48,14 +48,14 @@ const actions = {
 		let res
 		try {
 			res = await axios(options)
-			const data = handleResponse(res),
-				user = JSON.parse(data.user)
+			const user = handleResponse(res)
 			if (user.token) {
 				localStorage.setItem('user', JSON.stringify(user))
 			}
 			commit('LOGIN_SUCCESS', user)
 			router.push('/')
 		} catch (error) {
+			console.log(error)
 			const errorMessage = `${error.response.data.message}`
 			commit('LOGIN_FAILURE', errorMessage)
 			dispatch('alert/error', errorMessage, { root: true })

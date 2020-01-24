@@ -33,9 +33,6 @@
 						Login
 					</button>
 					<Loader v-show="status.loggingIn" />
-					<router-link to="/register" class="btn btn-link"
-						>Register</router-link
-					>
 				</div>
 			</form>
 		</div>

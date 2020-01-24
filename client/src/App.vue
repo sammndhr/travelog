@@ -1,16 +1,22 @@
 <template>
 	<div id="app">
 		<router-view></router-view>
-		<router-link to="/register">Register!</router-link>
-		<router-link to="/login">Login!</router-link>
+		<router-link v-if="!status.loggedIn" to="/register">Register!</router-link>
+		<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
 		<router-link to="/upload">Upload</router-link>
+		<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
 	</div>
 </template>
 
 <script>
+	import { mapState } from 'vuex'
 	export default {
 		name: 'app',
-		components: {}
+		components: {},
+
+		computed: {
+			...mapState('account', ['status'])
+		}
 	}
 </script>
 
