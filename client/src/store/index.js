@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 import { alerts } from './alerts.module'
 import { account } from './auth.module'
 import { users } from './users.module'

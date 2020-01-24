@@ -1,20 +1,28 @@
 const { query } = require('../models/psql.config')
 
-const handleError = err => new Error(err)
-
 const getUserId = async userId => {
-	let results = await query(
-		'SELECT exists (SELECT true from users where user_id=$1);',
-		[userId]
-	).catch(handleError)
+	let results
+	try {
+		results = await query(
+			'SELECT exists (SELECT true from users where user_id=$1);',
+			[userId]
+		)
+	} catch (error) {
+		console.error(error)
+	}
 	return results
 }
 
 const addImageData = async ({ exif, userId, key }) => {
-	let results = await query(
-		'INSERT INTO images (user_id ,key , exif) VALUES ($1, $2, $3) RETURNING *',
-		[userId, key, exif]
-	).catch(handleError)
+	let results
+	try {
+		results = await query(
+			'INSERT INTO images (user_id ,key , exif) VALUES ($1, $2, $3) RETURNING *',
+			[userId, key, exif]
+		)
+	} catch (error) {
+		console.error(error)
+	}
 
 	return results
 }
@@ -40,17 +48,20 @@ const saveImagesAndExif = async (request, response) => {
 			const key = Math.random()
 				.toString()
 				.slice(1, 6)
-			let imagesAdded = await addImageData({ userId, exif, key }).catch(
-				handleError
-			)
 
-			if (imagesAdded instanceof Error) {
+			let imagesAdded
+
+			try {
+				imagesAdded = await addImageData({ userId, exif, key })
+			} catch (error) {
+				console.error(error)
 				response
 					.status(500)
 					.send({ message: 'Could not add images. Something went wrong.' })
-			} else {
-				response.status(201).send(imagesAdded)
+				return
 			}
+
+			response.status(201).send(imagesAdded)
 		}
 	}
 }
