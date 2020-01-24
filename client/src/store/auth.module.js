@@ -1,7 +1,9 @@
-import { _login, _logout, _register } from '../utils/auth'
+import axios from 'axios'
 import router from '../router'
+import { handleResponse, _logout } from '../utils/auth'
 
 const user = JSON.parse(localStorage.getItem('user'))
+
 const state = user
 	? { status: { loggedIn: true }, user }
 	: { status: {}, user: null }
@@ -35,39 +37,58 @@ const mutations = {
 }
 
 const actions = {
-	login({ dispatch, commit }, { username, password }) {
-		commit('LOGIN_REQUEST', { username })
-
-		_login(username, password).then(
-			user => {
-				commit('LOGIN_SUCCESS', user)
-				router.push('/')
-			},
-			error => {
-				commit('LOGIN_FAILURE', error)
-				dispatch('alert/error', error, { root: true })
+	async login({ dispatch, commit }, { email, password }) {
+		commit('LOGIN_REQUEST', { email })
+		const options = {
+			method: 'POST',
+			data: { email, password },
+			headers: { 'Content-Type': 'application/json' },
+			url: `/users/authenticate`
+		}
+		let res
+		try {
+			res = await axios(options)
+			const data = handleResponse(res),
+				user = JSON.parse(data.user)
+			if (user.token) {
+				localStorage.setItem('user', JSON.stringify(user))
 			}
-		)
+			commit('LOGIN_SUCCESS', user)
+			router.push('/')
+		} catch (error) {
+			const errorMessage = `${error.response.data.message}`
+			commit('LOGIN_FAILURE', errorMessage)
+			dispatch('alert/error', errorMessage, { root: true })
+		}
 	},
+
 	logout({ commit }) {
 		_logout()
 		commit('LOGOUT')
 	},
-	register({ dispatch, commit }, user) {
+
+	async register({ dispatch, commit }, user) {
 		commit('REGISTER_REQUEST', user)
-		_register(user).then(
-			user => {
-				commit('REGISTER_SUCCESS', user)
-				router.push('/login')
-				setTimeout(() => {
-					dispatch('alert/success', 'Registration successful', { root: true })
-				})
-			},
-			error => {
-				commit('REGISTER_FAILURE', error)
-				dispatch('alert/error', error, { root: true })
-			}
-		)
+		const options = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			data: user,
+			url: `/users/register`
+		}
+
+		try {
+			const res = await axios(options),
+				user = handleResponse(res)
+			commit('REGISTER_SUCCESS', user)
+			router.push('/login')
+			setTimeout(() => {
+				dispatch('alert/success', 'Registration successful', { root: true })
+			})
+		} catch (error) {
+			const errorMessage = `${error.response.data.message}`
+			commit('REGISTER_FAILURE', errorMessage)
+			dispatch('alert/error', errorMessage, { root: true })
+		}
 	}
 }
 

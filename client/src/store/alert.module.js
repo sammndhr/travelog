@@ -30,7 +30,7 @@ const actions = {
 	}
 }
 
-export const alerts = {
+export const alert = {
 	namespaced: true,
 	state,
 	actions,

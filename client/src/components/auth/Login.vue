@@ -5,15 +5,15 @@
 			<h2>Login</h2>
 			<form @submit.prevent="handleSubmit">
 				<div class="form-group">
-					<label for="username">Username</label>
+					<label for="email">Email</label>
 					<input
 						type="text"
-						v-model="username"
-						name="username"
+						v-model="email"
+						name="email"
 						class="form-control"
 					/>
-					<div v-show="submitted && !username" class="invalid-feedback">
-						Username is required
+					<div v-show="submitted && !email" class="invalid-feedback">
+						email is required
 					</div>
 				</div>
 				<div class="form-group">
@@ -49,7 +49,7 @@
 	export default {
 		data() {
 			return {
-				username: '',
+				email: '',
 				password: '',
 				submitted: false
 			}
@@ -66,10 +66,9 @@
 			...mapActions('account', ['login', 'logout']),
 			handleSubmit() {
 				this.submitted = true
-				const { username, password } = this
-				if (username && password) {
-					// console.log(username, password)
-					this.login({ username, password })
+				const { email, password } = this
+				if (email && password) {
+					this.login({ email, password })
 				}
 			}
 		}

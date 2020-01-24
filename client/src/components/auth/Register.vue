@@ -5,16 +5,16 @@
 			<h2>Register</h2>
 			<form @submit.prevent="handleSubmit">
 				<div class="form-group">
-					<label for="username">Username</label>
+					<label for="email">Email</label>
 
 					<input
 						type="text"
-						v-model="user.username"
-						name="username"
+						v-model="user.email"
+						name="email"
 						class="form-control"
 					/>
 
-					<!-- <div v-if="submitted && errors.has('username')" class="invalid-feedback">{{ errors.first('username') }}</div> -->
+					<!-- <div v-if="submitted && errors.has('email')" class="invalid-feedback">{{ errors.first('email') }}</div> -->
 				</div>
 				<div class="form-group">
 					<label htmlFor="password">Password</label>
@@ -49,8 +49,8 @@
 		data() {
 			return {
 				user: {
-					username: '',
-					password: ''
+					password: '',
+					email: ''
 				},
 				submitted: false
 			}

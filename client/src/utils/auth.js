@@ -10,65 +10,38 @@ const authHeader = () => {
 	}
 }
 
-const _login = async (username, password) => {
-	const requestOptions = {
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ username, password })
-	}
-
-	try {
-		const res = await axios.post(`/users/authenticate`, requestOptions),
-			data = handleResponse(res),
-			user = JSON.parse(data.user)
-		if (user.token) {
-			localStorage.setItem('user', JSON.stringify(user))
-		}
-		return user
-	} catch (error) {
-		console.error(error)
-	}
-}
-
 const _logout = () => {
 	localStorage.removeItem('user')
 }
 
-const _register = async user => {
-	const requestOptions = {
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(user)
-	}
-	try {
-		const res = await axios.post(`/users/register`, requestOptions)
-		return handleResponse(res)
-	} catch (error) {
-		console.error(error)
-	}
-}
-
 const _update = async user => {
-	const requestOptions = {
+	const options = {
+		method: 'PUT',
 		headers: { ...authHeader(), 'Content-Type': 'application/json' },
-		body: JSON.stringify(user)
+		data: user,
+		url: `/users/${user.id}`
 	}
+	let res
 	try {
-		const res = await axios.put(`/users/${user.id}`, requestOptions)
+		res = await axios(options)
 		return handleResponse(res)
 	} catch (error) {
-		console.error(error)
+		return `${error.response.status}: ${error.response.data.message}`
 	}
 }
 
 const _delete = async id => {
-	const requestOptions = {
-		headers: authHeader()
+	const options = {
+		method: 'DELETE',
+		headers: authHeader(),
+		url: `/users/${id}`
 	}
-
+	let res
 	try {
-		const res = await axios.delete(`/users/${id}`, requestOptions)
+		res = await axios(options)
 		return handleResponse(res)
 	} catch (error) {
-		console.error(error)
+		return `${error.response.status}: ${error.response.data.message}`
 	}
 }
 
@@ -83,4 +56,4 @@ const handleResponse = response => {
 	return data
 }
 
-export { _login, _logout, _register, _update, _delete }
+export { _logout, _update, _delete, handleResponse }
