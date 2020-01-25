@@ -1,10 +1,15 @@
 const express = require('express'),
 	router = express.Router()
 
-const { wrapAsync } = require('../utils')
+const { wrapAsync } = require('../utils'),
+	upload = require('../models/s3.config'),
+	{ saveImagesAndExif } = require('../controller/upload.controller'),
+	{ verifyToken } = require('../utils/auth')
 
-const upload = require('../models/s3.config'),
-	{ saveImagesAndExif } = require('../controller/upload.controller')
-
-router.post('/', upload.array('photos', 20), wrapAsync(saveImagesAndExif))
+router.post(
+	'/',
+	verifyToken,
+	upload.array('photos', 20),
+	wrapAsync(saveImagesAndExif)
+)
 module.exports = router

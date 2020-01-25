@@ -36,6 +36,7 @@ const mutations = {
 	}
 }
 
+//TODO: Make authentication SECURE
 const actions = {
 	async login({ dispatch, commit }, { email, password }) {
 		commit('LOGIN_REQUEST', { email })

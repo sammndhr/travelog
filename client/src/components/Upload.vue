@@ -50,10 +50,10 @@
 					formData.append('photos', file)
 				}
 				formData.append('allExif', JSON.stringify(allExif))
-				formData.append('userId', JSON.stringify(this.user.userId))
-
 				try {
-					const getReq = await axios.post('/uploads', formData)
+					const getReq = await axios.post('/uploads', formData, {
+						headers: { 'x-access-token': this.user.token }
+					})
 					console.log(getReq.status)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
