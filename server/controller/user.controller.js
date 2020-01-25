@@ -1,5 +1,5 @@
 const { createError } = require('../utils')
-const { query } = require('./../models/psql.config')
+const { query } = require('../models/psql.config')
 const {
 	hashPassword,
 	comparePassword,
@@ -66,8 +66,9 @@ const User = {
 					.status(400)
 					.send({ message: 'The credentials you provided is incorrect' })
 			}
-			const token = generateToken(rows[0].user_id)
-			return res.status(200).send({ token })
+			const userId = rows[0].user_id,
+				token = generateToken(userId)
+			return res.status(200).send({ token, userId })
 		} catch (error) {
 			return res.status(400).send(error)
 		}

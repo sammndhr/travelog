@@ -49,7 +49,7 @@ const actions = {
 		try {
 			res = await axios(options)
 			const user = handleResponse(res)
-			if (user.token) {
+			if (user.token && user.userId) {
 				localStorage.setItem('user', JSON.stringify(user))
 			}
 			commit('LOGIN_SUCCESS', user)

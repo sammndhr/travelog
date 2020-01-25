@@ -56,6 +56,7 @@ const saveImagesAndExif = async (request, response, next) => {
 		validUserId = results.rows[0].exists
 
 	if (validUserId === false) {
+		console.log('user_id does not exist in database.')
 		response.status(404).send({ message: 'User does not exist.' })
 	} else {
 		const time = new Date().getTime(),
@@ -70,7 +71,7 @@ const saveImagesAndExif = async (request, response, next) => {
 			throw error
 		}
 
-		return response.status(201).send(imagesUpdated)
+		response.status(201).send(imagesUpdated)
 	}
 }
 

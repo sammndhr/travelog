@@ -18,9 +18,9 @@
 </template>
 
 <script>
-	/* eslint-disable */
 	import { supportsFileReader, readExif } from '../utils/getExif'
 	import axios from 'axios'
+	import { mapState } from 'vuex'
 	export default {
 		name: 'Upload',
 		data() {
@@ -28,6 +28,11 @@
 				file: '',
 				userId: 1
 			}
+		},
+		computed: {
+			...mapState({
+				user: state => state.account.user
+			})
 		},
 		methods: {
 			async handleChange(e) {
@@ -45,7 +50,7 @@
 					formData.append('photos', file)
 				}
 				formData.append('allExif', JSON.stringify(allExif))
-				formData.append('userId', JSON.stringify(1))
+				formData.append('userId', JSON.stringify(this.user.userId))
 
 				try {
 					const getReq = await axios.post('/uploads', formData)

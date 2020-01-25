@@ -7,8 +7,8 @@ var cors = require('cors')
 const bodyParser = require('body-parser')
 
 var indexRouter = require('./routes/index')
-var userRouter = require('./routes/users')
-var uploadRouter = require('./routes/uploads')
+var userRouter = require('./routes/user.routes')
+var uploadRouter = require('./routes/upload.routes')
 
 var app = express()
 
@@ -24,7 +24,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter)
 app.use('/users', userRouter)
 app.use('/uploads', uploadRouter)
 
@@ -33,9 +32,12 @@ app.use(function(req, res, next) {
 	next(createError(404))
 })
 
-// error handler
 app.use(function(err, req, res, next) {
-	// set locals, only providing error in development
+	console.log(
+		'XXXXXXX__________ERROR caught in final error handler__________XXXXXXX'
+	)
+	console.log(err)
+
 	res.locals.message = err.message
 	res.locals.error = req.app.get('env') === 'development' ? err : {}
 

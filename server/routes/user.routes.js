@@ -1,6 +1,6 @@
 const express = require('express'),
 	router = express.Router()
-const UserControllter = require('../controller/users'),
+const UserControllter = require('../controller/user.controller'),
 	{ create, login } = UserControllter,
 	{ wrapAsync } = require('../utils')
 
