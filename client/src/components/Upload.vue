@@ -49,6 +49,7 @@
 
 				try {
 					const getReq = await axios.post('/uploads', formData)
+					console.log(getReq.status)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
 				} catch (err) {

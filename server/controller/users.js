@@ -1,5 +1,5 @@
 const { createError } = require('../utils')
-const db = require('./../models/psql.config')
+const { query } = require('./../models/psql.config')
 const {
 	hashPassword,
 	comparePassword,
@@ -8,10 +8,9 @@ const {
 } = require('../utils')
 
 const User = {
-	async create(req, res) {
+	async create(req, res, next) {
 		const email = req.body.email,
 			password = req.body.password
-
 		if (!email || !password) {
 			return res.status(400).send({ message: 'Some values are missing' })
 		}
@@ -30,7 +29,8 @@ const User = {
 			values = [email, hashedPassword]
 
 		try {
-			const { rows } = await db.query(createQuery, values)
+			const results = await query(createQuery, values)
+			const rows = results.rows
 			if (rows) {
 				const token = generateToken(rows[0].user_id)
 				return res.status(201).send({ token })
@@ -55,7 +55,7 @@ const User = {
 		const text = 'SELECT * FROM users WHERE email = $1'
 
 		try {
-			const { rows } = await db.query(text, [req.body.email])
+			const { rows } = await query(text, [req.body.email])
 			if (!rows[0]) {
 				return res
 					.status(400)
@@ -76,7 +76,7 @@ const User = {
 	async delete(req, res) {
 		const deleteQuery = 'DELETE FROM users WHERE id=$1 returning *;'
 		try {
-			const { rows } = await db.query(deleteQuery, [req.user.id])
+			const { rows } = await query(deleteQuery, [req.user.id])
 			if (!rows[0]) {
 				return res.status(404).send({ message: 'user not found' })
 			}

@@ -7,6 +7,7 @@ const createErrorMessage = error => {
 			: `${error.response.data.message}`
 	return errorMessage
 }
+
 const authHeader = () => {
 	let user = JSON.parse(localStorage.getItem('user'))
 
