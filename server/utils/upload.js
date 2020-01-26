@@ -1,11 +1,8 @@
 const UploadHelper = {
-	generateKey({ userId, time }) {
-		if (!userId || !time) return
-		return `${userId}_${time}`
-	},
-	regenerateKey({ key, imageId }) {
-		if (!key || !imageId) return
-		return `${imageId}_${key}`
+	generateURL({ bucket, region, host, key, extension }) {
+		if (!bucket || !region || !host || !key || !extension)
+			throw 'Arguments not provided to generate url.'
+		return `https://${bucket}.${region}.${host}/${key}.${extension}`
 	}
 }
 

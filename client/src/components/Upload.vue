@@ -45,18 +45,18 @@
 				const formData = new FormData(),
 					files = e.target.files,
 					images = await handleImages(files),
-					allExif = []
+					allImageData = []
 
 				for (const image of images) {
 					const { key, exif, file } = image,
 						extension = file.type.split('/').pop(),
 						newName = `${key}.${extension}`
 
-					allExif.push({ key, exif })
+					allImageData.push({ key, exif, extension })
 					formData.append('photos', file, newName)
 				}
 
-				formData.append('allExif', JSON.stringify(allExif))
+				formData.append('allImageData', JSON.stringify(allImageData))
 
 				try {
 					const getReq = await axios.post('/uploads', formData, {

@@ -20,6 +20,7 @@ const createImageTable = async () => {
 			image_id SERIAL PRIMARY KEY,
 			user_id integer REFERENCES users (user_id) NOT NULL,
 			exif JSON,
+			url varchar(200) NOT NULL,
 			key varchar(150) NOT NULL UNIQUE
 		);`
 
@@ -54,13 +55,14 @@ const createAllTables = async () => {
 		images = await createImageTable()
 	} else {
 		console.error(users)
-		return
+		throw users
 	}
 
 	if (images instanceof Error) {
 		console.error(images)
-		return
+		throw images
 	}
+	console.log('Database tables are ready.')
 	pool.end()
 }
 
