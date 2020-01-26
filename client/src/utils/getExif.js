@@ -1,10 +1,9 @@
 import ExifReader from 'exifreader'
-
 function supportsFileReader() {
 	return window.FileReader === undefined ? false : true
 }
 
-function readFile(file) {
+function readFileAsArrayBuffer(file) {
 	const reader = new FileReader()
 	return new Promise((resolve, reject) => {
 		reader.onload = function(evt) {
@@ -18,33 +17,52 @@ function readFile(file) {
 	})
 }
 
-async function readMultipleFiles(files) {
-	const promises = Object.values(files).map(async file => {
-		const data = await readFile(file)
-		return data
-	})
-	return Promise.all(promises).then(results => {
-		return results
-	})
-}
-
-async function readExif(files) {
-	const imgsExifData = []
-	const readFiles = await readMultipleFiles(files)
-	for (const data of readFiles) {
-		var tags = ExifReader.load(data)
-		delete tags['MakerNote']
-		imgsExifData.push(listTags(tags))
+async function readFile(file) {
+	const res = {
+		readAsArrayBuffer: await readFileAsArrayBuffer(file)
 	}
-	return imgsExifData
+	return res
 }
 
-function listTags(tags) {
-	const exifData = {}
+function readExif(file) {
+	const tags = ExifReader.load(file),
+		exifData = {}
+	delete tags['MakerNote']
+
 	for (const name in tags) {
 		exifData[name] = tags[name].description
 	}
+
 	return exifData
 }
 
-export { supportsFileReader, readExif }
+function getKeys(len) {
+	let time = new Date().getTime()
+	const randomNumArr = new Uint32Array(len),
+		keys = []
+	window.crypto.getRandomValues(randomNumArr)
+
+	for (const num of randomNumArr) {
+		const key = num.toString(36).substr(2, 5) + time.toString(36)
+		keys.push(key)
+		time++
+	}
+	return keys
+}
+
+async function handleImages(files) {
+	const len = files.length,
+		keys = getKeys(len),
+		images = []
+
+	// Don't use for...in, will throw err cause it'll loop through 'length' and 'item' properties
+	for (const file of files) {
+		const { readAsArrayBuffer } = await readFile(file),
+			exif = readExif(readAsArrayBuffer),
+			currKey = keys.pop()
+
+		images.push({ key: currKey, exif, file: file })
+	}
+	return images
+}
+export { supportsFileReader, readExif, handleImages }

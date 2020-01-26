@@ -18,7 +18,7 @@
 </template>
 
 <script>
-	import { supportsFileReader, readExif } from '../utils/getExif'
+	import { supportsFileReader, handleImages } from '../utils/getExif'
 	import axios from 'axios'
 	import { mapState } from 'vuex'
 	export default {
@@ -44,16 +44,25 @@
 				}
 				const formData = new FormData(),
 					files = e.target.files,
-					allExif = await readExif(files)
+					images = await handleImages(files),
+					allExif = []
 
-				for (const file of files) {
-					formData.append('photos', file)
+				for (const image of images) {
+					const { key, exif, file } = image,
+						extension = file.type.split('/').pop(),
+						newName = `${key}.${extension}`
+
+					allExif.push({ key, exif })
+					formData.append('photos', file, newName)
 				}
+
 				formData.append('allExif', JSON.stringify(allExif))
+
 				try {
 					const getReq = await axios.post('/uploads', formData, {
 						headers: { 'x-access-token': this.user.token }
 					})
+
 					console.log(getReq.status)
 					console.log(getReq.data)
 					this.message = 'Uploaded!!'
