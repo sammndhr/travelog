@@ -3,7 +3,7 @@
 		<router-view></router-view>
 		<router-link v-if="!status.loggedIn" to="/register">Register!</router-link>
 		<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
-		<router-link to="/upload">Upload</router-link>
+		<router-link to="/log">Get started</router-link>
 		<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
 	</div>
 </template>

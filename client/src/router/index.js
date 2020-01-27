@@ -2,14 +2,14 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '../components/auth/Login'
 import Register from '../components/auth/Register'
-import Upload from '../components/Upload'
+import Log from '../components/Log'
 
 Vue.use(Router)
 
 const router = new Router({
 	mode: 'history',
 	routes: [
-		{ path: '/upload', name: 'Upload', component: Upload },
+		{ path: '/log', name: 'Log', component: Log },
 		{ path: '/login', name: 'Login', component: Login },
 		{ path: '/register', name: 'Register', component: Register }
 
