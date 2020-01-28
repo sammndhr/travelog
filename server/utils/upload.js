@@ -1,3 +1,42 @@
+const axios = require('axios')
+const { mapbox } = require('../config/DO_NOT_COMMIT.env.vars.js')
+
+async function reverseGeocode({ longitude, latitude }) {
+	let results,
+		location = null,
+		parameters = ''
+
+	const options = {
+		language: 'en',
+		limit: 1,
+		types: 'country,region,place'
+	}
+
+	for (const key in options) {
+		const val = options[key]
+		parameters += `${key}=${val}&`
+	}
+
+	try {
+		results = await axios.get(
+			`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?${parameters}access_token=${mapbox.token}`
+		)
+		const features = results.data.features
+		for (const feats of features) {
+			for (const key in feats) {
+				const val = feats[key]
+				if (key === 'place_name_en') {
+					location = val
+				}
+			}
+		}
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+	return location ? location : results
+}
+
 const UploadHelper = {
 	generateURL({ bucket, region, host, key, extension }) {
 		if (!bucket || !region || !host || !key || !extension)
@@ -8,6 +47,7 @@ const UploadHelper = {
 	generateGeoJson({
 		latitude,
 		longitude,
+		location,
 		height,
 		width,
 		name,
@@ -25,13 +65,14 @@ const UploadHelper = {
 				name,
 				dimensions: { width, height },
 				orientation,
-				dateCreated
+				dateCreated,
+				location
 			}
 		}
 		return feature
 	},
 
-	parseExif({ exif, name }) {
+	async parseExif({ exif, name }) {
 		const {
 			DateTime,
 			GPSLatitudeRef,
@@ -39,17 +80,20 @@ const UploadHelper = {
 			GPSLongitudeRef,
 			GPSLongitude
 		} = exif
+
+		const latitude = GPSLatitude
+			? GPSLatitudeRef.includes('South' || 'S')
+				? GPSLatitude * -1
+				: GPSLatitude
+			: null
+		const longitude = GPSLongitude
+			? GPSLongitudeRef.includes('West' || 'W')
+				? GPSLongitude * -1
+				: GPSLongitude
+			: null
+		const location = await reverseGeocode({ longitude, latitude })
 		const imageHeight = exif['Image Height']
 		const imageWidth = exif['Image Width']
-		console.log(
-			DateTime,
-			GPSLatitudeRef,
-			GPSLatitude,
-			GPSLongitudeRef,
-			GPSLongitude,
-			imageHeight,
-			imageWidth
-		)
 		const height = imageHeight ? parseFloat(imageHeight) : 0
 		const width = imageWidth ? parseFloat(imageWidth) : 0
 		const orientation =
@@ -62,19 +106,10 @@ const UploadHelper = {
 			  ).getTime()
 			: 0
 
-		const latitude = GPSLatitude
-			? GPSLatitudeRef.includes('South' || 'S')
-				? GPSLatitude * -1
-				: GPSLatitude
-			: null
-		const longitude = GPSLongitude
-			? GPSLongitudeRef.includes('West' || 'W')
-				? GPSLongitude * -1
-				: GPSLongitude
-			: null
 		return {
 			latitude,
 			longitude,
+			location,
 			height,
 			width,
 			name,
