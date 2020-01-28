@@ -109,9 +109,12 @@ dist
 # image uploads
 server/uploads
 
-
+# vscode workspace settings
 .vscode
 
+# Environment variables
 DO_NOT_COMMIT.env.vars.js
 
+# Test images and notes
 test_images
+notes

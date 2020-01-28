@@ -1,18 +1,18 @@
 const { query } = require('../models/psql.config')
 
-const { generateURL } = require('../utils/')
+const { generateURL, parseExif, generateGeoJson } = require('../utils/')
 const {
 	host,
 	bucket,
 	bucketRegion
 } = require('../config/DO_NOT_COMMIT.env.vars').s3
 
-const addImageData = async ({ exif, userId, key, url }) => {
+const addImageData = async ({ userId, key, url, extension, geoJson }) => {
 	let results
 	try {
 		results = await query(
-			'INSERT INTO images (user_id ,key , exif, url) VALUES ($1, $2, $3, $4) RETURNING *',
-			[userId, key, exif, url]
+			'INSERT INTO images (user_id, key, url, extension, geoJson) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+			[userId, key, url, extension, geoJson]
 		)
 	} catch (error) {
 		console.error(error)
@@ -22,17 +22,22 @@ const addImageData = async ({ exif, userId, key, url }) => {
 }
 
 const saveImageData = async ({ userId, imageData }) => {
-	const exif = JSON.stringify(imageData.exif),
+	const exif = imageData.exif,
 		{ key, extension } = imageData,
-		url = generateURL({ bucket, key, host, region: bucketRegion, extension })
-
+		name = `${key}.${extension}`,
+		url =
+			process.env.NODE_ENV === 'development'
+				? './uploads'
+				: generateURL({ bucket, key, host, region: bucketRegion, extension })
+	const parsedExif = parseExif({ exif, name })
+	const geoJson = generateGeoJson(parsedExif)
 	let results, image
 
 	try {
-		results = await addImageData({ userId, exif, key, url })
+		results = await addImageData({ userId, geoJson, key, url, extension })
 		const data = results.rows[0]
 		// TODO: Add exif data to return. Make a separate table for exif?
-		image = { url: data.url, key: data.key }
+		image = { url: data.url, key: data.key, geoJson: data.geoJson }
 	} catch (error) {
 		console.error(error)
 		throw error
