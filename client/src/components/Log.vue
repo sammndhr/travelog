@@ -1,5 +1,7 @@
 <template>
 	<div class="log">
+		<Alert />
+		<Loader v-show="status.uploading" />
 		<div className="form options">
 			<fieldset className="form-group">
 				<label className="button" htmlFor="upload-images">
@@ -20,12 +22,17 @@
 
 <script>
 	import { supportsFileReader, handleImages } from '../utils/'
-	import { mapActions } from 'vuex'
+	import { mapActions, mapState } from 'vuex'
 	import Map from './Map'
+	import Loader from './Loader'
+	import Alert from './Alert'
 
 	export default {
 		name: 'Log',
-		components: { Map },
+		components: { Loader, Alert, Map },
+		computed: {
+			...mapState('data', ['status'])
+		},
 		methods: {
 			...mapActions('data', ['upload']),
 			async handleChange(e) {
