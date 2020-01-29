@@ -4,7 +4,7 @@ const express = require('express'),
 const { wrapAsync } = require('../utils'),
 	upload = require('../models/s3.config'),
 	{ saveAllData } = require('../controller/upload.controller'),
-	{ verifyToken } = require('../utils/auth')
+	{ verifyToken } = require('../utils/')
 
 router.post(
 	'/',

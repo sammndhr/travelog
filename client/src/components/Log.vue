@@ -19,26 +19,15 @@
 </template>
 
 <script>
-	import { supportsFileReader, handleImages } from '../utils/getExif'
-	import axios from 'axios'
-	import { mapState } from 'vuex'
+	import { supportsFileReader, handleImages } from '../utils/'
+	import { mapActions } from 'vuex'
 	import Map from './Map'
 
 	export default {
 		name: 'Log',
-		data() {
-			return {
-				file: '',
-				userId: 1
-			}
-		},
 		components: { Map },
-		computed: {
-			...mapState({
-				user: state => state.account.user
-			})
-		},
 		methods: {
+			...mapActions('data', ['upload']),
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -61,22 +50,9 @@
 				}
 
 				formData.append('allImageData', JSON.stringify(allImageData))
-
-				try {
-					const getReq = await axios.post('/uploads', formData, {
-						headers: { 'x-access-token': this.user.token }
-					})
-
-					console.log(getReq.status)
-					console.log(getReq.data)
-					this.message = 'Uploaded!!'
-				} catch (err) {
-					console.log(err.response)
-					this.message = 'Something went wrong!!'
-				}
+				this.upload(formData)
 			}
-		},
-		mounted() {}
+		}
 	}
 </script>
 
