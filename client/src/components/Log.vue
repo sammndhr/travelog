@@ -1,5 +1,5 @@
 <template>
-	<div class="upload">
+	<div class="log">
 		<div className="form options">
 			<fieldset className="form-group">
 				<label className="button" htmlFor="upload-images">
@@ -14,6 +14,7 @@
 				/>
 			</fieldset>
 		</div>
+		<Map />
 	</div>
 </template>
 
@@ -21,6 +22,8 @@
 	import { supportsFileReader, handleImages } from '../utils/getExif'
 	import axios from 'axios'
 	import { mapState } from 'vuex'
+	import Map from './Map'
+
 	export default {
 		name: 'Log',
 		data() {
@@ -29,6 +32,7 @@
 				userId: 1
 			}
 		},
+		components: { Map },
 		computed: {
 			...mapState({
 				user: state => state.account.user
