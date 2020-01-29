@@ -20,7 +20,7 @@ const createImageTable = async () => {
 			key varchar(150) NOT NULL UNIQUE,
 			extension varchar(50) NOT NULL,
 			url varchar(200) NOT NULL,
-			geo_json JSON
+			geo_json_feature JSON
 		);`
 
 	const res = await pool.query(queryText).catch(handleError)

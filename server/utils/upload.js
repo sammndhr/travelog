@@ -44,16 +44,7 @@ const UploadHelper = {
 		return `https://${bucket}.${region}.${host}/${key}.${extension}`
 	},
 
-	generateGeoJson({
-		latitude,
-		longitude,
-		location,
-		height,
-		width,
-		name,
-		orientation,
-		dateCreated
-	}) {
+	createFeature({ latitude, longitude, height, width, ...rest }) {
 		const feature = {
 			type: 'Feature',
 			geometry: {
@@ -62,17 +53,14 @@ const UploadHelper = {
 					latitude !== null && longitude !== null ? [latitude, longitude] : []
 			},
 			properties: {
-				name,
 				dimensions: { width, height },
-				orientation,
-				dateCreated,
-				location
+				...rest
 			}
 		}
 		return feature
 	},
 
-	async parseExif({ exif, name }) {
+	async parseExif({ exif, name, url }) {
 		const {
 			DateTime,
 			GPSLatitudeRef,
@@ -92,10 +80,8 @@ const UploadHelper = {
 				: GPSLongitude
 			: null
 		const location = await reverseGeocode({ longitude, latitude })
-		const imageHeight = exif['Image Height']
-		const imageWidth = exif['Image Width']
-		const height = imageHeight ? parseFloat(imageHeight) : 0
-		const width = imageWidth ? parseFloat(imageWidth) : 0
+		const height = exif['Image Height'] ? parseFloat(exif['Image Height']) : 0
+		const width = exif['Image Width'] ? parseFloat(exif['Image Width']) : 0
 		const orientation =
 			width && height ? (width / height > 1 ? 'potrait' : 'landscape') : ''
 		const dateCreated = DateTime
@@ -114,7 +100,8 @@ const UploadHelper = {
 			width,
 			name,
 			orientation,
-			dateCreated
+			dateCreated,
+			url
 		}
 	}
 }

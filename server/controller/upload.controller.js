@@ -1,17 +1,23 @@
 const { query } = require('../models/psql.config')
-const { generateURL, parseExif, generateGeoJson } = require('../utils/')
+const { generateURL, parseExif, createFeature } = require('../utils/')
 const {
 	host,
 	bucket,
 	bucketRegion
 } = require('../config/DO_NOT_COMMIT.env.vars').s3
 
-const addImageData = async ({ userId, key, url, extension, geoJson }) => {
+const addImageData = async ({
+	userId,
+	key,
+	url,
+	extension,
+	geoJsonFeature
+}) => {
 	let results
 	try {
 		results = await query(
-			'INSERT INTO images (user_id, key, url, extension, geo_json) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
-			[userId, key, url, extension, geoJson]
+			'INSERT INTO images (user_id, key, url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+			[userId, key, url, extension, geoJsonFeature]
 		)
 	} catch (error) {
 		console.error(error)
@@ -46,12 +52,17 @@ const saveImageData = async ({ userId, imageData }) => {
 	let results, image
 
 	try {
-		const parsedExif = await parseExif({ exif, name })
-		const geoJson = generateGeoJson(parsedExif)
-		results = await addImageData({ userId, geoJson, key, url, extension })
+		const parsedExif = await parseExif({ exif, name, url })
+		const geoJsonFeature = createFeature(parsedExif)
+		results = await addImageData({
+			userId,
+			geoJsonFeature,
+			key,
+			url,
+			extension
+		})
 		await addExif({ key, exif })
-		const data = results.rows[0]
-		image = { url: data.url, key: data.key, geoJson: data.geo_json }
+		image = results.rows[0]
 	} catch (error) {
 		console.error(error)
 		throw error
@@ -62,15 +73,20 @@ const saveImageData = async ({ userId, imageData }) => {
 const saveAllData = async (request, response, next) => {
 	const allImageData = JSON.parse(request.body.allImageData),
 		userId = request.user.id, //comes from the verify token middleware
-		allData = [],
-		data = {}
+		features = []
+
 	for (const imageData of allImageData) {
 		const results = await saveImageData({ userId, imageData })
-		allData.push(results)
+		const geoJsonFeature = results.geo_json_feature
+		features.push(geoJsonFeature)
 	}
-	data.message = 'Successfully added images.'
-	data.allImageData = allData
-	response.status(201).send(data)
+
+	const geoJson = {
+		type: 'FeatureCollection',
+		features
+	}
+
+	response.status(201).json({ geoJson })
 }
 
 module.exports = { saveAllData }
