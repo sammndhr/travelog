@@ -21,6 +21,18 @@ const mutations = {
 	UPLOAD_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
+	},
+	GET_GEOSON_REQUEST(state) {
+		state.status = { fetching: true }
+	},
+
+	GET_GEOSON_SUCCESS(state, geoJson) {
+		state.status = { fetched: true }
+		state.geoJson = geoJson
+	},
+	GET_GEOSON_FAILURE(state) {
+		state.status = {}
+		state.geoJson.features = []
 	}
 }
 
@@ -46,6 +58,30 @@ const actions = {
 			console.log(error)
 			const errorMessage = createErrorMessage(error)
 			commit('UPLOAD_FAILURE')
+			dispatch('alert/error', errorMessage, { root: true })
+		}
+	},
+
+	async getGeojson({ dispatch, commit, rootState }) {
+		commit('GET_GEOSON_REQUEST')
+		const options = {
+			method: 'GET',
+			headers: { 'x-access-token': rootState.account.user.token },
+			url: `/uploads/log`
+		}
+		try {
+			const results = await axios(options)
+			if (results.status > 200) {
+				const geoJson = results.data.geoJson
+				commit('GET_GEOSON_SUCCESS', geoJson)
+				setTimeout(() => {
+					dispatch('alert/success', 'Fetch successful', { root: true })
+				})
+			}
+		} catch (error) {
+			console.log(error)
+			const errorMessage = createErrorMessage(error)
+			commit('GET_GEOSON_FAILURE')
 			dispatch('alert/error', errorMessage, { root: true })
 		}
 	}

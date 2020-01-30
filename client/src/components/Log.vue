@@ -34,7 +34,7 @@
 			...mapState('data', ['status'])
 		},
 		methods: {
-			...mapActions('data', ['upload']),
+			...mapActions('data', ['upload', 'getGeojson']),
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -59,6 +59,11 @@
 				formData.append('allImageData', JSON.stringify(allImageData))
 				this.upload(formData)
 			}
+		},
+		beforeRouteEnter(to, from, next) {
+			next(vm => {
+				vm.getGeojson()
+			})
 		}
 	}
 </script>

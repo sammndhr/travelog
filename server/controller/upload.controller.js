@@ -16,7 +16,7 @@ const addImageData = async ({
 	let results
 	try {
 		results = await query(
-			'INSERT INTO images (user_id, key, url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+			'INSERT INTO images (user_id, key, url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5);',
 			[userId, key, url, extension, geoJsonFeature]
 		)
 	} catch (error) {
@@ -49,7 +49,7 @@ const saveImageData = async ({ userId, imageData }) => {
 				? './uploads'
 				: generateURL({ bucket, key, host, region: bucketRegion, extension })
 
-	let results, image
+	let results
 
 	try {
 		const parsedExif = await parseExif({ exif, name, url })
@@ -62,31 +62,52 @@ const saveImageData = async ({ userId, imageData }) => {
 			extension
 		})
 		await addExif({ key, exif })
-		image = results.rows[0]
 	} catch (error) {
 		console.error(error)
 		throw error
 	}
-	return image
+	return results
 }
 
-const saveAllData = async (request, response, next) => {
-	const allImageData = JSON.parse(request.body.allImageData),
-		userId = request.user.id, //comes from the verify token middleware
+const getGeoJson = async (request, response, next) => {
+	const userId = request.user.id,
 		features = []
 
-	for (const imageData of allImageData) {
-		const results = await saveImageData({ userId, imageData })
-		const geoJsonFeature = results.geo_json_feature
-		features.push(geoJsonFeature)
+	let results
+	try {
+		results = await query(
+			'SELECT geo_json_feature FROM images WHERE user_id = $1;',
+			[userId]
+		)
+		for (const feat of results.rows) {
+			features.push(feat.geo_json_feature)
+		}
+	} catch (error) {
+		console.error(error)
+		throw error
 	}
-
 	const geoJson = {
 		type: 'FeatureCollection',
 		features
 	}
-
-	response.status(201).json({ geoJson })
+	return response.status(201).json({ geoJson })
 }
 
-module.exports = { saveAllData }
+const saveAllData = async (request, response, next) => {
+	const allImageData = JSON.parse(request.body.allImageData),
+		userId = request.user.id //comes from the verify token middleware
+	let results = []
+	try {
+		for (const imageData of allImageData) {
+			const data = await saveImageData({ userId, imageData })
+			console.log(data)
+			results.push(data)
+		}
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+	next()
+}
+
+module.exports = { saveAllData, getGeoJson }

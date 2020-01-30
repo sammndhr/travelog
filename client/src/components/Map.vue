@@ -44,10 +44,7 @@
 			return {
 				accessToken: null,
 				mapStyle: 'mapbox://styles/mapbox/streets-v11',
-
-				// coordinates: [-111.549668, 39.014],
 				images: [],
-				// image: './images/0jkpk5xa4o70.jpeg',
 				anchor: 'bottom'
 			}
 		},
@@ -62,13 +59,6 @@
 				// or just to store if you want have access from other components
 				// this.$store.map = event.map
 			}
-		},
-
-		mounted() {
-			console.log(this.geoJson)
-		},
-		updated() {
-			console.log(this.geoJson)
 		},
 
 		created() {
