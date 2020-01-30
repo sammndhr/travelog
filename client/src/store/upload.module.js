@@ -2,14 +2,14 @@ import axios from 'axios'
 import { createErrorMessage } from '../utils'
 
 const state = {
-	geoJson: {},
+	geoJson: {
+		type: 'FeatureCollection',
+		features: []
+	},
 	status: {}
 }
 
 const mutations = {
-	SET_GEOJSON(state, geoJson) {
-		state.geoJson = geoJson
-	},
 	UPLOAD_REQUEST(state) {
 		state.status = { uploading: true }
 	},
@@ -20,14 +20,11 @@ const mutations = {
 	},
 	UPLOAD_FAILURE(state) {
 		state.status = {}
-		state.geoJson = null
+		state.geoJson.features = []
 	}
 }
 
 const actions = {
-	getGeoJson({ commit }, geoJson) {
-		commit('SET_GEOJSON', geoJson)
-	},
 	async upload({ dispatch, commit, rootState }, formData) {
 		commit('UPLOAD_REQUEST')
 		const options = {

@@ -50,7 +50,7 @@ const UploadHelper = {
 			geometry: {
 				type: 'Point',
 				coordinates:
-					latitude !== null && longitude !== null ? [latitude, longitude] : []
+					latitude !== null && longitude !== null ? [longitude, latitude] : []
 			},
 			properties: {
 				dimensions: { width, height },
@@ -85,12 +85,10 @@ const UploadHelper = {
 		const orientation =
 			width && height ? (width / height > 1 ? 'potrait' : 'landscape') : ''
 		const dateCreated = DateTime
-			? new Date(
-					DateTime.split(' ')[0]
-						.split(':')
-						.join('-')
-			  ).getTime()
-			: 0
+			? DateTime.split(' ')[0]
+					.split(':')
+					.join('-')
+			: ''
 
 		return {
 			latitude,
