@@ -25,6 +25,11 @@
 						</div>
 					</MglPopup>
 				</MglMarker>
+				<MglGeojsonLayer
+					:sourceId="sourceId"
+					layerId="images"
+					:layer="geoJsonlayer"
+				/>
 			</MglMap>
 			<Gallery :filteredImages="images" />
 		</div>
@@ -35,7 +40,7 @@
 	/* eslint-disable */
 	import config from '../../DO_NOT_COMMIT.env.vars.js'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
-	import { MglMap, MglPopup, MglMarker } from 'vue-mapbox'
+	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import { mapActions, mapState } from 'vuex'
 	import Gallery from './Gallery'
 
@@ -43,6 +48,7 @@
 		components: {
 			MglMap,
 			MglMarker,
+			MglGeojsonLayer,
 			MglPopup,
 			Gallery
 		},
@@ -50,8 +56,17 @@
 			return {
 				accessToken: null,
 				mapStyle: 'mapbox://styles/mapbox/streets-v11',
-
-				anchor: 'bottom'
+				sourceId: 'image',
+				anchor: 'bottom',
+				geoJsonlayer: {
+					id: 'images',
+					type: 'symbol',
+					source: 'image',
+					layout: {
+						'icon-image': 'transparentPixel',
+						'icon-size': 0.25
+					}
+				}
 			}
 		},
 		computed: {
@@ -62,15 +77,51 @@
 					images[feature.properties.name] = feature.properties.url
 				}
 				return images
+			},
+			filteredImages() {
+				const images = {}
+				for (const feature of this.geoJson.features) {
+					images[feature.properties.name] = feature.properties.url
+				}
+				return images
 			}
 		},
 		methods: {
 			onMapLoaded(event) {
 				this.map = event.map
-				// 				map.addLayer({
-				// 'id': 'points',
-				// or just to store if you want have access from other components
-				// this.$store.map = event.map
+
+				const map = event.map
+				var width = 1
+				var bytesPerPixel = 4
+				var data = new Uint8Array(width * width * bytesPerPixel)
+
+				for (var x = 0; x < width; x++) {
+					for (var y = 0; y < width; y++) {
+						var offset = (y * width + x) * bytesPerPixel
+						data[offset + 0] = 255
+						data[offset + 1] = 255
+						data[offset + 2] = 255
+						data[offset + 3] = 0
+					}
+				}
+
+				map.addImage('transparentPixel', {
+					width: width,
+					height: width,
+					data: data
+				})
+
+				map.addSource('image', {
+					type: 'geojson',
+					data: this.geoJson
+				})
+				map.on('moveend', function() {
+					var features = map.queryRenderedFeatures({ layers: ['images'] })
+
+					if (features) {
+						console.log(features)
+					}
+				})
 			}
 		},
 
