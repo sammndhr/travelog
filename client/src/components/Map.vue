@@ -31,7 +31,7 @@
 					:layer="geoJsonlayer"
 				/>
 			</MglMap>
-			<Gallery :filteredImages="images" />
+			<Gallery :filteredImages="filteredImages" />
 		</div>
 	</div>
 </template>
@@ -66,44 +66,53 @@
 						'icon-image': 'transparentPixel',
 						'icon-size': 0.25
 					}
-				}
+				},
+				filteredImages: []
 			}
 		},
 		computed: {
 			...mapState('data', ['geoJson']),
 			images() {
-				const images = {}
+				const images = []
 				for (const feature of this.geoJson.features) {
-					images[feature.properties.name] = feature.properties.url
-				}
-				return images
-			},
-			filteredImages() {
-				const images = {}
-				for (const feature of this.geoJson.features) {
-					images[feature.properties.name] = feature.properties.url
+					images.push(feature.properties.url)
 				}
 				return images
 			}
 		},
 		methods: {
-			onMapLoaded(event) {
-				this.map = event.map
+			createImage(width) {
+				const bytesPerPixel = 4,
+					data = new Uint8Array(width * width * bytesPerPixel)
 
-				const map = event.map
-				var width = 1
-				var bytesPerPixel = 4
-				var data = new Uint8Array(width * width * bytesPerPixel)
-
-				for (var x = 0; x < width; x++) {
-					for (var y = 0; y < width; y++) {
-						var offset = (y * width + x) * bytesPerPixel
+				for (let x = 0; x < width; x++) {
+					for (let y = 0; y < width; y++) {
+						const offset = (y * width + x) * bytesPerPixel
 						data[offset + 0] = 255
 						data[offset + 1] = 255
 						data[offset + 2] = 255
 						data[offset + 3] = 0
 					}
 				}
+				return data
+			},
+
+			filterImages(map) {
+				const features = map.queryRenderedFeatures({ layers: ['images'] }),
+					filteredImages = []
+				if (features) {
+					for (const feature of features) {
+						filteredImages.push(feature.properties.url)
+					}
+					return filteredImages
+				}
+			},
+
+			onMapLoaded(event) {
+				const map = event.map,
+					width = 1,
+					data = this.createImage(width),
+					vm = this
 
 				map.addImage('transparentPixel', {
 					width: width,
@@ -115,12 +124,10 @@
 					type: 'geojson',
 					data: this.geoJson
 				})
-				map.on('moveend', function() {
-					var features = map.queryRenderedFeatures({ layers: ['images'] })
 
-					if (features) {
-						console.log(features)
-					}
+				map.on('render', function() {
+					const filteredImages = vm.filterImages(map)
+					vm.filteredImages = filteredImages
 				})
 			}
 		},

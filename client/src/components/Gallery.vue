@@ -2,17 +2,17 @@
 	<div id="gallery" class="gallery">
 		<div class="gallery-mobile" v-if="isMobile">
 			<img
-				v-for="(imageUrl, name) in filteredImages"
-				:key="name"
+				v-for="(image, i) in filteredImages"
+				:key="image"
 				class="gallery-image-mobile"
-				:src="imageUrl"
+				:src="image"
 				alt="gallery-img.jpeg"
 				@click="onClick(i)"
 			/>
 		</div>
 		<masonry v-else class="masonary" :cols="cols" :gutter="{ default: '5px' }">
 			<img
-				v-for="image in filteredImages"
+				v-for="(image, i) in filteredImages"
 				:style="{ paddingBottom: gutter.default }"
 				:key="image"
 				class="gallery-image"
@@ -23,7 +23,7 @@
 		</masonry>
 
 		<gallery
-			:images="Object.values(filteredImages)"
+			:images="filteredImages"
 			:index="index"
 			@close="index = null"
 		></gallery>
@@ -36,9 +36,9 @@
 	export default {
 		props: {
 			filteredImages: {
-				type: Object,
+				type: Array,
 				required: false,
-				default: () => {}
+				default: () => []
 			},
 			fadeUp: {
 				type: Boolean,
@@ -66,9 +66,7 @@
 				this.index = i
 			}
 		},
-		updated() {
-			console.log(this.filteredImages)
-		},
+
 		mounted() {
 			if (window.innerWidth <= 500) this.isMobile = true
 			this.$root.$on('resized', ({ width, height }) => {
