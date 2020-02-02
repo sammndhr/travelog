@@ -57,9 +57,9 @@
 		computed: {
 			...mapState('data', ['geoJson']),
 			images() {
-				const images = []
+				const images = {}
 				for (const feature of this.geoJson.features) {
-					images.push(feature.properties.url)
+					images[feature.properties.name] = feature.properties.url
 				}
 				return images
 			}

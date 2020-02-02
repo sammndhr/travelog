@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"start": "DEBUG=travelog:* NODE_ENV=development && node models/createTables.js && nodemon ./bin/www"
+		"start": "DEBUG=travelog:* && node models/createTables.js && nodemon ./bin/www"
 	},
 	"dependencies": {
 		"aws-sdk": "^2.606.0",
