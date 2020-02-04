@@ -73,11 +73,11 @@
 		computed: {
 			...mapState('data', ['geoJson']),
 			images() {
-				const images = []
+				const images = {}
 				for (const feature of this.geoJson.features) {
-					images.push(feature.properties.url)
+					images[feature.properties.name] = feature.properties.url
 				}
-				return images
+				return Object.values(images)
 			}
 		},
 		methods: {
@@ -99,12 +99,12 @@
 
 			filterImages(map) {
 				const features = map.queryRenderedFeatures({ layers: ['images'] }),
-					filteredImages = []
+					filteredImages = {}
 				if (features) {
 					for (const feature of features) {
-						filteredImages.push(feature.properties.url)
+						filteredImages[feature.properties.name] = feature.properties.url
 					}
-					return filteredImages
+					return Object.values(filteredImages)
 				}
 			},
 
