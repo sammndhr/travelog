@@ -1,5 +1,7 @@
 <template>
-	<div class="upload">
+	<div class="log">
+		<Alert />
+		<Loader v-show="status.uploading" />
 		<div className="form options">
 			<fieldset className="form-group">
 				<label className="button" htmlFor="upload-images">
@@ -14,27 +16,25 @@
 				/>
 			</fieldset>
 		</div>
+		<Map />
 	</div>
 </template>
 
 <script>
-	import { supportsFileReader, handleImages } from '../utils/getExif'
-	import axios from 'axios'
-	import { mapState } from 'vuex'
+	import { supportsFileReader, handleImages } from '../utils/'
+	import { mapActions, mapState } from 'vuex'
+	import Map from './Map'
+	import Loader from './Loader'
+	import Alert from './Alert'
+
 	export default {
 		name: 'Log',
-		data() {
-			return {
-				file: '',
-				userId: 1
-			}
-		},
+		components: { Loader, Alert, Map },
 		computed: {
-			...mapState({
-				user: state => state.account.user
-			})
+			...mapState('data', ['status'])
 		},
 		methods: {
+			...mapActions('data', ['upload', 'getGeojson']),
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -57,22 +57,14 @@
 				}
 
 				formData.append('allImageData', JSON.stringify(allImageData))
-
-				try {
-					const getReq = await axios.post('/uploads', formData, {
-						headers: { 'x-access-token': this.user.token }
-					})
-
-					console.log(getReq.status)
-					console.log(getReq.data)
-					this.message = 'Uploaded!!'
-				} catch (err) {
-					console.log(err.response)
-					this.message = 'Something went wrong!!'
-				}
+				this.upload(formData)
 			}
 		},
-		mounted() {}
+		beforeRouteEnter(to, from, next) {
+			next(vm => {
+				vm.getGeojson()
+			})
+		}
 	}
 </script>
 

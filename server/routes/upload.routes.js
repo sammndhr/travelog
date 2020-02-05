@@ -3,13 +3,16 @@ const express = require('express'),
 
 const { wrapAsync } = require('../utils'),
 	upload = require('../models/s3.config'),
-	{ saveAllData } = require('../controller/upload.controller'),
-	{ verifyToken } = require('../utils/auth')
+	{ saveAllData, getGeoJson } = require('../controller/upload.controller'),
+	{ verifyToken } = require('../utils/')
 
+router.get('/log', verifyToken, wrapAsync(getGeoJson))
 router.post(
 	'/',
 	verifyToken,
 	upload.array('photos', 20),
-	wrapAsync(saveAllData)
+	wrapAsync(saveAllData),
+	wrapAsync(getGeoJson)
 )
+
 module.exports = router

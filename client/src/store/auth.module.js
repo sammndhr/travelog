@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from '../router'
-import { createErrorMessage, handleResponse, _logout } from '../utils/auth'
+import { createErrorMessage, handleResponse, _logout } from '../utils/'
 
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -46,10 +46,10 @@ const actions = {
 			headers: { 'Content-Type': 'application/json' },
 			url: `/users/authenticate`
 		}
-		let res
+
 		try {
-			res = await axios(options)
-			const user = handleResponse(res)
+			const results = await axios(options)
+			const user = handleResponse(results)
 			if (user.token && user.userId) {
 				localStorage.setItem('user', JSON.stringify(user))
 			}
@@ -70,7 +70,7 @@ const actions = {
 	},
 
 	async register({ dispatch, commit }, user) {
-		commit('REGISTER_REQUEST', user)
+		commit('REGISTER_REQUEST')
 		const options = {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

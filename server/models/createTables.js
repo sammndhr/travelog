@@ -1,11 +1,9 @@
 const { Pool } = require('pg')
-const { connectionString } = require('../config/DO_NOT_COMMIT.env.vars')
+const { psql } = require('../config/DO_NOT_COMMIT.env.vars')
 
 const handleError = err => new Error(err)
 
-const pool = new Pool({
-	connectionString
-})
+const pool = new Pool(psql)
 
 pool.on('connect', () => {
 	console.log('connected to the db')
@@ -19,9 +17,10 @@ const createImageTable = async () => {
 		images(
 			image_id SERIAL PRIMARY KEY,
 			user_id integer REFERENCES users (user_id) NOT NULL,
-			exif JSON,
+			key varchar(150) NOT NULL UNIQUE,
+			extension varchar(50) NOT NULL,
 			url varchar(200) NOT NULL,
-			key varchar(150) NOT NULL UNIQUE
+			geo_json_feature JSON
 		);`
 
 	const res = await pool.query(queryText).catch(handleError)
@@ -38,6 +37,18 @@ const createUserTable = async () => {
 			user_id SERIAL PRIMARY KEY,
 			email VARCHAR(128) UNIQUE NOT NULL,
 			password VARCHAR(128) NOT NULL
+		);`
+
+	const res = await pool.query(queryText).catch(handleError)
+	return res
+}
+
+const createExifTable = async () => {
+	const queryText = `CREATE TABLE IF NOT EXISTS
+		exifs(
+			exif_id SERIAL PRIMARY KEY,
+			key varchar(150) REFERENCES images (key) NOT NULL,
+			exif JSON
 		);`
 
 	const res = await pool.query(queryText).catch(handleError)
@@ -61,7 +72,12 @@ const createAllTables = async () => {
 	if (images instanceof Error) {
 		console.error(images)
 		throw images
+	} else {
+		await createExifTable().catch(err => {
+			throw err
+		})
 	}
+
 	console.log('Database tables are ready.')
 	pool.end()
 }

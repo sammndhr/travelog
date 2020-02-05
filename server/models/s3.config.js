@@ -1,38 +1,41 @@
 const AWS = require('aws-sdk'),
 	multer = require('multer'),
 	multerS3 = require('multer-s3')
+const s3Config = require('../config/DO_NOT_COMMIT.env.vars').s3
 
-const {
-	accessKeyId,
-	secretAccessKey,
-	region,
-	apiVersion,
-	bucket
-} = require('../config/DO_NOT_COMMIT.env.vars').s3
-
-AWS.config.update({ region })
-
-const s3 = new AWS.S3({
-	apiVersion,
-	accessKeyId,
-	secretAccessKey
-})
-
-const uploadToS3 = multer({
-	storage: multerS3({
-		s3,
-		bucket,
-		metadata: function(req, file, cb) {
-			cb(null, { fieldName: file.fieldname })
+let upload
+if (process.env.NODE_ENV === 'development') {
+	var storage = multer.diskStorage({
+		destination: function(req, file, cb) {
+			cb(null, './uploads')
 		},
-		key: function(req, file, cb) {
+		filename: function(req, file, cb) {
 			cb(null, file.originalname)
 		}
 	})
-})
+	upload = multer({ storage })
+} else {
+	const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = s3Config
+	AWS.config.update({ region })
 
-const uploadToFS = multer({ dest: './uploads' })
+	const s3 = new AWS.S3({
+		apiVersion,
+		accessKeyId,
+		secretAccessKey
+	})
 
-const upload = process.env.NODE_ENV === 'development' ? uploadToFS : uploadToS3
+	upload = multer({
+		storage: multerS3({
+			s3,
+			bucket,
+			metadata: function(req, file, cb) {
+				cb(null, { fieldName: file.fieldname })
+			},
+			key: function(req, file, cb) {
+				cb(null, file.originalname)
+			}
+		})
+	})
+}
 
 module.exports = upload

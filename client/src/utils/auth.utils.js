@@ -1,12 +1,5 @@
 import axios from 'axios'
-
-const createErrorMessage = error => {
-	const errorMessage =
-		error.response.data.message === undefined
-			? 'Something went wrong.'
-			: `${error.response.data.message}`
-	return errorMessage
-}
+import { createErrorMessage } from '../utils'
 
 const authHeader = () => {
 	let user = JSON.parse(localStorage.getItem('user'))
@@ -64,4 +57,4 @@ const handleResponse = response => {
 	return data
 }
 
-export { _logout, _update, _delete, createErrorMessage, handleResponse }
+export { _logout, _update, _delete, handleResponse }

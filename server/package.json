@@ -3,10 +3,11 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"start": "DEBUG=travelog:* NODE_ENV=development && node models/createTables.js && nodemon ./bin/www"
+		"start": "DEBUG=travelog:* && node models/createTables.js && nodemon ./bin/www"
 	},
 	"dependencies": {
 		"aws-sdk": "^2.606.0",
+		"axios": "^0.19.2",
 		"bcrypt": "^3.0.7",
 		"body-parser": "^1.19.0",
 		"cookie-parser": "~1.4.4",

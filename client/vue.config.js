@@ -4,9 +4,10 @@ module.exports = {
 	},
 	css: {
 		loaderOptions: {
-			sass: {
-				prependData: `@import "@/assets/styles/_variables.scss";`
+			scss: {
+				prependData: '@import "@/assets/styles/_variables.scss";'
 			}
 		}
-	}
+	},
+	transpileDependencies: ['vuetify']
 }

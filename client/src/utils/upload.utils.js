@@ -65,4 +65,5 @@ async function handleImages(files) {
 	}
 	return images
 }
+
 export { supportsFileReader, readExif, handleImages }
