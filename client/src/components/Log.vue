@@ -1,37 +1,42 @@
 <template>
-	<div class="log">
-		<Alert />
-		<Loader v-show="status.uploading" />
-		<div className="form options">
-			<fieldset className="form-group">
-				<label className="button" htmlFor="upload-images">
-					<span>Upload Images</span>
-				</label>
-				<input
-					id="upload-images"
-					type="file"
-					accept="image/*, image/heic"
-					multiple="{true}"
-					@change="handleChange"
-				/>
-			</fieldset>
-		</div>
-		<Map />
-	</div>
+	<v-container class="log">
+		<v-layout text-center wrap>
+			<Alert />
+			<Loader v-show="status.uploading" />
+			<div className="form options">
+				<fieldset className="form-group">
+					<label className="button" htmlFor="upload-images">
+						<span>Upload Images</span>
+					</label>
+					<input
+						id="upload-images"
+						type="file"
+						accept="image/*, image/heic"
+						multiple="{true}"
+						@change="handleChange"
+					/>
+				</fieldset>
+			</div>
+			<Map />
+			<Gallery :filteredImages="filteredImages" />
+		</v-layout>
+	</v-container>
 </template>
 
 <script>
 	import { supportsFileReader, handleImages } from '../utils/'
 	import { mapActions, mapState } from 'vuex'
+	import Gallery from './Gallery'
+
 	import Map from './Map'
 	import Loader from './Loader'
 	import Alert from './Alert'
 
 	export default {
 		name: 'Log',
-		components: { Loader, Alert, Map },
+		components: { Loader, Alert, Map, Gallery },
 		computed: {
-			...mapState('data', ['status'])
+			...mapState('data', ['status', 'filteredImages'])
 		},
 		methods: {
 			...mapActions('data', ['upload', 'getGeojson']),

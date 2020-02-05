@@ -1,6 +1,5 @@
 <template>
 	<div id="travelog" class="travelog" ref="travelog">
-		<h1>Travelog</h1>
 		<div class="travel-wrapper">
 			<MglMap
 				id="map"
@@ -31,7 +30,6 @@
 					:layer="geoJsonlayer"
 				/>
 			</MglMap>
-			<Gallery :filteredImages="filteredImages" />
 		</div>
 	</div>
 </template>
@@ -42,15 +40,13 @@
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import { mapActions, mapState } from 'vuex'
-	import Gallery from './Gallery'
 
 	export default {
 		components: {
 			MglMap,
 			MglMarker,
 			MglGeojsonLayer,
-			MglPopup,
-			Gallery
+			MglPopup
 		},
 		data() {
 			return {
@@ -66,8 +62,7 @@
 						'icon-image': 'transparentPixel',
 						'icon-size': 0.25
 					}
-				},
-				filteredImages: []
+				}
 			}
 		},
 		computed: {
@@ -81,6 +76,7 @@
 			}
 		},
 		methods: {
+			...mapActions('data', ['getFilteredImages']),
 			createImage(width) {
 				const bytesPerPixel = 4,
 					data = new Uint8Array(width * width * bytesPerPixel)
@@ -127,7 +123,7 @@
 
 				map.on('render', function() {
 					const filteredImages = vm.filterImages(map)
-					vm.filteredImages = filteredImages
+					vm.getFilteredImages(filteredImages)
 				})
 			}
 		},
@@ -151,9 +147,6 @@
 	}
 	.travelog {
 		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
 		padding: 5rem 0;
 		h2 {
 			margin-top: 0;
@@ -164,7 +157,7 @@
 		overflow: hidden;
 		padding-bottom: 2rem;
 		justify-content: space-between;
-		display: flex;
+
 		width: calc(100vw - 1rem);
 		max-width: 1500px;
 		flex-direction: column;
@@ -172,34 +165,10 @@
 		height: 85vh;
 		position: relative;
 		.maps {
-			flex-basis: 85%;
+			width: 30rem;
 			min-height: 20rem;
 			height: 100%;
 			margin-bottom: 1rem;
-		}
-	}
-
-	@include small-breakpoint {
-		.travel-wrapper {
-			justify-content: space-around;
-			flex-direction: row;
-			width: calc(100vw - #{$padding-small});
-			.maps {
-				flex-basis: 65%;
-			}
-		}
-	}
-	@include medium-breakpoint {
-		.travel-wrapper {
-			width: calc(100vw - #{$padding-medium});
-		}
-	}
-	@include large-breakpoint {
-		.travel-wrapper {
-			width: calc(100vw - #{$padding-large});
-			.maps {
-				flex-basis: 55%;
-			}
 		}
 	}
 </style>

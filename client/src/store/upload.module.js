@@ -6,7 +6,8 @@ const state = {
 		type: 'FeatureCollection',
 		features: []
 	},
-	status: {}
+	status: {},
+	filteredImages: []
 }
 
 const mutations = {
@@ -33,6 +34,9 @@ const mutations = {
 	GET_GEOSON_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
+	},
+	SET_FILTERED_IMAGES(state, filteredImages) {
+		state.filteredImages = filteredImages
 	}
 }
 
@@ -84,6 +88,9 @@ const actions = {
 			commit('GET_GEOSON_FAILURE')
 			dispatch('alert/error', errorMessage, { root: true })
 		}
+	},
+	getFilteredImages({ commit }, filteredImages) {
+		commit('SET_FILTERED_IMAGES', filteredImages)
 	}
 }
 
