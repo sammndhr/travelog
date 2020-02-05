@@ -1,11 +1,15 @@
 <template>
-	<div id="app">
-		<router-link v-if="!status.loggedIn" to="/register">Register!</router-link>
-		<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
-		<router-link to="/log">Get started</router-link>
-		<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
-		<router-view></router-view>
-	</div>
+	<v-app>
+		<v-content>
+			<router-link v-if="!status.loggedIn" to="/register"
+				>Register!</router-link
+			>
+			<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
+			<router-link to="/log">Get started</router-link>
+			<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
+			<router-view></router-view>
+		</v-content>
+	</v-app>
 </template>
 
 <script>
