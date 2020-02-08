@@ -5,38 +5,3 @@ $blue: #3682ed;
 $red: #ff6666;
 $black: #090909;
 $white: #fff;
-
-/* Containers */
-$small: 500px;
-$medium: 900px;
-$large: 1200px;
-$x-large: 1600px;
-
-//Main container padding for with media breaks
-$padding-small: 2rem;
-$padding-medium: 3rem;
-$padding-large: 4rem;
-
-//Breakpoints
-@mixin small-breakpoint {
-	@media screen and (min-width: #{$small}) {
-		@content;
-	}
-}
-
-@mixin medium-breakpoint {
-	@media screen and (min-width: #{$medium}) {
-		@content;
-	}
-}
-
-@mixin large-breakpoint {
-	@media screen and (min-width:  #{$large}) {
-		@content;
-	}
-}
-@mixin x-large-breakpoint {
-	@media screen and (min-width:  #{$x-large}) {
-		@content;
-	}
-}

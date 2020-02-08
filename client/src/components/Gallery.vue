@@ -79,7 +79,7 @@
 		data() {
 			return {
 				index: null,
-				cols: { default: 4, 1600: 3, 1000: 2, 900: 1 },
+				cols: { default: 4, 1600: 3, 700: 2 },
 				items: [1, 2, 3, 4, 5],
 				isMobile: false,
 				gutter: { default: '5px' },
@@ -146,10 +146,6 @@
 	.gallery {
 		overflow: scroll;
 		margin: 8px;
-		/* flex-basis: 45%; */
-		/* display: flex; */
-		/* align-items: center; */
-
 		.gallery-mobile {
 			display: flex;
 			align-items: center;
@@ -171,17 +167,4 @@
 			display: block;
 		}
 	}
-	/* 
-	@include small-breakpoint {
-		.gallery {
-			display: block;
-			flex-basis: 30%;
-		}
-	}
-
-	@include large-breakpoint {
-		.gallery {
-			flex-basis: 40%;
-		}
-	} */
 </style>
