@@ -6,7 +6,7 @@
 		<Loader v-show="status.uploading" />
 		<v-row align="center" justify="center">
 			<Map />
-			<Gallery :filteredGeoJson="filteredGeoJson" />
+			<Gallery />
 		</v-row>
 	</div>
 </template>
@@ -23,7 +23,7 @@
 		name: 'Log',
 		components: { Loader, Alert, Map, Gallery },
 		computed: {
-			...mapState('data', ['status', 'filteredGeoJson'])
+			...mapState('data', ['status'])
 		},
 		methods: {
 			...mapActions('data', ['upload', 'getGeojson'])

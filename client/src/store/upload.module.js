@@ -78,6 +78,11 @@ const actions = {
 			if (results.status > 200) {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
+				const arr = []
+				for (const feature of geoJson.features) {
+					arr.push(feature.properties.name)
+				}
+				console.log('from get', arr)
 				setTimeout(() => {
 					dispatch('alert/success', 'Fetch successful', { root: true })
 				})
@@ -90,6 +95,11 @@ const actions = {
 		}
 	},
 	getFilteredGeoJson({ commit }, filteredGeoJson) {
+		const arr = []
+		for (const feature of filteredGeoJson) {
+			arr.push(feature.properties.name)
+		}
+		console.log(arr)
 		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
 	}
 }

@@ -46,7 +46,9 @@
 								alt="gallery-img.jpeg"
 								@click="onClick(i)"
 							/>
-							<figcaption>{{ image.location }}</figcaption>
+							<figcaption>
+								{{ `${image.location.region}, ${image.location.country}` }}
+							</figcaption>
 						</figure>
 					</masonry>
 				</v-col>
@@ -65,11 +67,6 @@
 
 	export default {
 		props: {
-			filteredGeoJson: {
-				type: Array,
-				required: false,
-				default: () => []
-			},
 			fadeUp: {
 				type: Boolean,
 				required: false,
@@ -78,19 +75,21 @@
 		},
 
 		computed: {
-			...mapState('data', ['status']),
+			...mapState('data', ['status', 'geoJson', 'filteredGeoJson']),
 			imagesArr() {
 				return this.filteredImages.map(feature => {
 					return feature.url
 				})
 			},
+
 			filteredImages() {
 				const images = []
+				console.log(this.filteredGeoJson)
 				this.filteredGeoJson.forEach(feature => {
 					const obj = {}
 					obj.url = feature.properties.url
 					obj.name = feature.properties.name
-					obj.location = feature.properties.location
+					obj.location = JSON.parse(feature.properties.location)
 					images.push(obj)
 				})
 				return images
@@ -114,6 +113,9 @@
 			Button
 		},
 
+		updated() {
+			console.log('updated', this.geoJson.features)
+		},
 		methods: {
 			onClick(i) {
 				this.index = i
@@ -146,6 +148,7 @@
 		},
 
 		mounted() {
+			console.log('mounted', this.geoJson.features)
 			if (window.innerWidth <= 500) this.isMobile = true
 			this.$root.$on('resized', ({ width, height }) => {
 				this.isMobile = width <= 500 ? true : false

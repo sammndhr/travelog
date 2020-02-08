@@ -27,7 +27,11 @@
 								<MglPopup :anchor="anchor">
 									<div>
 										<p>{{ feature.properties.dateCreated }}</p>
-										<p>{{ feature.properties.location }}</p>
+										<p>
+											{{
+												`${feature.properties.location.place}, ${feature.properties.location.region}, ${feature.properties.location.country}`
+											}}
+										</p>
 									</div>
 								</MglPopup>
 							</MglMarker>
@@ -75,8 +79,19 @@
 				}
 			}
 		},
+		updated() {
+			console.log('Map 83 this.geoJson.features', this.geoJson.features)
+			console.log(
+				'store geoJson feats',
+				this.$store.state.data.geoJson.features
+			)
+		},
 		computed: {
-			...mapState('data', ['geoJson'])
+			...mapState('data', ['geoJson']),
+			filteredGeoJson() {
+				const features = this.geoJson.features
+				this.getFilteredGeoJson(features)
+			}
 		},
 		methods: {
 			...mapActions('data', ['getFilteredGeoJson']),
@@ -99,6 +114,7 @@
 			filter(map) {
 				const features = map.queryRenderedFeatures({ layers: ['images'] }),
 					filteredGeoJson = []
+				console.log(features)
 				if (features) {
 					for (const feature of features) {
 						if (feature) filteredGeoJson.push(feature)
@@ -112,7 +128,7 @@
 					width = 1,
 					data = this.createImage(width),
 					vm = this
-
+				this.map = map
 				map.addImage('transparentPixel', {
 					width: width,
 					height: width,
@@ -124,7 +140,10 @@
 					data: this.geoJson
 				})
 
-				map.on('render', function() {
+				// const filteredGeoJson = vm.filter(map)
+				// vm.getFilteredGeoJson(filteredGeoJson)
+
+				map.on('moveend', function() {
 					const filteredGeoJson = vm.filter(map)
 					vm.getFilteredGeoJson(filteredGeoJson)
 				})
