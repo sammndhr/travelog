@@ -26,9 +26,9 @@
 		<v-sheet
 			id="scrolling-techniques-6"
 			class="overflow-y-auto"
-			max-height="100vh"
+			min-height="100vh"
 		>
-			<v-container><slot /></v-container>
+			<slot />
 		</v-sheet>
 	</v-card>
 </template>

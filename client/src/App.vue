@@ -1,7 +1,7 @@
 <template>
 	<v-app>
 		<Navbar>
-			<v-content>
+			<v-content class="main-content">
 				<router-view></router-view>
 			</v-content>
 		</Navbar>
@@ -9,8 +9,10 @@
 </template>
 
 <script>
+	/* eslint-disable */
 	import { mapState } from 'vuex'
 	import Navbar from './components/Navbar'
+
 	export default {
 		name: 'app',
 		components: {
@@ -23,15 +25,7 @@
 </script>
 
 <style lang="scss">
-	#app {
-		font-family: 'Avenir', Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-align: center;
-		color: #2c3e50;
-		max-width: 100vw;
-	}
-	a {
-		display: block;
+	.main-content {
+		margin-top: 64px;
 	}
 </style>

@@ -1,25 +1,15 @@
 <template>
 	<v-container class="log">
-		<v-layout text-center wrap>
+		<v-row align="center" justify="center">
 			<Alert />
-			<Loader v-show="status.uploading" />
-			<div className="form options">
-				<fieldset className="form-group">
-					<label className="button" htmlFor="upload-images">
-						<span>Upload Images</span>
-					</label>
-					<input
-						id="upload-images"
-						type="file"
-						accept="image/*, image/heic"
-						multiple="{true}"
-						@change="handleChange"
-					/>
-				</fieldset>
-			</div>
+		</v-row>
+
+		<Loader v-show="status.uploading" />
+		<v-row align="center" justify="center">
 			<Map />
+
 			<Gallery :filteredImages="filteredImages" />
-		</v-layout>
+		</v-row>
 	</v-container>
 </template>
 
@@ -73,4 +63,9 @@
 	}
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+	.log {
+		margin-top: 64px;
+		/* max-width: 1400px; */
+	}
+</style>

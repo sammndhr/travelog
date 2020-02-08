@@ -1,37 +1,47 @@
 <template>
-	<div id="travelog" class="travelog" ref="travelog">
-		<div class="travel-wrapper">
-			<MglMap
-				id="map"
-				class="maps"
-				:accessToken="accessToken"
-				:mapStyle="mapStyle"
-				@load="onMapLoaded"
-			>
-				<MglMarker
-					v-for="feature in geoJson.features"
-					:anchor="'top'"
-					:key="feature.properties.name"
-					:coordinates="feature.geometry.coordinates"
-				>
-					<div slot="marker" class="marker">
-						<img class="marker" :src="feature.properties.url" alt="marker" />
+	<v-col align-self="start" cols="12" md="6" id="travelog" class="travelog">
+		<v-card outlined>
+			<v-row>
+				<v-col align="center">
+					<div class="travel-wrapper">
+						<MglMap
+							id="map"
+							class="maps"
+							:accessToken="accessToken"
+							:mapStyle="mapStyle"
+							@load="onMapLoaded"
+						>
+							<MglMarker
+								v-for="feature in geoJson.features"
+								:anchor="'top'"
+								:key="feature.properties.name"
+								:coordinates="feature.geometry.coordinates"
+							>
+								<div slot="marker" class="marker">
+									<img
+										class="marker"
+										:src="feature.properties.url"
+										alt="marker"
+									/>
+								</div>
+								<MglPopup :anchor="anchor">
+									<div>
+										<p>{{ feature.properties.dateCreated }}</p>
+										<p>{{ feature.properties.location }}</p>
+									</div>
+								</MglPopup>
+							</MglMarker>
+							<MglGeojsonLayer
+								:sourceId="sourceId"
+								layerId="images"
+								:layer="geoJsonlayer"
+							/>
+						</MglMap>
 					</div>
-					<MglPopup :anchor="anchor">
-						<div>
-							<p>{{ feature.properties.dateCreated }}</p>
-							<p>{{ feature.properties.location }}</p>
-						</div>
-					</MglPopup>
-				</MglMarker>
-				<MglGeojsonLayer
-					:sourceId="sourceId"
-					layerId="images"
-					:layer="geoJsonlayer"
-				/>
-			</MglMap>
-		</div>
-	</div>
+				</v-col>
+			</v-row>
+		</v-card>
+	</v-col>
 </template>
 
 <script>
@@ -145,30 +155,11 @@
 		border-radius: 5px;
 		cursor: pointer;
 	}
-	.travelog {
-		min-height: 100vh;
-		padding: 5rem 0;
-		h2 {
-			margin-top: 0;
-			margin-bottom: 7rem;
-		}
-	}
-	.travel-wrapper {
-		overflow: hidden;
-		padding-bottom: 2rem;
-		justify-content: space-between;
 
-		width: calc(100vw - 1rem);
-		max-width: 1500px;
-		flex-direction: column;
-		min-height: 570px;
-		height: 85vh;
-		position: relative;
+	.travel-wrapper {
 		.maps {
-			width: 30rem;
+			min-width: 20rem;
 			min-height: 20rem;
-			height: 100%;
-			margin-bottom: 1rem;
 		}
 	}
 </style>

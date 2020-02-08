@@ -5,11 +5,11 @@ const state = {
 
 const mutations = {
 	SUCCESS(state, message) {
-		state.type = 'alert-success'
+		state.type = 'success'
 		state.message = message
 	},
 	ERROR(state, message) {
-		state.type = 'alert-danger'
+		state.type = 'error'
 		state.message = message
 	},
 	CLEAR(state) {
