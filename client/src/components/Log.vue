@@ -1,16 +1,14 @@
 <template>
-	<v-container class="log">
+	<div class="log main-container">
 		<v-row align="center" justify="center">
 			<Alert />
 		</v-row>
-
 		<Loader v-show="status.uploading" />
 		<v-row align="center" justify="center">
 			<Map />
-
 			<Gallery :filteredImages="filteredImages" />
 		</v-row>
-	</v-container>
+	</div>
 </template>
 
 <script>
@@ -64,8 +62,10 @@
 </script>
 
 <style scoped lang="scss">
+	.main-container {
+		margin: 2rem;
+	}
 	.log {
 		margin-top: 64px;
-		/* max-width: 1400px; */
 	}
 </style>
