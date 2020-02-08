@@ -26,6 +26,7 @@
 		<v-sheet
 			id="scrolling-techniques-6"
 			class="overflow-y-auto"
+			max-height="100vh"
 			min-height="100vh"
 		>
 			<slot />
