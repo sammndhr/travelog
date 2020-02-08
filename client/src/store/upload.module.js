@@ -7,7 +7,7 @@ const state = {
 		features: []
 	},
 	status: {},
-	filteredImages: []
+	filteredGeoJson: []
 }
 
 const mutations = {
@@ -35,8 +35,8 @@ const mutations = {
 		state.status = {}
 		state.geoJson.features = []
 	},
-	SET_FILTERED_IMAGES(state, filteredImages) {
-		state.filteredImages = filteredImages
+	SET_FILTERED_GEOJSON(state, filteredGeoJson) {
+		state.filteredGeoJson = filteredGeoJson
 	}
 }
 
@@ -89,8 +89,8 @@ const actions = {
 			dispatch('alert/error', errorMessage, { root: true })
 		}
 	},
-	getFilteredImages({ commit }, filteredImages) {
-		commit('SET_FILTERED_IMAGES', filteredImages)
+	getFilteredGeoJson({ commit }, filteredGeoJson) {
+		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
 	}
 }
 

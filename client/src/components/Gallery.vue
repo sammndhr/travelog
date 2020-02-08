@@ -38,19 +38,20 @@
 						:cols="cols"
 						:gutter="{ default: '5px' }"
 					>
-						<img
-							v-for="(image, i) in filteredImages"
-							:style="{ paddingBottom: gutter.default }"
-							:key="image"
-							class="gallery-image"
-							:src="image"
-							alt="gallery-img.jpeg"
-							@click="onClick(i)"
-						/>
+						<figure v-for="(image, i) in filteredImages" :key="image.name">
+							<img
+								:style="{ paddingBottom: gutter.default }"
+								class="gallery-image"
+								:src="image.url"
+								alt="gallery-img.jpeg"
+								@click="onClick(i)"
+							/>
+							<figcaption>{{ image.location }}</figcaption>
+						</figure>
 					</masonry>
 				</v-col>
 			</v-row>
-			<gallery :images="filteredImages" :index="index" @close="index = null" />
+			<gallery :images="imagesArr" :index="index" @close="index = null" />
 		</v-card>
 	</v-col>
 </template>
@@ -64,7 +65,7 @@
 
 	export default {
 		props: {
-			filteredImages: {
+			filteredGeoJson: {
 				type: Array,
 				required: false,
 				default: () => []
@@ -73,6 +74,26 @@
 				type: Boolean,
 				required: false,
 				default: true
+			}
+		},
+
+		computed: {
+			...mapState('data', ['status']),
+			imagesArr() {
+				return this.filteredImages.map(feature => {
+					return feature.url
+				})
+			},
+			filteredImages() {
+				const images = []
+				this.filteredGeoJson.forEach(feature => {
+					const obj = {}
+					obj.url = feature.properties.url
+					obj.name = feature.properties.name
+					obj.location = feature.properties.location
+					images.push(obj)
+				})
+				return images
 			}
 		},
 
@@ -91,10 +112,6 @@
 			gallery: VueGallery,
 			Alert,
 			Button
-		},
-
-		computed: {
-			...mapState('data', ['status'])
 		},
 
 		methods: {

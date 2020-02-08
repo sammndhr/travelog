@@ -76,17 +76,10 @@
 			}
 		},
 		computed: {
-			...mapState('data', ['geoJson']),
-			images() {
-				const images = {}
-				for (const feature of this.geoJson.features) {
-					images[feature.properties.name] = feature.properties.url
-				}
-				return Object.values(images)
-			}
+			...mapState('data', ['geoJson'])
 		},
 		methods: {
-			...mapActions('data', ['getFilteredImages']),
+			...mapActions('data', ['getFilteredGeoJson']),
 			createImage(width) {
 				const bytesPerPixel = 4,
 					data = new Uint8Array(width * width * bytesPerPixel)
@@ -103,14 +96,14 @@
 				return data
 			},
 
-			filterImages(map) {
+			filter(map) {
 				const features = map.queryRenderedFeatures({ layers: ['images'] }),
-					filteredImages = {}
+					filteredGeoJson = []
 				if (features) {
 					for (const feature of features) {
-						filteredImages[feature.properties.name] = feature.properties.url
+						if (feature) filteredGeoJson.push(feature)
 					}
-					return Object.values(filteredImages)
+					return filteredGeoJson
 				}
 			},
 
@@ -132,8 +125,8 @@
 				})
 
 				map.on('render', function() {
-					const filteredImages = vm.filterImages(map)
-					vm.getFilteredImages(filteredImages)
+					const filteredGeoJson = vm.filter(map)
+					vm.getFilteredGeoJson(filteredGeoJson)
 				})
 			}
 		},
