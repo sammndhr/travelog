@@ -44,7 +44,6 @@
 									color="primary"
 									class="mr-4"
 									@click="validate"
-									block
 									type="submit"
 									form="login-form"
 									>Login</v-btn
