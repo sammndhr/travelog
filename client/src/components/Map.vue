@@ -1,11 +1,19 @@
 <template>
-	<v-col align-self="start" cols="12" md="6" id="travelog" class="travelog">
+	<v-col
+		align-self="start"
+		cols="12"
+		md="7"
+		xl="6"
+		id="travelog"
+		class="travelog"
+	>
 		<v-card outlined>
 			<v-row>
 				<v-col align="center">
 					<div class="travel-wrapper">
 						<MglMap
 							id="map"
+							:zoom="zoom"
 							class="maps"
 							:accessToken="accessToken"
 							:mapStyle="mapStyle"
@@ -29,7 +37,7 @@
 										<p>{{ feature.properties.dateCreated }}</p>
 										<p>
 											{{
-												`${feature.properties.location.place}, ${feature.properties.location.region}, ${feature.properties.location.country}`
+												`${feature.properties.location.region}, ${feature.properties.location.country}`
 											}}
 										</p>
 									</div>
@@ -49,11 +57,11 @@
 </template>
 
 <script>
-	/* eslint-disable */
+	import { mapActions, mapState } from 'vuex'
+	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import config from '../../DO_NOT_COMMIT.env.vars.js'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
-	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
-	import { mapActions, mapState } from 'vuex'
+	import { filter } from '../utils'
 
 	export default {
 		components: {
@@ -68,33 +76,43 @@
 				mapStyle: 'mapbox://styles/mapbox/streets-v11',
 				sourceId: 'image',
 				anchor: 'bottom',
+				// map: null, //will break. Don't uncomment
+				zoom: 1,
 				geoJsonlayer: {
 					id: 'images',
 					type: 'symbol',
 					source: 'image',
+					replaceSource: true,
 					layout: {
 						'icon-image': 'transparentPixel',
-						'icon-size': 0.25
+						'icon-size': 0.01
 					}
 				}
 			}
 		},
-		updated() {
-			console.log('Map 83 this.geoJson.features', this.geoJson.features)
-			console.log(
-				'store geoJson feats',
-				this.$store.state.data.geoJson.features
-			)
-		},
+
 		computed: {
-			...mapState('data', ['geoJson']),
-			filteredGeoJson() {
-				const features = this.geoJson.features
-				this.getFilteredGeoJson(features)
+			...mapState('data', ['geoJson'])
+		},
+
+		watch: {
+			geoJson() {
+				if (!this.map) return
+				this.filter()
 			}
 		},
+
 		methods: {
 			...mapActions('data', ['getFilteredGeoJson']),
+
+			filter() {
+				const geoJson = this.geoJson,
+					// works fine without map being set in data
+					bounds = this.map.getBounds()
+				const filteredGeoJson = filter({ bounds, geoJson })
+				this.getFilteredGeoJson(filteredGeoJson)
+			},
+
 			createImage(width) {
 				const bytesPerPixel = 4,
 					data = new Uint8Array(width * width * bytesPerPixel)
@@ -102,30 +120,18 @@
 				for (let x = 0; x < width; x++) {
 					for (let y = 0; y < width; y++) {
 						const offset = (y * width + x) * bytesPerPixel
-						data[offset + 0] = 255
-						data[offset + 1] = 255
-						data[offset + 2] = 255
-						data[offset + 3] = 0
+						data[offset + 0] = 0
+						data[offset + 1] = 0
+						data[offset + 2] = 0
+						data[offset + 3] = 255
 					}
 				}
 				return data
 			},
 
-			filter(map) {
-				const features = map.queryRenderedFeatures({ layers: ['images'] }),
-					filteredGeoJson = []
-				console.log(features)
-				if (features) {
-					for (const feature of features) {
-						if (feature) filteredGeoJson.push(feature)
-					}
-					return filteredGeoJson
-				}
-			},
-
 			onMapLoaded(event) {
 				const map = event.map,
-					width = 1,
+					width = 0.5,
 					data = this.createImage(width),
 					vm = this
 				this.map = map
@@ -134,18 +140,15 @@
 					height: width,
 					data: data
 				})
-
 				map.addSource('image', {
 					type: 'geojson',
 					data: this.geoJson
 				})
 
-				// const filteredGeoJson = vm.filter(map)
-				// vm.getFilteredGeoJson(filteredGeoJson)
+				this.filter()
 
 				map.on('moveend', function() {
-					const filteredGeoJson = vm.filter(map)
-					vm.getFilteredGeoJson(filteredGeoJson)
+					vm.filter()
 				})
 			}
 		},
@@ -158,9 +161,9 @@
 </script>
 
 <style lang="scss" scoped>
-	.mapboxgl-popup {
+	/* .mapboxgl-popup {
 		max-width: 200px;
-	}
+	} */
 	.marker {
 		width: 50px;
 		height: 50px;
@@ -171,7 +174,7 @@
 	.travel-wrapper {
 		.maps {
 			min-width: 20rem;
-			min-height: 20rem;
+			min-height: 60vh;
 		}
 	}
 </style>

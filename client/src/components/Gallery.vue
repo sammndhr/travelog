@@ -1,5 +1,5 @@
 <template>
-	<v-col align-self="start" cols="12" md="6">
+	<v-col align-self="start" cols="12" xl="6" md="5">
 		<v-card outlined>
 			<v-row>
 				<v-col align="center">
@@ -84,12 +84,11 @@
 
 			filteredImages() {
 				const images = []
-				console.log(this.filteredGeoJson)
 				this.filteredGeoJson.forEach(feature => {
 					const obj = {}
 					obj.url = feature.properties.url
 					obj.name = feature.properties.name
-					obj.location = JSON.parse(feature.properties.location)
+					obj.location = feature.properties.location
 					images.push(obj)
 				})
 				return images
@@ -113,14 +112,11 @@
 			Button
 		},
 
-		updated() {
-			console.log('updated', this.geoJson.features)
-		},
 		methods: {
 			onClick(i) {
 				this.index = i
 			},
-			...mapActions('data', ['upload', 'getGeojson']),
+			...mapActions('data', ['upload']),
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -148,7 +144,6 @@
 		},
 
 		mounted() {
-			console.log('mounted', this.geoJson.features)
 			if (window.innerWidth <= 500) this.isMobile = true
 			this.$root.$on('resized', ({ width, height }) => {
 				this.isMobile = width <= 500 ? true : false

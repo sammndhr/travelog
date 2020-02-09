@@ -21,14 +21,13 @@ async function reverseGeocode({ longitude, latitude }) {
 		results = await axios.get(
 			`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?${parameters}access_token=${mapbox.token}`
 		)
-		console.log(results.data.features)
+
 		const features = results.data.features
 		for (const feats of features) {
 			for (const key in feats) {
 				const val = feats[key]
 
 				if (key === 'place_type') {
-					console.log('WHAT DOES THIS LOG?', val)
 					for (const place of val) {
 						location[place] = feats.text_en
 					}
@@ -39,7 +38,7 @@ async function reverseGeocode({ longitude, latitude }) {
 		console.error(error)
 		throw error
 	}
-	console.log(location)
+
 	return location ? location : results
 }
 

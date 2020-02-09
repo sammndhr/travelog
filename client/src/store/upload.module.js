@@ -19,10 +19,12 @@ const mutations = {
 		state.status = { uploaded: true }
 		state.geoJson = geoJson
 	},
+
 	UPLOAD_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
 	},
+
 	GET_GEOSON_REQUEST(state) {
 		state.status = { fetching: true }
 	},
@@ -31,10 +33,12 @@ const mutations = {
 		state.status = { fetched: true }
 		state.geoJson = geoJson
 	},
+
 	GET_GEOSON_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
 	},
+
 	SET_FILTERED_GEOJSON(state, filteredGeoJson) {
 		state.filteredGeoJson = filteredGeoJson
 	}
@@ -78,11 +82,6 @@ const actions = {
 			if (results.status > 200) {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
-				const arr = []
-				for (const feature of geoJson.features) {
-					arr.push(feature.properties.name)
-				}
-				console.log('from get', arr)
 				setTimeout(() => {
 					dispatch('alert/success', 'Fetch successful', { root: true })
 				})
@@ -95,11 +94,6 @@ const actions = {
 		}
 	},
 	getFilteredGeoJson({ commit }, filteredGeoJson) {
-		const arr = []
-		for (const feature of filteredGeoJson) {
-			arr.push(feature.properties.name)
-		}
-		console.log(arr)
 		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
 	}
 }
