@@ -1,64 +1,32 @@
 <template>
-	<div class="log">
-		<Alert />
+	<div class="log main-container">
+		<v-row align="center" justify="center">
+			<Alert />
+		</v-row>
 		<Loader v-show="status.uploading" />
-		<div className="form options">
-			<fieldset className="form-group">
-				<label className="button" htmlFor="upload-images">
-					<span>Upload Images</span>
-				</label>
-				<input
-					id="upload-images"
-					type="file"
-					accept="image/*, image/heic"
-					multiple="{true}"
-					@change="handleChange"
-				/>
-			</fieldset>
-		</div>
-		<Map />
+		<v-row align="center" justify="center">
+			<Map />
+			<Gallery />
+		</v-row>
 	</div>
 </template>
 
 <script>
-	import { supportsFileReader, handleImages } from '../utils/'
 	import { mapActions, mapState } from 'vuex'
+	import Gallery from './Gallery'
+
 	import Map from './Map'
 	import Loader from './Loader'
 	import Alert from './Alert'
 
 	export default {
 		name: 'Log',
-		components: { Loader, Alert, Map },
+		components: { Loader, Alert, Map, Gallery },
 		computed: {
 			...mapState('data', ['status'])
 		},
 		methods: {
-			...mapActions('data', ['upload', 'getGeojson']),
-			async handleChange(e) {
-				if (!supportsFileReader()) {
-					console.log(
-						'Sorry, your web browser does not support the FileReader API.'
-					)
-					return
-				}
-				const formData = new FormData(),
-					files = e.target.files,
-					images = await handleImages(files),
-					allImageData = []
-
-				for (const image of images) {
-					const { key, exif, file } = image,
-						extension = file.type.split('/').pop(),
-						newName = `${key}.${extension}`
-
-					allImageData.push({ key, exif, extension })
-					formData.append('photos', file, newName)
-				}
-
-				formData.append('allImageData', JSON.stringify(allImageData))
-				this.upload(formData)
-			}
+			...mapActions('data', ['upload', 'getGeojson'])
 		},
 		beforeRouteEnter(to, from, next) {
 			next(vm => {
@@ -68,4 +36,11 @@
 	}
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+	.main-container {
+		margin: 2rem;
+	}
+	.log {
+		margin-top: 64px;
+	}
+</style>

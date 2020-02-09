@@ -1,56 +1,74 @@
 <template>
-	<div id="travelog" class="travelog" ref="travelog">
-		<h1>Travelog</h1>
-		<div class="travel-wrapper">
-			<MglMap
-				id="map"
-				class="maps"
-				:accessToken="accessToken"
-				:mapStyle="mapStyle"
-				@load="onMapLoaded"
-			>
-				<MglMarker
-					v-for="feature in geoJson.features"
-					:anchor="'top'"
-					:key="feature.properties.name"
-					:coordinates="feature.geometry.coordinates"
-				>
-					<div slot="marker" class="marker">
-						<img class="marker" :src="feature.properties.url" alt="marker" />
+	<v-col
+		align-self="start"
+		cols="12"
+		md="7"
+		xl="6"
+		id="travelog"
+		class="travelog"
+	>
+		<v-card outlined>
+			<v-row>
+				<v-col align="center">
+					<div class="travel-wrapper">
+						<MglMap
+							id="map"
+							:zoom="zoom"
+							class="maps"
+							:accessToken="accessToken"
+							:mapStyle="mapStyle"
+							@load="onMapLoaded"
+						>
+							<MglMarker
+								v-for="feature in geoJson.features"
+								:anchor="'top'"
+								:key="feature.properties.name"
+								:coordinates="feature.geometry.coordinates"
+							>
+								<div slot="marker" class="marker">
+									<img
+										class="marker"
+										:src="feature.properties.url"
+										alt="marker"
+									/>
+								</div>
+								<MglPopup :anchor="anchor">
+									<div>
+										<p>{{ feature.properties.dateCreated }}</p>
+										<p>
+											{{
+												`${feature.properties.location.region}, ${feature.properties.location.country}`
+											}}
+										</p>
+									</div>
+								</MglPopup>
+							</MglMarker>
+							<MglGeojsonLayer
+								:sourceId="sourceId"
+								layerId="images"
+								:layer="geoJsonlayer"
+							/>
+						</MglMap>
 					</div>
-					<MglPopup :anchor="anchor">
-						<div>
-							<p>{{ feature.properties.dateCreated }}</p>
-							<p>{{ feature.properties.location }}</p>
-						</div>
-					</MglPopup>
-				</MglMarker>
-				<MglGeojsonLayer
-					:sourceId="sourceId"
-					layerId="images"
-					:layer="geoJsonlayer"
-				/>
-			</MglMap>
-			<Gallery :filteredImages="filteredImages" />
-		</div>
-	</div>
+				</v-col>
+			</v-row>
+		</v-card>
+	</v-col>
 </template>
 
 <script>
-	/* eslint-disable */
+	import { mapActions, mapState } from 'vuex'
+	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import config from '../../DO_NOT_COMMIT.env.vars.js'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
-	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
-	import { mapActions, mapState } from 'vuex'
-	import Gallery from './Gallery'
+	import { filter } from '../utils'
 
 	export default {
 		components: {
 			MglMap,
 			MglMarker,
 			MglGeojsonLayer,
-			MglPopup,
-			Gallery
+			MglPopup
 		},
 		data() {
 			return {
@@ -58,29 +76,43 @@
 				mapStyle: 'mapbox://styles/mapbox/streets-v11',
 				sourceId: 'image',
 				anchor: 'bottom',
+				// map: null, //will break. Don't uncomment
+				zoom: 1,
 				geoJsonlayer: {
 					id: 'images',
 					type: 'symbol',
 					source: 'image',
+					replaceSource: true,
 					layout: {
 						'icon-image': 'transparentPixel',
-						'icon-size': 0.25
+						'icon-size': 0.01
 					}
-				},
-				filteredImages: []
-			}
-		},
-		computed: {
-			...mapState('data', ['geoJson']),
-			images() {
-				const images = {}
-				for (const feature of this.geoJson.features) {
-					images[feature.properties.name] = feature.properties.url
 				}
-				return Object.values(images)
 			}
 		},
+
+		computed: {
+			...mapState('data', ['geoJson'])
+		},
+
+		watch: {
+			geoJson() {
+				if (!this.map) return
+				this.filter()
+			}
+		},
+
 		methods: {
+			...mapActions('data', ['getFilteredGeoJson']),
+
+			filter() {
+				const geoJson = this.geoJson,
+					// works fine without map being set in data
+					bounds = this.map.getBounds()
+				const filteredGeoJson = filter({ bounds, geoJson })
+				this.getFilteredGeoJson(filteredGeoJson)
+			},
+
 			createImage(width) {
 				const bytesPerPixel = 4,
 					data = new Uint8Array(width * width * bytesPerPixel)
@@ -88,46 +120,35 @@
 				for (let x = 0; x < width; x++) {
 					for (let y = 0; y < width; y++) {
 						const offset = (y * width + x) * bytesPerPixel
-						data[offset + 0] = 255
-						data[offset + 1] = 255
-						data[offset + 2] = 255
-						data[offset + 3] = 0
+						data[offset + 0] = 0
+						data[offset + 1] = 0
+						data[offset + 2] = 0
+						data[offset + 3] = 255
 					}
 				}
 				return data
 			},
 
-			filterImages(map) {
-				const features = map.queryRenderedFeatures({ layers: ['images'] }),
-					filteredImages = {}
-				if (features) {
-					for (const feature of features) {
-						filteredImages[feature.properties.name] = feature.properties.url
-					}
-					return Object.values(filteredImages)
-				}
-			},
-
 			onMapLoaded(event) {
 				const map = event.map,
-					width = 1,
+					width = 0.5,
 					data = this.createImage(width),
 					vm = this
-
+				this.map = map
 				map.addImage('transparentPixel', {
 					width: width,
 					height: width,
 					data: data
 				})
-
 				map.addSource('image', {
 					type: 'geojson',
 					data: this.geoJson
 				})
 
-				map.on('render', function() {
-					const filteredImages = vm.filterImages(map)
-					vm.filteredImages = filteredImages
+				this.filter()
+
+				map.on('moveend', function() {
+					vm.filter()
 				})
 			}
 		},
@@ -140,66 +161,20 @@
 </script>
 
 <style lang="scss" scoped>
-	.mapboxgl-popup {
+	/* .mapboxgl-popup {
 		max-width: 200px;
-	}
+	} */
 	.marker {
 		width: 50px;
 		height: 50px;
 		border-radius: 5px;
 		cursor: pointer;
 	}
-	.travelog {
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		padding: 5rem 0;
-		h2 {
-			margin-top: 0;
-			margin-bottom: 7rem;
-		}
-	}
-	.travel-wrapper {
-		overflow: hidden;
-		padding-bottom: 2rem;
-		justify-content: space-between;
-		display: flex;
-		width: calc(100vw - 1rem);
-		max-width: 1500px;
-		flex-direction: column;
-		min-height: 570px;
-		height: 85vh;
-		position: relative;
-		.maps {
-			flex-basis: 85%;
-			min-height: 20rem;
-			height: 100%;
-			margin-bottom: 1rem;
-		}
-	}
 
-	@include small-breakpoint {
-		.travel-wrapper {
-			justify-content: space-around;
-			flex-direction: row;
-			width: calc(100vw - #{$padding-small});
-			.maps {
-				flex-basis: 65%;
-			}
-		}
-	}
-	@include medium-breakpoint {
-		.travel-wrapper {
-			width: calc(100vw - #{$padding-medium});
-		}
-	}
-	@include large-breakpoint {
-		.travel-wrapper {
-			width: calc(100vw - #{$padding-large});
-			.maps {
-				flex-basis: 55%;
-			}
+	.travel-wrapper {
+		.maps {
+			min-width: 20rem;
+			min-height: 60vh;
 		}
 	}
 </style>

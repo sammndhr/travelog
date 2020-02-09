@@ -54,7 +54,7 @@ const actions = {
 				localStorage.setItem('user', JSON.stringify(user))
 			}
 			commit('LOGIN_SUCCESS', user)
-			router.push('/')
+			router.push('/log')
 		} catch (error) {
 			console.log(error)
 			const errorMessage = createErrorMessage(error)

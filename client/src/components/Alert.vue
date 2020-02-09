@@ -1,10 +1,16 @@
 <template>
-	<div class="container">
-		<div class="col-sm-6 offset-sm-3">
-			<div v-if="alert.message" :class="`alert ${alert.type}`">
-				{{ alert.message }}
-			</div>
-		</div>
+	<div>
+		<v-alert
+			v-if="alert.type === 'success' && showSuccess"
+			outlined
+			type="success"
+			text
+		>
+			{{ alert.message }}
+		</v-alert>
+		<v-alert v-else-if="alert.type === 'error'" outlined type="error" text>
+			{{ alert.message }}
+		</v-alert>
 	</div>
 </template>
 
@@ -12,7 +18,14 @@
 	import { mapState, mapActions } from 'vuex'
 
 	export default {
-		name: 'app',
+		name: 'Alert',
+		props: {
+			showSuccess: {
+				type: Boolean,
+				required: false,
+				default: false
+			}
+		},
 		computed: {
 			...mapState({
 				alert: state => state.alert

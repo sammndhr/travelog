@@ -100,7 +100,6 @@ const saveAllData = async (request, response, next) => {
 	try {
 		for (const imageData of allImageData) {
 			const data = await saveImageData({ userId, imageData })
-			console.log(data)
 			results.push(data)
 		}
 	} catch (error) {

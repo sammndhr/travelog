@@ -6,7 +6,8 @@ const state = {
 		type: 'FeatureCollection',
 		features: []
 	},
-	status: {}
+	status: {},
+	filteredGeoJson: []
 }
 
 const mutations = {
@@ -18,10 +19,12 @@ const mutations = {
 		state.status = { uploaded: true }
 		state.geoJson = geoJson
 	},
+
 	UPLOAD_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
 	},
+
 	GET_GEOSON_REQUEST(state) {
 		state.status = { fetching: true }
 	},
@@ -30,9 +33,14 @@ const mutations = {
 		state.status = { fetched: true }
 		state.geoJson = geoJson
 	},
+
 	GET_GEOSON_FAILURE(state) {
 		state.status = {}
 		state.geoJson.features = []
+	},
+
+	SET_FILTERED_GEOJSON(state, filteredGeoJson) {
+		state.filteredGeoJson = filteredGeoJson
 	}
 }
 
@@ -84,6 +92,9 @@ const actions = {
 			commit('GET_GEOSON_FAILURE')
 			dispatch('alert/error', errorMessage, { root: true })
 		}
+	},
+	getFilteredGeoJson({ commit }, filteredGeoJson) {
+		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
 	}
 }
 
