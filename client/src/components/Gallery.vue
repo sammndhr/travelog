@@ -4,7 +4,14 @@
 			<v-row>
 				<v-col align="center">
 					<Alert />
+
+					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
+					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
+					<!-- 
+					<v-icon color="primary">mdi-close-circle-outline</v-icon>
+				-->
 					<Button
+						v-if="!edit"
 						type="upload"
 						text="Upload"
 						@clicked="$refs.fileInput.click()"
@@ -24,7 +31,7 @@
 				<v-col>
 					<div class="gallery-mobile" v-if="isMobile">
 						<img
-							v-for="(image, i) in filteredImages"
+							v-for="(image, i) in images"
 							:key="image"
 							class="gallery-image-mobile"
 							:src="image"
@@ -38,13 +45,20 @@
 						:cols="cols"
 						:gutter="{ default: '5px' }"
 					>
-						<figure v-for="(image, i) in filteredImages" :key="image.name">
+						<figure
+							v-for="(image, i) in images"
+							:key="image.name"
+							:class="{ selected: image.selected }"
+						>
+							<v-icon v-show="edit" :color="image.selected ? 'primary' : 'grey'"
+								>mdi-check-circle-outline</v-icon
+							>
 							<img
 								:style="{ paddingBottom: gutter.default }"
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
-								@click="onClick(i)"
+								@click="onClick({ i, name: image.name })"
 							/>
 							<figcaption>
 								{{ `${image.location.region}, ${image.location.country}` }}
@@ -53,7 +67,12 @@
 					</masonry>
 				</v-col>
 			</v-row>
-			<gallery :images="imagesArr" :index="index" @close="index = null" />
+			<gallery
+				v-if="!edit"
+				:images="imagesArr"
+				:index="index"
+				@close="index = null"
+			/>
 		</v-card>
 	</v-col>
 </template>
@@ -66,11 +85,26 @@
 	import Button from './ui/Button'
 
 	export default {
+		name: 'Travelog-Gallery',
 		props: {
 			fadeUp: {
 				type: Boolean,
 				required: false,
 				default: true
+			}
+		},
+
+		data() {
+			return {
+				index: null,
+				cols: { default: 4, 1600: 3, 700: 2 },
+				items: [1, 2, 3, 4, 5],
+				isMobile: false,
+				gutter: { default: '5px' },
+				showAlert: false,
+				edit: false,
+				images: [],
+				selected: []
 			}
 		},
 
@@ -85,24 +119,21 @@
 			filteredImages() {
 				const images = []
 				this.filteredGeoJson.forEach(feature => {
+					console.log(feature)
 					const obj = {}
 					obj.url = feature.properties.url
 					obj.name = feature.properties.name
 					obj.location = feature.properties.location
+					obj.selected = false
 					images.push(obj)
 				})
 				return images
 			}
 		},
 
-		data() {
-			return {
-				index: null,
-				cols: { default: 4, 1600: 3, 700: 2 },
-				items: [1, 2, 3, 4, 5],
-				isMobile: false,
-				gutter: { default: '5px' },
-				showAlert: false
+		watch: {
+			filteredImages(newImages) {
+				this.images = newImages
 			}
 		},
 
@@ -113,10 +144,26 @@
 		},
 
 		methods: {
-			onClick(i) {
-				this.index = i
-			},
 			...mapActions('data', ['upload']),
+
+			onClick({ i, name }) {
+				if (!this.edit) this.index = i
+				else {
+					const copied = JSON.parse(JSON.stringify(this.images)),
+						selectedImage = copied[i]
+					if (selectedImage.name === name) {
+						selectedImage.selected = !selectedImage.selected
+						this.images = copied
+					}
+				}
+			},
+
+			handleClickEdit() {
+				this.edit = true
+			},
+			handleClickCancel() {
+				this.edit = false
+			},
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -180,6 +227,9 @@
 			max-width: 400px;
 			width: 100%;
 			display: block;
+		}
+		.selected {
+			border: 5px solid #1976d2; /*primary*/
 		}
 	}
 </style>
