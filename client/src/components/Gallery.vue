@@ -48,7 +48,7 @@
 					>
 						<figure
 							v-for="(image, i) in images"
-							:key="image.name"
+							:key="image.key"
 							:class="{ selected: image.selected }"
 						>
 							<v-icon v-show="edit" :color="image.selected ? 'primary' : 'grey'"
@@ -59,7 +59,7 @@
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
-								@click="onClick({ i, name: image.name })"
+								@click="onClick({ i, key: image.key })"
 							/>
 							<figcaption>
 								{{ `${image.location.region}, ${image.location.country}` }}
@@ -122,7 +122,7 @@
 				this.filteredGeoJson.forEach(feature => {
 					const obj = {}
 					obj.url = feature.properties.url
-					obj.name = feature.properties.name
+					obj.key = feature.properties.key
 					obj.location = feature.properties.location
 					obj.selected = false
 					images.push(obj)
@@ -146,12 +146,12 @@
 		methods: {
 			...mapActions('data', ['upload', 'delete']),
 
-			onClick({ i, name }) {
+			onClick({ i, key }) {
 				if (!this.edit) this.index = i
 				else {
 					const copied = JSON.parse(JSON.stringify(this.images)),
 						selectedImage = copied[i]
-					if (selectedImage.name === name) {
+					if (selectedImage.key === key) {
 						selectedImage.selected = !selectedImage.selected
 						if (selectedImage.selected) {
 							this.selectionCount++
@@ -177,11 +177,13 @@
 			},
 
 			handleClickDelete() {
-				const imagesToDelete = this.images.filter(image => {
-					return image.selected
-				})
+				const imagesToDelete = this.images.reduce((filtered, image) => {
+					if (image.selected) filtered.push(image.key)
+					return filtered
+				}, [])
+
 				console.log('click delete', imagesToDelete)
-				this.delete(imagesToDelete)
+				this.delete({ imagesToDelete })
 			},
 
 			async handleChange(e) {

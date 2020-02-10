@@ -116,7 +116,7 @@ const actions = {
 		}
 		try {
 			const results = await axios(options)
-			if (results.status > 200) {
+			if (results.status >= 200) {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
 				setTimeout(() => {

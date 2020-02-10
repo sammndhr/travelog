@@ -65,7 +65,7 @@ const UploadHelper = {
 		return feature
 	},
 
-	async parseExif({ exif, name, url }) {
+	async parseExif({ exif, key, url }) {
 		const {
 			DateTime,
 			GPSLatitudeRef,
@@ -101,7 +101,7 @@ const UploadHelper = {
 			location,
 			height,
 			width,
-			name,
+			key,
 			orientation,
 			dateCreated,
 			url

@@ -47,7 +47,7 @@ const createExifTable = async () => {
 	const queryText = `CREATE TABLE IF NOT EXISTS
 		exifs(
 			exif_id SERIAL PRIMARY KEY,
-      key varchar(150) REFERENCES images (key) NOT NULL UNIQUE,
+      key varchar(150) REFERENCES images (key) ON DELETE CASCADE NOT NULL UNIQUE ,
 			exif JSON
 		);`
 
@@ -73,9 +73,8 @@ const createAllTables = async () => {
 		console.error(images)
 		throw images
 	} else {
-		await createExifTable().catch(err => {
-			throw err
-		})
+		const exifs = await createExifTable()
+		if (exifs instanceof Error) throw exifs
 	}
 
 	console.log('Database tables are ready.')
