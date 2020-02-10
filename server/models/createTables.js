@@ -47,7 +47,7 @@ const createExifTable = async () => {
 	const queryText = `CREATE TABLE IF NOT EXISTS
 		exifs(
 			exif_id SERIAL PRIMARY KEY,
-			key varchar(150) REFERENCES images (key) NOT NULL,
+      key varchar(150) REFERENCES images (key) NOT NULL UNIQUE,
 			exif JSON
 		);`
 
