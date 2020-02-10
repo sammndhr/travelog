@@ -182,7 +182,6 @@
 					return filtered
 				}, [])
 
-				console.log('click delete', imagesToDelete)
 				this.delete({ imagesToDelete })
 			},
 

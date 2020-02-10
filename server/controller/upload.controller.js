@@ -5,6 +5,7 @@ const {
 	bucket,
 	bucketRegion
 } = require('../config/DO_NOT_COMMIT.env.vars').s3
+const { _delete } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
@@ -111,7 +112,14 @@ const saveAllData = async (request, response, next) => {
 const deleteData = async (request, response, next) => {
 	const keys = request.body.imagesToDelete
 	try {
-		query('DELETE FROM images WHERE key = ANY($1);', [keys])
+		const results = await query(
+			'DELETE FROM images WHERE key = ANY($1) RETURNING key, extension;',
+			[keys]
+		)
+		const s3Keys = results.rows.map(imageData => {
+			return { Key: `${imageData.key}.${imageData.extension}` }
+		})
+		request.s3Keys = s3Keys
 	} catch (error) {
 		console.error(error)
 		throw error
@@ -119,4 +127,10 @@ const deleteData = async (request, response, next) => {
 	next()
 }
 
-module.exports = { saveAllData, getGeoJson, deleteData }
+const deleteImages = async (request, response, next) => {
+	const keys = request.s3Keys
+	_delete(keys)
+	next()
+}
+
+module.exports = { saveAllData, getGeoJson, deleteData, deleteImages }
