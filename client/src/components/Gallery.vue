@@ -7,6 +7,7 @@
 
 					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
 					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
+					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
 					<!-- 
 					<v-icon color="primary">mdi-close-circle-outline</v-icon>
 				-->
@@ -104,7 +105,7 @@
 				showAlert: false,
 				edit: false,
 				images: [],
-				selected: []
+				selectionCount: 0
 			}
 		},
 
@@ -119,7 +120,6 @@
 			filteredImages() {
 				const images = []
 				this.filteredGeoJson.forEach(feature => {
-					console.log(feature)
 					const obj = {}
 					obj.url = feature.properties.url
 					obj.name = feature.properties.name
@@ -144,7 +144,7 @@
 		},
 
 		methods: {
-			...mapActions('data', ['upload']),
+			...mapActions('data', ['upload', 'delete']),
 
 			onClick({ i, name }) {
 				if (!this.edit) this.index = i
@@ -153,6 +153,13 @@
 						selectedImage = copied[i]
 					if (selectedImage.name === name) {
 						selectedImage.selected = !selectedImage.selected
+						if (selectedImage.selected) {
+							this.selectionCount++
+						} else {
+							{
+								this.selectionCount--
+							}
+						}
 						this.images = copied
 					}
 				}
@@ -161,9 +168,22 @@
 			handleClickEdit() {
 				this.edit = true
 			},
+
 			handleClickCancel() {
+				for (const image of this.images) {
+					image.selected = false
+				}
 				this.edit = false
 			},
+
+			handleClickDelete() {
+				const imagesToDelete = this.images.filter(image => {
+					return image.selected
+				})
+				console.log('click delete', imagesToDelete)
+				this.delete(imagesToDelete)
+			},
+
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(

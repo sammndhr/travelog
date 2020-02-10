@@ -15,4 +15,10 @@ router.post(
 	wrapAsync(getGeoJson)
 )
 
+function deleteItems(images) {
+	console.log(images)
+}
+
+router.post('/deletes', verifyToken, deleteItems)
+
 module.exports = router
