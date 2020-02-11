@@ -1,5 +1,5 @@
 <template>
-	<div class="log main-container">
+	<div class="log" :class="$vuetify.breakpoint.xs ? 'mobile' : ''">
 		<v-row align="center" justify="center">
 			<Alert />
 		</v-row>
@@ -37,10 +37,11 @@
 </script>
 
 <style scoped lang="scss">
-	.main-container {
-		margin: 2rem;
-	}
 	.log {
-		margin-top: 64px;
+		overflow: hidden;
+		margin: 2rem;
+		&.mobile {
+			margin: 0.5rem;
+		}
 	}
 </style>

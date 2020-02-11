@@ -1,10 +1,12 @@
 <template>
 	<v-col align-self="start" cols="12" xl="6" md="5">
-		<v-card outlined>
+		<v-card
+			class="gallery-wrapper"
+			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
+			outlined
+		>
 			<v-row>
 				<v-col align="center">
-					<Alert />
-
 					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
 					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
 					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
@@ -31,11 +33,11 @@
 					<div class="gallery-mobile" v-if="isMobile">
 						<img
 							v-for="(image, i) in images"
-							:key="image"
+							:key="image.key"
 							class="gallery-image-mobile"
-							:src="image"
+							:src="image.url"
 							alt="gallery-img.jpeg"
-							@click="onClick(i)"
+							@click="onClick({ i, key: image.key })"
 						/>
 					</div>
 					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
@@ -68,7 +70,7 @@
 					</masonry>
 				</v-col>
 			</v-row>
-			<gallery
+			<VueGallery
 				v-if="!edit"
 				:images="imagesArr"
 				:index="index"
@@ -82,7 +84,7 @@
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '../utils/'
-	import Alert from './Alert'
+
 	import Button from './ui/Button'
 
 	export default {
@@ -138,8 +140,7 @@
 		},
 
 		components: {
-			gallery: VueGallery,
-			Alert,
+			VueGallery,
 			Button
 		},
 
@@ -226,40 +227,46 @@
 </script>
 
 <style lang="scss" scoped>
-	.gallery {
-		overflow: scroll;
-		margin: 8px;
-		.gallery-mobile {
-			display: flex;
-			align-items: center;
+	.gallery-wrapper {
+		&.not-mobile {
+			height: 85vh;
+			/* height: 60vh; */
 		}
-
-		.gallery-image-mobile,
-		.gallery-image {
-			background-size: cover;
-			cursor: pointer;
-		}
-
-		.gallery-image-mobile {
-			height: 185px;
-			display: block;
-		}
-		.gallery-image {
-			max-width: 400px;
-			width: 100%;
-			display: block;
-		}
-		.figure {
-			position: relative;
-			.select-btn {
-				top: 5px;
-				right: 5px;
-				position: absolute;
-				border-radius: 50%;
+		.gallery {
+			overflow: scroll;
+			margin: 8px;
+			.gallery-mobile {
+				display: flex;
+				align-items: center;
 			}
-		}
-		.selected {
-			border: 5px solid #1976d2; /*primary*/
+
+			.gallery-image-mobile,
+			.gallery-image {
+				background-size: cover;
+				cursor: pointer;
+			}
+
+			.gallery-image-mobile {
+				height: 185px;
+				display: block;
+			}
+			.gallery-image {
+				max-width: 400px;
+				width: 100%;
+				display: block;
+			}
+			.figure {
+				position: relative;
+				.select-btn {
+					top: 5px;
+					right: 5px;
+					position: absolute;
+					border-radius: 50%;
+				}
+			}
+			.selected {
+				border: 5px solid #1976d2; /*primary*/
+			}
 		}
 	}
 </style>

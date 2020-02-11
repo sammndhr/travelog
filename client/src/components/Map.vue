@@ -1,57 +1,44 @@
 <template>
-	<v-col
-		align-self="start"
-		cols="12"
-		md="7"
-		xl="6"
-		id="travelog"
-		class="travelog"
-	>
-		<v-card outlined>
-			<v-row>
-				<v-col align="center">
-					<div class="travel-wrapper">
-						<MglMap
-							id="map"
-							:zoom="zoom"
-							class="maps"
-							:accessToken="accessToken"
-							:mapStyle="mapStyle"
-							@load="onMapLoaded"
-						>
-							<MglMarker
-								v-for="feature in geoJson.features"
-								:anchor="'top'"
-								:key="feature.properties.name"
-								:coordinates="feature.geometry.coordinates"
-							>
-								<div slot="marker" class="marker">
-									<img
-										class="marker"
-										:src="feature.properties.url"
-										alt="marker"
-									/>
-								</div>
-								<MglPopup :anchor="anchor">
-									<div>
-										<p>{{ feature.properties.dateCreated }}</p>
-										<p>
-											{{
-												`${feature.properties.location.region}, ${feature.properties.location.country}`
-											}}
-										</p>
-									</div>
-								</MglPopup>
-							</MglMarker>
-							<MglGeojsonLayer
-								:sourceId="sourceId"
-								layerId="images"
-								:layer="geoJsonlayer"
-							/>
-						</MglMap>
+	<v-col align-self="start" cols="12" md="7" xl="6">
+		<v-card
+			class="map-wrapper"
+			:class="$vuetify.breakpoint.xs ? 'mobile' : ''"
+			outlined
+		>
+			<MglMap
+				id="map"
+				:zoom="zoom"
+				class="map"
+				:accessToken="accessToken"
+				:mapStyle="mapStyle"
+				@load="onMapLoaded"
+			>
+				<MglMarker
+					v-for="feature in geoJson.features"
+					:anchor="'top'"
+					:key="feature.properties.name"
+					:coordinates="feature.geometry.coordinates"
+				>
+					<div slot="marker" class="marker">
+						<img class="marker" :src="feature.properties.url" alt="marker" />
 					</div>
-				</v-col>
-			</v-row>
+					<MglPopup :anchor="anchor">
+						<div>
+							<p>{{ feature.properties.dateCreated }}</p>
+							<p>
+								{{
+									`${feature.properties.location.region}, ${feature.properties.location.country}`
+								}}
+							</p>
+						</div>
+					</MglPopup>
+				</MglMarker>
+				<MglGeojsonLayer
+					:sourceId="sourceId"
+					layerId="images"
+					:layer="geoJsonlayer"
+				/>
+			</MglMap>
 		</v-card>
 	</v-col>
 </template>
@@ -161,9 +148,6 @@
 </script>
 
 <style lang="scss" scoped>
-	/* .mapboxgl-popup {
-		max-width: 200px;
-	} */
 	.marker {
 		width: 50px;
 		height: 50px;
@@ -171,10 +155,17 @@
 		cursor: pointer;
 	}
 
-	.travel-wrapper {
-		.maps {
-			min-width: 20rem;
-			min-height: 60vh;
+	.map-wrapper {
+		/* width: max-content; */
+		min-width: min-content;
+		height: 85vh;
+
+		&.mobile {
+			height: 60vh;
+		}
+		.map {
+			height: 100%;
+			min-height: 400px;
 		}
 	}
 </style>
