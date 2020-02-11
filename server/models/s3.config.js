@@ -3,7 +3,7 @@ const AWS = require('aws-sdk'),
 	multerS3 = require('multer-s3')
 const s3Config = require('../config/DO_NOT_COMMIT.env.vars').s3
 
-let upload
+let upload, _delete
 if (process.env.NODE_ENV === 'development') {
 	var storage = multer.diskStorage({
 		destination: function(req, file, cb) {
@@ -36,6 +36,20 @@ if (process.env.NODE_ENV === 'development') {
 			}
 		})
 	})
+
+	_delete = keys => {
+		const params = {
+			Bucket: bucket,
+			Delete: {
+				Objects: keys,
+				Quiet: false
+			}
+		}
+
+		s3.deleteObjects(params, function(err, data) {
+			if (err) throw error
+		})
+	}
 }
 
-module.exports = upload
+module.exports = { upload, _delete }

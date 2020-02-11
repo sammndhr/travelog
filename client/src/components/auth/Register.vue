@@ -19,8 +19,8 @@
 									lazy-validation
 								>
 									<v-text-field
-										label="Login"
-										name="login"
+										label="Email"
+										name="email"
 										v-model="email"
 										:rules="emailRules"
 										prepend-icon="mdi-account"

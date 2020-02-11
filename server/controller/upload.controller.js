@@ -5,6 +5,7 @@ const {
 	bucket,
 	bucketRegion
 } = require('../config/DO_NOT_COMMIT.env.vars').s3
+const { _delete } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
@@ -43,7 +44,6 @@ const addExif = async ({ key, exif }) => {
 const saveImageData = async ({ userId, imageData }) => {
 	const exif = imageData.exif,
 		{ key, extension } = imageData,
-		name = `${key}.${extension}`,
 		url =
 			process.env.NODE_ENV === 'development'
 				? './uploads'
@@ -52,7 +52,7 @@ const saveImageData = async ({ userId, imageData }) => {
 	let results
 
 	try {
-		const parsedExif = await parseExif({ exif, name, url })
+		const parsedExif = await parseExif({ exif, key, url })
 		const geoJsonFeature = createFeature(parsedExif)
 		results = await addImageData({
 			userId,
@@ -71,8 +71,8 @@ const saveImageData = async ({ userId, imageData }) => {
 
 const getGeoJson = async (request, response, next) => {
 	const userId = request.user.id,
-		features = []
-
+		features = [],
+		code = request.code ? request.code : 200
 	let results
 	try {
 		results = await query(
@@ -90,18 +90,36 @@ const getGeoJson = async (request, response, next) => {
 		type: 'FeatureCollection',
 		features
 	}
-	return response.status(201).json({ geoJson })
+	return response.status(code).json({ geoJson })
 }
 
 const saveAllData = async (request, response, next) => {
 	const allImageData = JSON.parse(request.body.allImageData),
 		userId = request.user.id //comes from the verify token middleware
-	let results = []
+
 	try {
 		for (const imageData of allImageData) {
-			const data = await saveImageData({ userId, imageData })
-			results.push(data)
+			await saveImageData({ userId, imageData })
 		}
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+	request.code = 201
+	next()
+}
+
+const deleteData = async (request, response, next) => {
+	const keys = request.body.imagesToDelete
+	try {
+		const results = await query(
+			'DELETE FROM images WHERE key = ANY($1) RETURNING key, extension;',
+			[keys]
+		)
+		const s3Keys = results.rows.map(imageData => {
+			return { Key: `${imageData.key}.${imageData.extension}` }
+		})
+		request.s3Keys = s3Keys
 	} catch (error) {
 		console.error(error)
 		throw error
@@ -109,4 +127,10 @@ const saveAllData = async (request, response, next) => {
 	next()
 }
 
-module.exports = { saveAllData, getGeoJson }
+const deleteImages = async (request, response, next) => {
+	const keys = request.s3Keys
+	_delete(keys)
+	next()
+}
+
+module.exports = { saveAllData, getGeoJson, deleteData, deleteImages }

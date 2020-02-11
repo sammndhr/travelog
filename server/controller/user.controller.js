@@ -24,7 +24,7 @@ const User = {
 		const createQuery = `INSERT INTO
       users (email, password)
 			VALUES ($1, $2)
-			returning *;`
+			RETURNING *;`
 		const hashedPassword = hashPassword(password),
 			values = [email, hashedPassword]
 

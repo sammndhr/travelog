@@ -7,7 +7,7 @@
 					<v-col cols="12" sm="8" md="4">
 						<v-card class="elevation-12">
 							<v-toolbar color="primary" dark flat>
-								<v-toolbar-title>Login form</v-toolbar-title>
+								<v-toolbar-title>Login</v-toolbar-title>
 								<v-spacer />
 							</v-toolbar>
 							<v-card-text>
@@ -19,8 +19,8 @@
 									lazy-validation
 								>
 									<v-text-field
-										label="Login"
-										name="login"
+										label="Email"
+										name="email"
 										v-model="email"
 										:rules="emailRules"
 										prepend-icon="mdi-account"
@@ -38,6 +38,9 @@
 								</v-form>
 							</v-card-text>
 							<v-card-actions>
+								<v-btn to="/register" text color="primary">
+									Register instead
+								</v-btn>
 								<v-spacer />
 								<v-btn
 									:disabled="!valid"

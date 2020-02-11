@@ -1,4 +1,5 @@
 import 'mapbox-gl/dist/mapbox-gl.css'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Vue from 'vue'
 import VueMasonry from 'vue-masonry-css'
 import App from './App.vue'

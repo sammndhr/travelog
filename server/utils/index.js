@@ -1,5 +1,5 @@
-const AuthHelper = require('./auth')
-const ErrorHelper = require('./errors')
-const UploadHelper = require('./upload')
+const AuthHelper = require('./auth.utils')
+const ErrorHelper = require('./errors.utils')
+const UploadHelper = require('./upload.utils')
 
 module.exports = { ...AuthHelper, ...ErrorHelper, ...UploadHelper }

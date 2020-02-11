@@ -1,30 +1,32 @@
 <template>
 	<v-card class="overflow-hidden">
 		<v-app-bar
-			:collapse="!collapseOnScroll"
-			:collapse-on-scroll="collapseOnScroll"
 			absolute
-			color="deep-purple accent-4"
-			dark
-			scroll-target="#scrolling-techniques-6"
+			color="white"
+			elevate-on-scroll
+			scroll-target="#scrolling-techniques-7"
 		>
-			<v-app-bar-nav-icon></v-app-bar-nav-icon>
-			<v-toolbar-title>Travelog</v-toolbar-title>
+			<v-btn to="/" text color="primary">
+				<v-toolbar-title>Travelog</v-toolbar-title>
+			</v-btn>
+
 			<v-spacer></v-spacer>
-			<router-link v-if="!status.loggedIn" to="/register"
-				>Register!</router-link
-			>
-			<router-link v-if="!status.loggedIn" to="/login">Login!</router-link>
-			<router-link to="/log">Get started</router-link>
-			<router-link v-if="status.loggedIn" to="/login">Logout</router-link>
-			<!-- <v-checkbox
-				v-model="collapseOnScroll"
-				color="white"
-				hide-details
-			></v-checkbox> -->
+
+			<v-btn v-if="!status.loggedIn" to="/register" text color="primary">
+				Register
+			</v-btn>
+			<v-btn v-if="!status.loggedIn" to="/login" text color="primary">
+				Login
+			</v-btn>
+			<v-btn to="/log" text color="primary">
+				Log
+			</v-btn>
+			<v-btn v-if="status.loggedIn" to="/login" text color="primary">
+				Logout
+			</v-btn>
 		</v-app-bar>
 		<v-sheet
-			id="scrolling-techniques-6"
+			id="scrolling-techniques-7"
 			class="overflow-y-auto"
 			max-height="100vh"
 			min-height="100vh"
@@ -42,9 +44,12 @@
 		components: {},
 		computed: {
 			...mapState('account', ['status'])
-		},
-		data: () => ({
-			collapseOnScroll: true
-		})
+		}
 	}
 </script>
+
+<style scoped>
+	.router-link {
+		text-decoration: none;
+	}
+</style>

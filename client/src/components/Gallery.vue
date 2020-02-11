@@ -4,7 +4,13 @@
 			<v-row>
 				<v-col align="center">
 					<Alert />
+
+					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
+					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
+					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
+
 					<Button
+						v-if="!edit"
 						type="upload"
 						text="Upload"
 						@clicked="$refs.fileInput.click()"
@@ -24,7 +30,7 @@
 				<v-col>
 					<div class="gallery-mobile" v-if="isMobile">
 						<img
-							v-for="(image, i) in filteredImages"
+							v-for="(image, i) in images"
 							:key="image"
 							class="gallery-image-mobile"
 							:src="image"
@@ -32,28 +38,42 @@
 							@click="onClick(i)"
 						/>
 					</div>
-					<masonry
-						v-else
-						class="masonary"
-						:cols="cols"
-						:gutter="{ default: '5px' }"
-					>
-						<figure v-for="(image, i) in filteredImages" :key="image.name">
+					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
+						<figure
+							:style="{ marginBottom: gutter.default }"
+							v-for="(image, i) in images"
+							:key="image.key"
+							:class="[{ selected: image.selected }, 'figure']"
+						>
+							<v-icon
+								class="select-btn"
+								v-show="edit"
+								:color="image.selected ? 'primary' : 'grey'"
+								>{{
+									image.selected
+										? 'mdi-check-circle'
+										: 'mdi-checkbox-blank-circle-outline'
+								}}</v-icon
+							>
 							<img
-								:style="{ paddingBottom: gutter.default }"
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
-								@click="onClick(i)"
+								@click="onClick({ i, key: image.key })"
 							/>
-							<figcaption>
+							<!-- <figcaption>
 								{{ `${image.location.region}, ${image.location.country}` }}
-							</figcaption>
+							</figcaption> -->
 						</figure>
 					</masonry>
 				</v-col>
 			</v-row>
-			<gallery :images="imagesArr" :index="index" @close="index = null" />
+			<gallery
+				v-if="!edit"
+				:images="imagesArr"
+				:index="index"
+				@close="index = null"
+			/>
 		</v-card>
 	</v-col>
 </template>
@@ -66,11 +86,26 @@
 	import Button from './ui/Button'
 
 	export default {
+		name: 'Travelog-Gallery',
 		props: {
 			fadeUp: {
 				type: Boolean,
 				required: false,
 				default: true
+			}
+		},
+
+		data() {
+			return {
+				index: null,
+				cols: { default: 4, 1600: 3, 700: 2 },
+				items: [1, 2, 3, 4, 5],
+				isMobile: false,
+				gutter: { default: '5px' },
+				showAlert: false,
+				edit: false,
+				images: [],
+				selectionCount: 0
 			}
 		},
 
@@ -87,22 +122,18 @@
 				this.filteredGeoJson.forEach(feature => {
 					const obj = {}
 					obj.url = feature.properties.url
-					obj.name = feature.properties.name
+					obj.key = feature.properties.key
 					obj.location = feature.properties.location
+					obj.selected = false
 					images.push(obj)
 				})
 				return images
 			}
 		},
 
-		data() {
-			return {
-				index: null,
-				cols: { default: 4, 1600: 3, 700: 2 },
-				items: [1, 2, 3, 4, 5],
-				isMobile: false,
-				gutter: { default: '5px' },
-				showAlert: false
+		watch: {
+			filteredImages(newImages) {
+				this.images = newImages
 			}
 		},
 
@@ -113,10 +144,47 @@
 		},
 
 		methods: {
-			onClick(i) {
-				this.index = i
+			...mapActions('data', ['upload', 'delete']),
+
+			onClick({ i, key }) {
+				if (!this.edit) this.index = i
+				else {
+					const copied = JSON.parse(JSON.stringify(this.images)),
+						selectedImage = copied[i]
+					if (selectedImage.key === key) {
+						selectedImage.selected = !selectedImage.selected
+						if (selectedImage.selected) {
+							this.selectionCount++
+						} else {
+							{
+								this.selectionCount--
+							}
+						}
+						this.images = copied
+					}
+				}
 			},
-			...mapActions('data', ['upload']),
+
+			handleClickEdit() {
+				this.edit = true
+			},
+
+			handleClickCancel() {
+				for (const image of this.images) {
+					image.selected = false
+				}
+				this.edit = false
+			},
+
+			handleClickDelete() {
+				const imagesToDelete = this.images.reduce((filtered, image) => {
+					if (image.selected) filtered.push(image.key)
+					return filtered
+				}, [])
+
+				this.delete({ imagesToDelete })
+			},
+
 			async handleChange(e) {
 				if (!supportsFileReader()) {
 					console.log(
@@ -180,6 +248,18 @@
 			max-width: 400px;
 			width: 100%;
 			display: block;
+		}
+		.figure {
+			position: relative;
+			.select-btn {
+				top: 5px;
+				right: 5px;
+				position: absolute;
+				border-radius: 50%;
+			}
+		}
+		.selected {
+			border: 5px solid #1976d2; /*primary*/
 		}
 	}
 </style>

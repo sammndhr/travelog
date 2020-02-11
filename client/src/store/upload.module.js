@@ -24,6 +24,18 @@ const mutations = {
 		state.status = {}
 		state.geoJson.features = []
 	},
+	DELETE_REQUEST(state) {
+		state.status = { deleting: true }
+	},
+
+	DELETE_SUCCESS(state, geoJson) {
+		state.status = { deleted: true }
+		state.geoJson = geoJson
+	},
+
+	DELETE_FAILURE(state) {
+		state.status = {}
+	},
 
 	GET_GEOSON_REQUEST(state) {
 		state.status = { fetching: true }
@@ -55,7 +67,7 @@ const actions = {
 		}
 		try {
 			const results = await axios(options)
-			if (results.status > 200) {
+			if (results.status >= 200) {
 				const geoJson = results.data.geoJson
 				commit('UPLOAD_SUCCESS', geoJson)
 				setTimeout(() => {
@@ -70,6 +82,31 @@ const actions = {
 		}
 	},
 
+	async delete({ dispatch, commit, rootState }, images) {
+		commit('DELETE_REQUEST')
+		const options = {
+			method: 'POST',
+			headers: { 'x-access-token': rootState.account.user.token },
+			data: images,
+			url: `/uploads/deletes`
+		}
+		try {
+			const results = await axios(options)
+			if (results.status >= 200) {
+				const geoJson = results.data.geoJson
+				commit('DELETE_SUCCESS', geoJson)
+				setTimeout(() => {
+					dispatch('alert/success', 'Delete successful', { root: true })
+				})
+			}
+		} catch (error) {
+			console.log(error)
+			const errorMessage = createErrorMessage(error)
+			commit('DELETE_FAILURE')
+			dispatch('alert/error', errorMessage, { root: true })
+		}
+	},
+
 	async getGeojson({ dispatch, commit, rootState }) {
 		commit('GET_GEOSON_REQUEST')
 		const options = {
@@ -79,7 +116,7 @@ const actions = {
 		}
 		try {
 			const results = await axios(options)
-			if (results.status > 200) {
+			if (results.status >= 200) {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
 				setTimeout(() => {
@@ -93,6 +130,7 @@ const actions = {
 			dispatch('alert/error', errorMessage, { root: true })
 		}
 	},
+
 	getFilteredGeoJson({ commit }, filteredGeoJson) {
 		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
 	}
