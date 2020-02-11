@@ -8,9 +8,7 @@
 					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
 					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
 					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
-					<!-- 
-					<v-icon color="primary">mdi-close-circle-outline</v-icon>
-				-->
+
 					<Button
 						v-if="!edit"
 						type="upload"
@@ -40,30 +38,32 @@
 							@click="onClick(i)"
 						/>
 					</div>
-					<masonry
-						v-else
-						class="masonary"
-						:cols="cols"
-						:gutter="{ default: '5px' }"
-					>
+					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
 						<figure
+							:style="{ marginBottom: gutter.default }"
 							v-for="(image, i) in images"
 							:key="image.key"
-							:class="{ selected: image.selected }"
+							:class="[{ selected: image.selected }, 'figure']"
 						>
-							<v-icon v-show="edit" :color="image.selected ? 'primary' : 'grey'"
-								>mdi-check-circle-outline</v-icon
+							<v-icon
+								class="select-btn"
+								v-show="edit"
+								:color="image.selected ? 'primary' : 'grey'"
+								>{{
+									image.selected
+										? 'mdi-check-circle'
+										: 'mdi-checkbox-blank-circle-outline'
+								}}</v-icon
 							>
 							<img
-								:style="{ paddingBottom: gutter.default }"
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
 								@click="onClick({ i, key: image.key })"
 							/>
-							<figcaption>
+							<!-- <figcaption>
 								{{ `${image.location.region}, ${image.location.country}` }}
-							</figcaption>
+							</figcaption> -->
 						</figure>
 					</masonry>
 				</v-col>
@@ -248,6 +248,15 @@
 			max-width: 400px;
 			width: 100%;
 			display: block;
+		}
+		.figure {
+			position: relative;
+			.select-btn {
+				top: 5px;
+				right: 5px;
+				position: absolute;
+				border-radius: 50%;
+			}
 		}
 		.selected {
 			border: 5px solid #1976d2; /*primary*/
