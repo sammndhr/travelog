@@ -5,7 +5,14 @@
 			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
 			outlined
 		>
-			<v-tabs background-color="primary accent-4" centered dark>
+			<v-tabs
+				:height="$vuetify.breakpoint.xs ? '30px' : ''"
+				class="order-0"
+				style="flex-grow: 0;"
+				background-color="primary accent-4"
+				centered
+				dark
+			>
 				<v-tab @click="handleClickGallery">
 					Gallery
 				</v-tab>
@@ -14,7 +21,10 @@
 				</v-tab>
 			</v-tabs>
 
-			<v-row>
+			<v-row
+				:class="{ 'order-3': $vuetify.breakpoint.xs }"
+				style="flex-grow: 0;"
+			>
 				<v-col align="center">
 					<template v-if="edit">
 						<Button
@@ -52,9 +62,16 @@
 					/>
 				</v-col>
 			</v-row>
-			<v-row id="gallery" class="gallery">
-				<v-col>
-					<div class="gallery-mobile" v-if="isMobile">
+			<v-row
+				id="gallery"
+				:class="{ 'order-2': $vuetify.breakpoint.xs }"
+				class="gallery"
+			>
+				<v-col
+					class="overflow"
+					:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
+				>
+					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
 						<img
 							v-for="(image, i) in images"
 							:key="image.key"
@@ -123,7 +140,6 @@
 				index: null,
 				cols: { default: 4, 1600: 3, 700: 2 },
 				items: [1, 2, 3, 4, 5],
-				isMobile: false,
 				gutter: { default: '5px' },
 				showAlert: false,
 				edit: false,
@@ -254,38 +270,49 @@
 				formData.append('allImageData', JSON.stringify(allImageData))
 				this.upload(formData)
 			}
-		},
-
-		mounted() {
-			if (window.innerWidth <= 500) this.isMobile = true
-			this.$root.$on('resized', ({ width, height }) => {
-				this.isMobile = width <= 500 ? true : false
-				this.isMobile = height > 750 || width > 500 ? false : true
-				this.cols =
-					width < 450 && height > 750
-						? { default: 2 }
-						: { default: 3, 1000: 2, 900: 1 }
-			})
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
 	.gallery-wrapper {
-		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+
+		&.mobile {
+			height: 45vh;
+		}
+
 		&.not-mobile {
 			height: 85vh;
 		}
 
 		.gallery {
-			height: 100%;
 			margin: 8px;
-			overflow-y: scroll;
+			overflow: hidden;
+			flex-grow: 1;
+			position: relative;
+
+			.overflow {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				overflow: auto;
+				padding: 0;
+			}
+
+			.overflow-mobile {
+				display: flex;
+				align-content: center;
+				align-items: center;
+			}
 
 			.gallery-mobile {
 				display: flex;
-				overflow-y: scroll;
 				align-items: center;
+
 				img {
 					padding-right: 8px;
 					&:last-child {
@@ -301,7 +328,8 @@
 			}
 
 			.gallery-image-mobile {
-				height: 185px;
+				height: 158px;
+
 				display: block;
 			}
 			.gallery-image {
