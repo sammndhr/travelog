@@ -16,7 +16,24 @@
 
 			<v-row>
 				<v-col align="center">
-					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
+					<template v-if="edit">
+						<Button
+							:disabled="images.length > 0 ? false : true"
+							text="Select All"
+							@clicked="handleClickSelectAll"
+						/>
+						<Button
+							:disabled="selectionCount > 0 ? false : true"
+							text="Delete"
+							@clicked="handleClickDelete"
+						/>
+
+						<Button
+							:disabled="selectionCount > 0 ? false : true"
+							text="Cancel"
+							@clicked="handleClickCancel"
+						/>
+					</template>
 
 					<Button
 						v-if="!edit"
@@ -44,7 +61,7 @@
 							class="gallery-image-mobile"
 							:src="image.url"
 							alt="gallery-img.jpeg"
-							@click="onClick({ i, key: image.key })"
+							@click="handleClickImage({ i, key: image.key })"
 						/>
 					</div>
 					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
@@ -68,11 +85,8 @@
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
-								@click="onClick({ i, key: image.key })"
+								@click="handleClickImage({ i, key: image.key })"
 							/>
-							<!-- <figcaption>
-								{{ `${image.location.region}, ${image.location.country}` }}
-							</figcaption> -->
 						</figure>
 					</masonry>
 				</v-col>
@@ -154,33 +168,56 @@
 		methods: {
 			...mapActions('data', ['upload', 'delete']),
 
-			onClick({ i, key }) {
+			toggleSelect({ i, key }) {
+				const copied = JSON.parse(JSON.stringify(this.images)),
+					selectedImage = copied[i]
+				if (selectedImage.key === key) {
+					selectedImage.selected = !selectedImage.selected
+					if (selectedImage.selected) {
+						this.selectionCount++
+					} else {
+						{
+							this.selectionCount--
+						}
+					}
+					this.images = copied
+				}
+			},
+
+			unselectAllItems() {
+				for (const image of this.images) {
+					image.selected = false
+				}
+				this.selectionCount = 0
+			},
+
+			selectAllItems() {
+				for (const image of this.images) {
+					image.selected = true
+				}
+				this.selectionCount = this.images.length
+			},
+
+			handleClickImage({ i, key }) {
 				if (!this.edit) this.index = i
 				else {
-					const copied = JSON.parse(JSON.stringify(this.images)),
-						selectedImage = copied[i]
-					if (selectedImage.key === key) {
-						selectedImage.selected = !selectedImage.selected
-						if (selectedImage.selected) {
-							this.selectionCount++
-						} else {
-							{
-								this.selectionCount--
-							}
-						}
-						this.images = copied
-					}
+					this.toggleSelect({ i, key })
 				}
+			},
+			handleClickSelectAll() {
+				this.selectAllItems()
 			},
 
 			handleClickEdit() {
 				this.edit = true
 			},
 
+			handleClickCancel() {
+				this.unselectAllItems()
+			},
+
 			handleClickGallery() {
-				for (const image of this.images) {
-					image.selected = false
-				}
+				this.unselectAllItems()
 				this.edit = false
 			},
 
@@ -189,7 +226,7 @@
 					if (image.selected) filtered.push(image.key)
 					return filtered
 				}, [])
-
+				this.selectionCount = 0
 				this.delete({ imagesToDelete })
 			},
 
