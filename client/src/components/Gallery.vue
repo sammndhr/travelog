@@ -5,10 +5,17 @@
 			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
 			outlined
 		>
+			<v-tabs background-color="primary accent-4" centered dark>
+				<v-tab @click="handleClickGallery">
+					Gallery
+				</v-tab>
+				<v-tab @click="handleClickEdit">
+					Edit
+				</v-tab>
+			</v-tabs>
+
 			<v-row>
 				<v-col align="center">
-					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
-					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
 					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
 
 					<Button
@@ -170,7 +177,7 @@
 				this.edit = true
 			},
 
-			handleClickCancel() {
+			handleClickGallery() {
 				for (const image of this.images) {
 					image.selected = false
 				}
@@ -228,16 +235,26 @@
 
 <style lang="scss" scoped>
 	.gallery-wrapper {
+		overflow: hidden;
 		&.not-mobile {
 			height: 85vh;
-			/* height: 60vh; */
 		}
+
 		.gallery {
-			overflow: scroll;
+			height: 100%;
 			margin: 8px;
+			overflow-y: scroll;
+
 			.gallery-mobile {
 				display: flex;
+				overflow-y: scroll;
 				align-items: center;
+				img {
+					padding-right: 8px;
+					&:last-child {
+						padding-right: 0;
+					}
+				}
 			}
 
 			.gallery-image-mobile,
