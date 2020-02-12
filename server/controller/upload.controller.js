@@ -1,10 +1,6 @@
 const { query } = require('../models/psql.config')
 const { generateURL, parseExif, createFeature } = require('../utils/')
-const {
-	host,
-	bucket,
-	bucketRegion
-} = require('../config/DO_NOT_COMMIT.env.vars').s3
+const { host, bucket, bucketRegion } = require('../config').s3
 const { _delete } = require('../models/s3.config')
 
 const addImageData = async ({
@@ -45,9 +41,9 @@ const saveImageData = async ({ userId, imageData }) => {
 	const exif = imageData.exif,
 		{ key, extension } = imageData,
 		url =
-			process.env.NODE_ENV === 'development'
-				? './uploads'
-				: generateURL({ bucket, key, host, region: bucketRegion, extension })
+			process.env.NODE_ENV === 'production'
+				? generateURL({ bucket, key, host, region: bucketRegion, extension })
+				: './uploads'
 
 	let results
 

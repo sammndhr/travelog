@@ -1,20 +1,11 @@
 const AWS = require('aws-sdk'),
 	multer = require('multer'),
 	multerS3 = require('multer-s3')
-const s3Config = require('../config/DO_NOT_COMMIT.env.vars').s3
+const s3Config = require('../config/').s3
 
 let upload, _delete
-if (process.env.NODE_ENV === 'development') {
-	var storage = multer.diskStorage({
-		destination: function(req, file, cb) {
-			cb(null, './uploads')
-		},
-		filename: function(req, file, cb) {
-			cb(null, file.originalname)
-		}
-	})
-	upload = multer({ storage })
-} else {
+
+if (process.env.NODE_ENV === 'production') {
 	const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = s3Config
 	AWS.config.update({ region })
 
@@ -50,6 +41,16 @@ if (process.env.NODE_ENV === 'development') {
 			if (err) throw err
 		})
 	}
+} else {
+	var storage = multer.diskStorage({
+		destination: function(req, file, cb) {
+			cb(null, './uploads')
+		},
+		filename: function(req, file, cb) {
+			cb(null, file.originalname)
+		}
+	})
+	upload = multer({ storage })
 }
 
 module.exports = { upload, _delete }

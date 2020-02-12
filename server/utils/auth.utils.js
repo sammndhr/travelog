@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt'),
 	jwt = require('jsonwebtoken'),
-	db = require('../models/psql.config')
+	db = require('../models/psql.config'),
+	{ secret } = require('../config/').jwt
 
 const AuthHelper = {
 	hashPassword(password) {
@@ -20,7 +21,7 @@ const AuthHelper = {
 			{
 				userId: id
 			},
-			process.env.SECRET,
+			secret,
 			{ expiresIn: '7d' }
 		)
 		return token
@@ -33,7 +34,7 @@ const AuthHelper = {
 			return res.status(400).send({ message: 'Token is not provided' })
 		}
 		try {
-			const decoded = await jwt.verify(token, process.env.SECRET)
+			const decoded = await jwt.verify(token, secret)
 			const text = 'SELECT * FROM users WHERE user_id = $1'
 			await db.query(text, [decoded.userId])
 			req.user = { id: decoded.userId }

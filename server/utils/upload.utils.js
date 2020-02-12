@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { mapbox } = require('../config/DO_NOT_COMMIT.env.vars.js')
+const { mapbox } = require('../config/')
 
 async function reverseGeocode({ longitude, latitude }) {
 	let results,
