@@ -47,7 +47,7 @@ if (process.env.NODE_ENV === 'development') {
 		}
 
 		s3.deleteObjects(params, function(err, data) {
-			if (err) throw error
+			if (err) throw err
 		})
 	}
 }

@@ -28,10 +28,12 @@
 		<v-sheet
 			id="scrolling-techniques-7"
 			class="overflow-y-auto"
-			max-height="100vh"
 			min-height="100vh"
+			max-height="100vh"
 		>
-			<slot />
+			<v-container style="min-height: 100vh;" class="fill-height" fluid>
+				<slot />
+			</v-container>
 		</v-sheet>
 	</v-card>
 </template>
@@ -49,7 +51,7 @@
 </script>
 
 <style scoped>
-	.router-link {
-		text-decoration: none;
+	.fill-height {
+		padding: 0;
 	}
 </style>

@@ -59,12 +59,12 @@ const User = {
 			if (!rows[0]) {
 				return res
 					.status(400)
-					.send({ message: 'The credentials you provided is incorrect' })
+					.send({ message: 'The credentials you provided are incorrect.' })
 			}
 			if (!comparePassword(rows[0].password, req.body.password)) {
 				return res
 					.status(400)
-					.send({ message: 'The credentials you provided is incorrect' })
+					.send({ message: 'The credentials you provided are incorrect.' })
 			}
 			const userId = rows[0].user_id,
 				token = generateToken(userId)

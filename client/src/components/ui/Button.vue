@@ -1,5 +1,11 @@
 <template>
-	<v-btn elevation="3" class="ma-2" color="primary" @click="handleClick">
+	<v-btn
+		:disabled="disabled"
+		elevation="3"
+		class="ma-2"
+		color="primary"
+		@click="handleClick"
+	>
 		{{ text }}
 		<v-icon v-show="type === 'upload'" right dark>mdi-cloud-upload</v-icon>
 	</v-btn>
@@ -17,6 +23,12 @@
 				default: '',
 				required: false,
 				type: String
+			},
+
+			disabled: {
+				default: false,
+				required: false,
+				type: Boolean
 			}
 		},
 		methods: {

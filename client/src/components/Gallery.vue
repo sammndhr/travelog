@@ -1,13 +1,49 @@
 <template>
 	<v-col align-self="start" cols="12" xl="6" md="5">
-		<v-card outlined>
-			<v-row>
-				<v-col align="center">
-					<Alert />
+		<v-card
+			class="gallery-wrapper"
+			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
+			outlined
+		>
+			<v-tabs
+				:height="$vuetify.breakpoint.xs ? '30px' : ''"
+				class="order-0"
+				style="flex-grow: 0;"
+				background-color="primary accent-4"
+				centered
+				dark
+			>
+				<v-tab @click="handleClickGallery">
+					Gallery
+				</v-tab>
+				<v-tab @click="handleClickEdit">
+					Edit
+				</v-tab>
+			</v-tabs>
 
-					<Button v-if="!edit" text="Edit" @clicked="handleClickEdit" />
-					<Button v-if="edit" text="Cancel" @clicked="handleClickCancel" />
-					<Button v-if="edit" text="Delete" @clicked="handleClickDelete" />
+			<v-row
+				:class="{ 'order-3': $vuetify.breakpoint.xs }"
+				style="flex-grow: 0;"
+			>
+				<v-col align="center">
+					<template v-if="edit">
+						<Button
+							:disabled="images.length > 0 ? false : true"
+							text="Select All"
+							@clicked="handleClickSelectAll"
+						/>
+						<Button
+							:disabled="selectionCount > 0 ? false : true"
+							text="Delete"
+							@clicked="handleClickDelete"
+						/>
+
+						<Button
+							:disabled="selectionCount > 0 ? false : true"
+							text="Cancel"
+							@clicked="handleClickCancel"
+						/>
+					</template>
 
 					<Button
 						v-if="!edit"
@@ -26,16 +62,23 @@
 					/>
 				</v-col>
 			</v-row>
-			<v-row id="gallery" class="gallery">
-				<v-col>
-					<div class="gallery-mobile" v-if="isMobile">
+			<v-row
+				id="gallery"
+				:class="{ 'order-2': $vuetify.breakpoint.xs }"
+				class="gallery"
+			>
+				<v-col
+					class="overflow"
+					:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
+				>
+					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
 						<img
 							v-for="(image, i) in images"
-							:key="image"
+							:key="image.key"
 							class="gallery-image-mobile"
-							:src="image"
+							:src="image.url"
 							alt="gallery-img.jpeg"
-							@click="onClick(i)"
+							@click="handleClickImage({ i, key: image.key })"
 						/>
 					</div>
 					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
@@ -59,16 +102,13 @@
 								class="gallery-image"
 								:src="image.url"
 								alt="gallery-img.jpeg"
-								@click="onClick({ i, key: image.key })"
+								@click="handleClickImage({ i, key: image.key })"
 							/>
-							<!-- <figcaption>
-								{{ `${image.location.region}, ${image.location.country}` }}
-							</figcaption> -->
 						</figure>
 					</masonry>
 				</v-col>
 			</v-row>
-			<gallery
+			<VueGallery
 				v-if="!edit"
 				:images="imagesArr"
 				:index="index"
@@ -82,7 +122,7 @@
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '../utils/'
-	import Alert from './Alert'
+
 	import Button from './ui/Button'
 
 	export default {
@@ -100,7 +140,6 @@
 				index: null,
 				cols: { default: 4, 1600: 3, 700: 2 },
 				items: [1, 2, 3, 4, 5],
-				isMobile: false,
 				gutter: { default: '5px' },
 				showAlert: false,
 				edit: false,
@@ -138,31 +177,51 @@
 		},
 
 		components: {
-			gallery: VueGallery,
-			Alert,
+			VueGallery,
 			Button
 		},
 
 		methods: {
 			...mapActions('data', ['upload', 'delete']),
 
-			onClick({ i, key }) {
+			toggleSelect({ i, key }) {
+				const copied = JSON.parse(JSON.stringify(this.images)),
+					selectedImage = copied[i]
+				if (selectedImage.key === key) {
+					selectedImage.selected = !selectedImage.selected
+					if (selectedImage.selected) {
+						this.selectionCount++
+					} else {
+						{
+							this.selectionCount--
+						}
+					}
+					this.images = copied
+				}
+			},
+
+			unselectAllItems() {
+				for (const image of this.images) {
+					image.selected = false
+				}
+				this.selectionCount = 0
+			},
+
+			selectAllItems() {
+				for (const image of this.images) {
+					image.selected = true
+				}
+				this.selectionCount = this.images.length
+			},
+
+			handleClickImage({ i, key }) {
 				if (!this.edit) this.index = i
 				else {
-					const copied = JSON.parse(JSON.stringify(this.images)),
-						selectedImage = copied[i]
-					if (selectedImage.key === key) {
-						selectedImage.selected = !selectedImage.selected
-						if (selectedImage.selected) {
-							this.selectionCount++
-						} else {
-							{
-								this.selectionCount--
-							}
-						}
-						this.images = copied
-					}
+					this.toggleSelect({ i, key })
 				}
+			},
+			handleClickSelectAll() {
+				this.selectAllItems()
 			},
 
 			handleClickEdit() {
@@ -170,9 +229,11 @@
 			},
 
 			handleClickCancel() {
-				for (const image of this.images) {
-					image.selected = false
-				}
+				this.unselectAllItems()
+			},
+
+			handleClickGallery() {
+				this.unselectAllItems()
 				this.edit = false
 			},
 
@@ -181,7 +242,7 @@
 					if (image.selected) filtered.push(image.key)
 					return filtered
 				}, [])
-
+				this.selectionCount = 0
 				this.delete({ imagesToDelete })
 			},
 
@@ -209,57 +270,85 @@
 				formData.append('allImageData', JSON.stringify(allImageData))
 				this.upload(formData)
 			}
-		},
-
-		mounted() {
-			if (window.innerWidth <= 500) this.isMobile = true
-			this.$root.$on('resized', ({ width, height }) => {
-				this.isMobile = width <= 500 ? true : false
-				this.isMobile = height > 750 || width > 500 ? false : true
-				this.cols =
-					width < 450 && height > 750
-						? { default: 2 }
-						: { default: 3, 1000: 2, 900: 1 }
-			})
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	.gallery {
-		overflow: scroll;
-		margin: 8px;
-		.gallery-mobile {
-			display: flex;
-			align-items: center;
+	.gallery-wrapper {
+		display: flex;
+		flex-direction: column;
+
+		&.mobile {
+			height: 45vh;
 		}
 
-		.gallery-image-mobile,
-		.gallery-image {
-			background-size: cover;
-			cursor: pointer;
+		&.not-mobile {
+			height: 85vh;
 		}
 
-		.gallery-image-mobile {
-			height: 185px;
-			display: block;
-		}
-		.gallery-image {
-			max-width: 400px;
-			width: 100%;
-			display: block;
-		}
-		.figure {
+		.gallery {
+			margin: 8px;
+			overflow: hidden;
+			flex-grow: 1;
 			position: relative;
-			.select-btn {
-				top: 5px;
-				right: 5px;
+
+			.overflow {
 				position: absolute;
-				border-radius: 50%;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				overflow: auto;
+				padding: 0;
 			}
-		}
-		.selected {
-			border: 5px solid #1976d2; /*primary*/
+
+			.overflow-mobile {
+				display: flex;
+				align-content: center;
+				align-items: center;
+			}
+
+			.gallery-mobile {
+				display: flex;
+				align-items: center;
+
+				img {
+					padding-right: 8px;
+					&:last-child {
+						padding-right: 0;
+					}
+				}
+			}
+
+			.gallery-image-mobile,
+			.gallery-image {
+				background-size: cover;
+				cursor: pointer;
+			}
+
+			.gallery-image-mobile {
+				height: 158px;
+
+				display: block;
+			}
+			.gallery-image {
+				max-width: 400px;
+				width: 100%;
+				display: block;
+			}
+			.figure {
+				position: relative;
+				.select-btn {
+					top: 5px;
+					right: 5px;
+					position: absolute;
+					border-radius: 50%;
+				}
+			}
+			.selected {
+				border: 5px solid #1976d2; /*primary*/
+			}
 		}
 	}
 </style>
