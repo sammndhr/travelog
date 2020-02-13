@@ -1,8 +1,9 @@
 const createErrorMessage = error => {
 	const errorMessage =
-		error.response.data.message === undefined
-			? 'Something went wrong.'
-			: `${error.response.data.message}`
+		error.response && error.response.data && error.response.data.message
+			? `${error.response.data.message}`
+			: 'Something went wrong.'
+
 	return errorMessage
 }
 
