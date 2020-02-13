@@ -63,7 +63,7 @@ const actions = {
 			method: 'POST',
 			headers: { 'x-access-token': rootState.account.user.token },
 			data: formData,
-			url: `/uploads`
+			url: `${process.env.VUE_APP_BACKEND_URL}/uploads`
 		}
 		try {
 			const results = await axios(options)
@@ -88,7 +88,7 @@ const actions = {
 			method: 'POST',
 			headers: { 'x-access-token': rootState.account.user.token },
 			data: images,
-			url: `/uploads/deletes`
+			url: `${process.env.VUE_APP_BACKEND_URL}/uploads/deletes`
 		}
 		try {
 			const results = await axios(options)
@@ -112,7 +112,7 @@ const actions = {
 		const options = {
 			method: 'GET',
 			headers: { 'x-access-token': rootState.account.user.token },
-			url: `/uploads/log`
+			url: `${process.env.VUE_APP_BACKEND_URL}/uploads/log`
 		}
 		try {
 			const results = await axios(options)

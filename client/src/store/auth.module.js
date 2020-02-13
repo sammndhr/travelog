@@ -44,7 +44,7 @@ const actions = {
 			method: 'POST',
 			data: { email, password },
 			headers: { 'Content-Type': 'application/json' },
-			url: `/users/authenticate`
+			url: `${process.env.VUE_APP_BACKEND_URL}/users/authenticate`
 		}
 
 		try {
@@ -75,7 +75,7 @@ const actions = {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			data: user,
-			url: `/users/register`
+			url: `${process.env.VUE_APP_BACKEND_URL}/users/register`
 		}
 
 		try {
