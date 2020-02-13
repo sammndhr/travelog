@@ -1,9 +1,7 @@
-require('dotenv').config()
-
 const {
 	JWT_SECRET,
 	MAPBOX_TOKEN,
-	PSQL,
+	DATABASE_URL,
 	S3_KEY,
 	S3_SECRET,
 	S3_REGION,
@@ -23,7 +21,7 @@ const config = {
 		bucketRegion: S3_BUCKET_REGION
 	},
 
-	psql: JSON.parse(PSQL),
+	psql: { connectionString: DATABASE_URL },
 
 	mapbox: { token: MAPBOX_TOKEN },
 
