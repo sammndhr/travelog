@@ -58,7 +58,7 @@
 		},
 		data() {
 			return {
-				accessToken: null,
+				accessToken: process.env.VUE_APP_MAPBOX_TOKEN,
 				mapStyle: 'mapbox://styles/mapbox/streets-v11',
 				sourceId: 'image',
 				anchor: 'bottom',
@@ -140,8 +140,6 @@
 		},
 
 		created() {
-			this.accessToken =
-				process.env.MAPBOX_TOKEN || process.env.VUE_APP_MAPBOX_TOKEN
 			this.mapbox = Mapbox
 		}
 	}
