@@ -40,10 +40,7 @@ const addExif = async ({ key, exif }) => {
 const saveImageData = async ({ userId, imageData }) => {
 	const exif = imageData.exif,
 		{ key, extension } = imageData,
-		url =
-			process.env.NODE_ENV === 'production'
-				? generateURL({ bucket, key, host, region: bucketRegion, extension })
-				: './uploads'
+		url = generateURL({ bucket, key, host, region: bucketRegion, extension })
 
 	let results
 

@@ -3,54 +3,40 @@ const AWS = require('aws-sdk'),
 	multerS3 = require('multer-s3')
 const s3Config = require('../config/').s3
 
-let upload, _delete
+const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = s3Config
+AWS.config.update({ region })
 
-if (process.env.NODE_ENV === 'production') {
-	const { accessKeyId, secretAccessKey, region, apiVersion, bucket } = s3Config
-	AWS.config.update({ region })
+const s3 = new AWS.S3({
+	apiVersion,
+	accessKeyId,
+	secretAccessKey
+})
 
-	const s3 = new AWS.S3({
-		apiVersion,
-		accessKeyId,
-		secretAccessKey
-	})
-
-	upload = multer({
-		storage: multerS3({
-			s3,
-			bucket,
-			metadata: function(req, file, cb) {
-				cb(null, { fieldName: file.fieldname })
-			},
-			key: function(req, file, cb) {
-				cb(null, file.originalname)
-			}
-		})
-	})
-
-	_delete = keys => {
-		const params = {
-			Bucket: bucket,
-			Delete: {
-				Objects: keys,
-				Quiet: false
-			}
-		}
-
-		s3.deleteObjects(params, function(err, data) {
-			if (err) throw err
-		})
-	}
-} else {
-	var storage = multer.diskStorage({
-		destination: function(req, file, cb) {
-			cb(null, './uploads')
+const upload = multer({
+	storage: multerS3({
+		s3,
+		bucket,
+		metadata: function(req, file, cb) {
+			cb(null, { fieldName: file.fieldname })
 		},
-		filename: function(req, file, cb) {
+		key: function(req, file, cb) {
 			cb(null, file.originalname)
 		}
 	})
-	upload = multer({ storage })
+})
+
+const _delete = keys => {
+	const params = {
+		Bucket: bucket,
+		Delete: {
+			Objects: keys,
+			Quiet: false
+		}
+	}
+
+	s3.deleteObjects(params, function(err, data) {
+		if (err) throw err
+	})
 }
 
 module.exports = { upload, _delete }

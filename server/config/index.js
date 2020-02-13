@@ -1,7 +1,4 @@
-let configVars
-
-if (process.env.NODE_ENV === 'production') configVars = process.env
-else configVars = require('./DO_NOT_COMMIT.env.vars')
+require('dotenv').config()
 
 const {
 	JWT_SECRET,
@@ -13,7 +10,7 @@ const {
 	S3_BUCKET,
 	S3_HOST,
 	S3_BUCKET_REGION
-} = configVars
+} = process.env
 
 const config = {
 	s3: {
