@@ -5,6 +5,8 @@ const handleError = err => new Error(err)
 
 const pool = new Pool(psql)
 
+//DOESN'T WORK. NEED TO MANUALLY CREATE Tables. You shouldn't be dropping tables SO YOU DON'T NEED THIS
+
 pool.on('connect', () => {
 	console.log('connected to the db')
 })
