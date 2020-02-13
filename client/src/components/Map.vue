@@ -46,7 +46,6 @@
 <script>
 	import { mapActions, mapState } from 'vuex'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
-	import config from '../../DO_NOT_COMMIT.env.vars.js'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
 	import { filter } from '../utils'
 
@@ -141,7 +140,8 @@
 		},
 
 		created() {
-			this.accessToken = config.mapbox.token
+			this.accessToken =
+				process.env.MAPBOX_TOKEN || process.env.VUE_APP_MAPBOX_TOKEN
 			this.mapbox = Mapbox
 		}
 	}

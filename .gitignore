@@ -103,7 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-
 .DS_Store
 
 # image uploads
@@ -118,3 +117,7 @@ DO_NOT_COMMIT.env.vars.js
 # Test images and notes
 test_images
 notes
+
+# local env files
+.env.local
+.env.*.local
