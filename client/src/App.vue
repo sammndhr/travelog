@@ -9,7 +9,7 @@
 </template>
 
 <script>
-	import { mapState, mapActions } from 'vuex'
+	import { mapActions } from 'vuex'
 	import Navbar from './components/Navbar'
 
 	export default {
@@ -17,9 +17,7 @@
 		components: {
 			Navbar
 		},
-		computed: {
-			...mapState('account', ['status'])
-		},
+
 		methods: {
 			...mapActions({
 				clearAlert: 'alert/clear'
