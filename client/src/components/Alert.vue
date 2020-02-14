@@ -15,7 +15,7 @@
 </template>
 
 <script>
-	import { mapState, mapActions } from 'vuex'
+	import { mapState } from 'vuex'
 
 	export default {
 		name: 'Alert',
@@ -30,16 +30,6 @@
 			...mapState({
 				alert: state => state.alert
 			})
-		},
-		methods: {
-			...mapActions({
-				clearAlert: 'alert/clear'
-			})
-		},
-		watch: {
-			$route() {
-				this.clearAlert()
-			}
 		}
 	}
 </script>
