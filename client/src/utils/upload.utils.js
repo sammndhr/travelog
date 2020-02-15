@@ -28,9 +28,9 @@ function readExif(file) {
 	const tags = ExifReader.load(file),
 		exifData = {}
 	delete tags['MakerNote']
-
 	for (const name in tags) {
-		exifData[name] = tags[name].description
+		exifData[name] =
+			name === 'Orientation' ? tags[name].value : tags[name].description
 	}
 
 	return exifData

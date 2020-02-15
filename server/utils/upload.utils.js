@@ -71,7 +71,8 @@ const UploadHelper = {
 			GPSLatitudeRef,
 			GPSLatitude,
 			GPSLongitudeRef,
-			GPSLongitude
+			GPSLongitude,
+			Orientation
 		} = exif
 
 		const latitude = GPSLatitude
@@ -87,8 +88,7 @@ const UploadHelper = {
 		const location = await reverseGeocode({ longitude, latitude })
 		const height = exif['Image Height'] ? parseFloat(exif['Image Height']) : 0
 		const width = exif['Image Width'] ? parseFloat(exif['Image Width']) : 0
-		const orientation =
-			width && height ? (width / height > 1 ? 'potrait' : 'landscape') : ''
+		const orientation = Orientation
 		const dateCreated = DateTime
 			? DateTime.split(' ')[0]
 					.split(':')
