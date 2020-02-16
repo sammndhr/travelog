@@ -211,7 +211,7 @@
 					key = image.key
 
 				if (url.includes(key)) {
-					switch (image.rotation) {
+					switch (image.orientation) {
 						case 1:
 							rotation = 'transform: rotate(0deg);'
 							break
