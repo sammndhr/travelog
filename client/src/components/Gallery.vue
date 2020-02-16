@@ -62,6 +62,7 @@
 					/>
 				</v-col>
 			</v-row>
+
 			<v-row
 				id="gallery"
 				:class="{ 'order-2': $vuetify.breakpoint.xs }"
@@ -72,14 +73,30 @@
 					:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
 				>
 					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
-						<img
+						<figure
+							:class="[{ selected: image.selected }, 'figure']"
 							v-for="(image, i) in images"
 							:key="image.key"
-							class="gallery-image-mobile"
-							:src="image.url"
-							alt="gallery-img.jpeg"
-							@click="handleClickImage({ i, key: image.key })"
-						/>
+						>
+							<v-icon
+								class="select-btn"
+								v-show="edit"
+								:color="image.selected ? 'primary' : 'grey'"
+								>{{
+									image.selected
+										? 'mdi-check-circle'
+										: 'mdi-checkbox-blank-circle-outline'
+								}}</v-icon
+							>
+
+							<img
+								class="gallery-image-mobile"
+								:class="`rotate-${image.orientation}`"
+								:src="image.url"
+								alt="gallery-img.jpeg"
+								@click="handleClickImage({ i, key: image.key })"
+							/>
+						</figure>
 					</div>
 					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
 						<figure
@@ -100,6 +117,7 @@
 							>
 							<img
 								class="gallery-image"
+								:class="`rotate-${image.orientation}`"
 								:src="image.url"
 								alt="gallery-img.jpeg"
 								@click="handleClickImage({ i, key: image.key })"
@@ -108,11 +126,13 @@
 					</masonry>
 				</v-col>
 			</v-row>
+
 			<VueGallery
 				v-if="!edit"
-				:images="imagesArr"
+				:images="imagesUrls"
 				:index="index"
 				@close="index = null"
+				:options="{ onslide: onslide }"
 			/>
 		</v-card>
 	</v-col>
@@ -139,22 +159,17 @@
 			return {
 				index: null,
 				cols: { default: 4, 1600: 3, 700: 2 },
-				items: [1, 2, 3, 4, 5],
 				gutter: { default: '5px' },
 				showAlert: false,
 				edit: false,
-				images: [],
+				images: this.filteredImages,
+				imagesUrls: [],
 				selectionCount: 0
 			}
 		},
 
 		computed: {
 			...mapState('data', ['status', 'geoJson', 'filteredGeoJson']),
-			imagesArr() {
-				return this.filteredImages.map(feature => {
-					return feature.url
-				})
-			},
 
 			filteredImages() {
 				const images = []
@@ -163,6 +178,7 @@
 					obj.url = feature.properties.url
 					obj.key = feature.properties.key
 					obj.location = feature.properties.location
+					obj.orientation = feature.properties.orientation
 					obj.selected = false
 					images.push(obj)
 				})
@@ -172,6 +188,11 @@
 
 		watch: {
 			filteredImages(newImages) {
+				//Because you don't mutate filteredImages, so you set images to filteredImages (to keep track of what images are selected)
+				const imagesUrls = newImages.map(feature => {
+					return feature.url
+				})
+				this.imagesUrls = imagesUrls
 				this.images = newImages
 			}
 		},
@@ -183,7 +204,34 @@
 
 		methods: {
 			...mapActions('data', ['upload', 'delete']),
+			onslide: function(index, slide) {
+				let rotation = ''
+				const url = slide.getElementsByTagName('img')[0].src,
+					image = this.images[index],
+					key = image.key
 
+				if (url.includes(key)) {
+					switch (image.rotation) {
+						case 1:
+							rotation = 'transform: rotate(0deg);'
+							break
+						case 3:
+							rotation = 'transform: rotate(180deg);'
+							break
+						case 6:
+							rotation = 'transform: rotate(90deg);'
+							break
+						case 8:
+							rotation = 'transform: rotate(270deg);'
+							break
+						default:
+							rotation = ''
+							break
+					}
+				}
+
+				slide.getElementsByTagName('img')[0].style = rotation
+			},
 			toggleSelect({ i, key }) {
 				const copied = JSON.parse(JSON.stringify(this.images)),
 					selectedImage = copied[i]
@@ -325,11 +373,22 @@
 			.gallery-image {
 				background-size: cover;
 				cursor: pointer;
+				&.rotate-1 {
+					transform: rotate(0deg);
+				}
+				&.rotate-3 {
+					transform: rotate(180deg);
+				}
+				&.rotate-6 {
+					transform: rotate(90deg);
+				}
+				&.rotate-8 {
+					transform: rotate(270deg);
+				}
 			}
 
 			.gallery-image-mobile {
 				height: 158px;
-
 				display: block;
 			}
 			.gallery-image {
@@ -340,6 +399,7 @@
 			.figure {
 				position: relative;
 				.select-btn {
+					z-index: 5;
 					top: 5px;
 					right: 5px;
 					position: absolute;

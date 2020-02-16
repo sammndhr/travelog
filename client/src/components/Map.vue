@@ -20,7 +20,12 @@
 					:coordinates="feature.geometry.coordinates"
 				>
 					<div slot="marker" class="marker">
-						<img class="marker" :src="feature.properties.url" alt="marker" />
+						<img
+							class="marker-img"
+							:class="`rotate-${feature.properties.orientation}`"
+							:src="feature.properties.url"
+							alt="marker"
+						/>
 					</div>
 					<MglPopup :anchor="anchor">
 						<div>
@@ -146,11 +151,23 @@
 </script>
 
 <style lang="scss" scoped>
-	.marker {
+	.marker-img {
 		width: 50px;
 		height: 50px;
 		border-radius: 5px;
 		cursor: pointer;
+		&.rotate-1 {
+			transform: rotate(0deg);
+		}
+		&.rotate-3 {
+			transform: rotate(180deg);
+		}
+		&.rotate-6 {
+			transform: rotate(90deg);
+		}
+		&.rotate-8 {
+			transform: rotate(270deg);
+		}
 	}
 
 	.map-wrapper {
