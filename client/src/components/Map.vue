@@ -83,7 +83,19 @@
 		},
 
 		computed: {
-			...mapState('data', ['geoJson'])
+			...mapState({
+				geoJson({ data }) {
+					const features = data.geoJson.features,
+						geoJson = JSON.parse(JSON.stringify(data.geoJson))
+
+					const featuresWithLocation = features.filter(feature => {
+						return feature.geometry.coordinates.length > 0
+					})
+
+					geoJson.features = featuresWithLocation
+					return geoJson
+				}
+			})
 		},
 
 		watch: {

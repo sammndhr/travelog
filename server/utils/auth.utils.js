@@ -42,7 +42,7 @@ const AuthHelper = {
 		} catch (error) {
 			return res
 				.status(400)
-				.send({ message: 'The token you provided is invalid' })
+				.send({ message: 'The token you provided is invalid.' })
 		}
 	}
 }

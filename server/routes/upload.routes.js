@@ -16,7 +16,7 @@ router.get('/log', verifyToken, wrapAsync(getGeoJson))
 router.post(
 	'/',
 	verifyToken,
-	upload.array('photos', 20),
+	upload.array('photos', 200),
 	wrapAsync(saveAllData),
 	wrapAsync(getGeoJson)
 )
