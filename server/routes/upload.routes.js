@@ -20,7 +20,7 @@ router.post(
 	upload.array('photos', 200),
 	wrapAsync(saveAllData),
 	wrapAsync(convertImage),
-	// wrapAsync(uploadConvertedFile),
+	wrapAsync(uploadConvertedFile),
 	wrapAsync(getGeoJson)
 )
 

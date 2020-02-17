@@ -56,23 +56,21 @@ const _delete = keys => {
 	})
 }
 
-const uploadConvertedFile = ({ key, path }) => {
-	// const { key } = request.resizedData
-	// const path = `../uploads/resized-${key}`
-	console.log(path, key, 'FILENAME FROM s3')
-	const fileContent = fs.readFileSync(path)
-
-	const params = {
-		Bucket: bucket,
-		Key: `resized-${key}`,
-		Body: fileContent
-	}
+const uploadConvertedFile = async (request, response, next) => {
+	const { key, resizedPath, path } = request.s3UploadData,
+		fileContent = fs.readFileSync(path),
+		params = {
+			Bucket: bucket,
+			Key: `resized-${key}`,
+			Body: fileContent
+		}
 
 	s3.upload(params, function(err, data) {
 		if (err) {
 			throw err
 		}
 		console.log(`File uploaded successfully. ${data.Location}`)
+		next()
 	})
 }
 

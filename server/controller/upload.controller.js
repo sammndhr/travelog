@@ -135,12 +135,18 @@ const convertImage = async (request, response, next) => {
 		resizedPath = `./uploads/resized-${key}`
 
 	try {
-		const convertImage = await sharp(path).resize(320, 240)
+		const convertImage = await sharp(path).resize({ height: 320 })
 		await convertImage.toFile(resizedPath)
-		uploadConvertedFile({ key, path: resizedPath })
+		const s3UploadData = {
+			key,
+			resizedPath,
+			path
+		}
+		request.s3UploadData = s3UploadData
 	} catch (error) {
 		console.error(error)
 	}
+
 	next()
 }
 
