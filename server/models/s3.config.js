@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk'),
 	multer = require('multer'),
-	multerS3 = require('multer-s3'),
 	fs = require('fs')
 const s3Config = require('../config/').s3
 
@@ -35,7 +34,6 @@ const s3 = new AWS.S3({
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: function(req, file, cb) {
-			// console.log(file, req)
 			cb(null, './uploads')
 		},
 		filename: function(req, file, cb) {

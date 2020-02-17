@@ -129,17 +129,18 @@ const deleteImages = async (request, response, next) => {
 }
 
 const convertImage = async (request, response, next) => {
-	const image = JSON.parse(request.body.allImageData)[0]
-	const key = `${image.key}.${image.extension}`
-	const path = `./uploads/${key}`
-	const resizedPath = `./uploads/resized-${key}`
-	sharp(path)
-		.resize(320, 240)
-		.toFile(resizedPath, (err, info) => {
-			console.log(err, info)
-			const resizedData = { key, path: resizedPath }
-			uploadConvertedFile(resizedData)
-		})
+	const image = JSON.parse(request.body.allImageData)[0],
+		key = `${image.key}.${image.extension}`,
+		path = `./uploads/${key}`,
+		resizedPath = `./uploads/resized-${key}`
+
+	try {
+		const convertImage = await sharp(path).resize(320, 240)
+		await convertImage.toFile(resizedPath)
+		uploadConvertedFile({ key, path: resizedPath })
+	} catch (error) {
+		console.error(error)
+	}
 	next()
 }
 
