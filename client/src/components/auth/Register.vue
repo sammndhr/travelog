@@ -4,10 +4,13 @@
 			<Alert />
 		</v-row>
 		<v-row align="center" justify="center">
-			<v-col cols="12" sm="8" md="4">
+			<v-col cols="12" :sm="cols.sm" :md="cols.md">
 				<v-card class="elevation-12">
 					<v-toolbar color="primary" dark flat>
-						<v-toolbar-title>Register</v-toolbar-title>
+						<v-btn text icon @click="handleClickBackButton">
+							<v-icon>mdi-chevron-left</v-icon>
+						</v-btn>
+						<v-toolbar-title>Create Your Account</v-toolbar-title>
 						<v-spacer />
 					</v-toolbar>
 					<v-card-text>
@@ -61,6 +64,7 @@
 <script>
 	import { mapState, mapActions } from 'vuex'
 	import Alert from '../Alert'
+
 	export default {
 		data() {
 			return {
@@ -73,6 +77,13 @@
 					v => !!v || 'E-mail is required',
 					v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
 				]
+			}
+		},
+		props: {
+			cols: {
+				type: Object,
+				required: false,
+				default: () => ({ sm: 8, md: 4 })
 			}
 		},
 		components: { Alert },
@@ -88,6 +99,10 @@
 				if (this.$refs.form.validate()) {
 					this.snackbar = true
 				}
+			},
+			handleClickBackButton() {
+				// router.push('/')
+				this.$emit('backButtonClicked')
 			},
 			handleSubmit() {
 				this.submitted = true

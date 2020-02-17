@@ -1,18 +1,5 @@
 <template>
 	<v-btn
-		v-if="!link"
-		:disabled="disabled"
-		elevation="3"
-		class="ma-2"
-		color="primary"
-		@click="handleClick"
-	>
-		{{ text }}
-		<v-icon v-show="type === 'upload'" right dark>mdi-cloud-upload</v-icon>
-	</v-btn>
-
-	<v-btn
-		v-else
 		:disabled="disabled"
 		elevation="3"
 		class="ma-2"

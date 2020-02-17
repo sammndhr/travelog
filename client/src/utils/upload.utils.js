@@ -54,7 +54,7 @@ async function handleImages(files) {
 	const len = files.length,
 		keys = getKeys(len),
 		images = []
-	console.log(keys)
+
 	// Don't use for...in, will throw err cause it'll loop through 'length' and 'item' properties
 	for (const file of files) {
 		const { readAsArrayBuffer } = await readFile(file),
