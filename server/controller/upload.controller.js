@@ -131,8 +131,8 @@ const deleteImages = async (request, response, next) => {
 const convertImage = async (request, response, next) => {
 	const image = JSON.parse(request.body.allImageData)[0],
 		key = `${image.key}.${image.extension}`,
-		path = `./uploads/${key}`,
-		resizedPath = `./uploads/resized-${key}`
+		path = `./uploads/originals/${key}`,
+		resizedPath = `./uploads/converted/${key}`
 
 	try {
 		const convertImage = await sharp(path).resize({ height: 320 })

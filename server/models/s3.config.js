@@ -34,7 +34,7 @@ const s3 = new AWS.S3({
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: function(req, file, cb) {
-			cb(null, './uploads')
+			cb(null, './uploads/originals/')
 		},
 		filename: function(req, file, cb) {
 			cb(null, file.originalname)
