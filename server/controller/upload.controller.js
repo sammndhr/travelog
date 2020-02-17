@@ -1,9 +1,10 @@
-const { query } = require('../models/psql.config')
-const { generateURL, parseExif, createFeature } = require('../utils/')
-const { host, bucket, bucketRegion } = require('../config').s3
-const { _delete, uploadConvertedFile } = require('../models/s3.config')
-const fs = require('fs')
-const sharp = require('sharp')
+const multer = require('multer'),
+	sharp = require('sharp')
+
+const { query } = require('../models/psql.config'),
+	{ generateURL, parseExif, createFeature } = require('../utils/'),
+	{ host, bucket, bucketRegion } = require('../config').s3,
+	{ _delete, uploadConvertedFile } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
@@ -150,10 +151,22 @@ const convertImage = async (request, response, next) => {
 	next()
 }
 
+const uploadToDisk = multer({
+	storage: multer.diskStorage({
+		destination: function(req, file, cb) {
+			cb(null, './uploads/originals/')
+		},
+		filename: function(req, file, cb) {
+			cb(null, file.originalname)
+		}
+	})
+})
+
 module.exports = {
 	saveAllData,
 	getGeoJson,
 	deleteData,
 	deleteImages,
-	convertImage
+	convertImage,
+	uploadToDisk
 }
