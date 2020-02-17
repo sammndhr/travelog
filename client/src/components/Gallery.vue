@@ -301,22 +301,25 @@
 					)
 					return
 				}
-				const formData = new FormData(),
-					files = e.target.files,
-					images = await handleImages(files),
-					allImageData = []
-
+				const files = e.target.files,
+					images = await handleImages(files)
+				console.log(images)
 				for (const image of images) {
 					const { key, exif, file } = image,
+						imageData = [],
+						formData = new FormData(),
 						extension = file.type.split('/').pop(),
 						newName = `${key}.${extension}`
 
-					allImageData.push({ key, exif, extension })
+					imageData.push({ key, exif, extension })
+					// allImageData.push({ key, exif, extension })
 					formData.append('photos', file, newName)
+					formData.append('allImageData', JSON.stringify(imageData))
+					this.upload(formData)
 				}
 
-				formData.append('allImageData', JSON.stringify(allImageData))
-				this.upload(formData)
+				// formData.append('allImageData', JSON.stringify(allImageData))
+				// this.upload(formData)
 			}
 		}
 	}
