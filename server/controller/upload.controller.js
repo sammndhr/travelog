@@ -1,7 +1,9 @@
 const { query } = require('../models/psql.config')
 const { generateURL, parseExif, createFeature } = require('../utils/')
 const { host, bucket, bucketRegion } = require('../config').s3
-const { _delete } = require('../models/s3.config')
+const { _delete, uploadConvertedFile } = require('../models/s3.config')
+const fs = require('fs')
+const sharp = require('sharp')
 
 const addImageData = async ({
 	userId,
@@ -126,4 +128,25 @@ const deleteImages = async (request, response, next) => {
 	next()
 }
 
-module.exports = { saveAllData, getGeoJson, deleteData, deleteImages }
+const convertImage = async (request, response, next) => {
+	const image = JSON.parse(request.body.allImageData)[0]
+	const key = `${image.key}.${image.extension}`
+	const path = `./uploads/${key}`
+	const resizedPath = `./uploads/resized-${key}`
+	sharp(path)
+		.resize(320, 240)
+		.toFile(resizedPath, (err, info) => {
+			console.log(err, info)
+			const resizedData = { key, path: resizedPath }
+			uploadConvertedFile(resizedData)
+		})
+	next()
+}
+
+module.exports = {
+	saveAllData,
+	getGeoJson,
+	deleteData,
+	deleteImages,
+	convertImage
+}
