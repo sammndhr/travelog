@@ -136,8 +136,17 @@ const convertImage = async (request, response, next) => {
 		resizedPath = `./uploads/converted/${key}`
 
 	try {
-		const convertImage = await sharp(path).resize({ height: 320 })
-		await convertImage.toFile(resizedPath)
+		let convertImage = sharp(path),
+			metaData = await convertImage.metadata()
+		const { width, height, exif } = metaData,
+			megaPixels = width * height
+		// iPhone MegaPixel = 4032 * 3024 = 12,192,768
+		if (12000000 && width > 2016 && height > 2016) {
+			await convertImage.resize(Math.round(width * 0.5)).toFile(resizedPath)
+		} else {
+			await convertImage.toFile(resizedPath)
+		}
+
 		const s3UploadData = {
 			key,
 			resizedPath,

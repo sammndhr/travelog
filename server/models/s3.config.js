@@ -18,25 +18,6 @@ const s3 = new AWS.S3({
 	secretAccessKey
 })
 
-// const upload = multer({
-// 	storage: multerS3({
-// 		s3,
-// 		bucket,
-// 		metadata: function(req, file, cb) {
-//       console.log(file);
-// 			cb(null, { fieldName: file.fieldname })
-// 		},
-// 		key: function(req, file, cb) {
-// 			cb(null, file.originalname)
-//     },
-//     // done: function(req, file, cb) {
-//     //   const filePath = resizeAndOrient(file)
-//     //   s3Upload(filePath)
-
-//     // }
-// 	})
-// })
-
 const _delete = keys => {
 	const params = {
 		Bucket: bucket,
@@ -51,7 +32,7 @@ const _delete = keys => {
 	})
 }
 
-const uploadOriginal = async ({ key, path }) => {
+const uploadOriginal = async ({ key, path }, cb) => {
 	const fileContent = fs.readFileSync(path),
 		params = {
 			Bucket: originalBucket,
@@ -63,15 +44,15 @@ const uploadOriginal = async ({ key, path }) => {
 		if (err) {
 			throw err
 		}
-		console.log(`File uploaded successfully. ${data.Location}`)
+		cb()
 	})
 }
 
-const uploadConvertedFile = async ({ key, path }) => {
+const uploadConvertedFile = async ({ key, path }, cb) => {
 	const fileContent = fs.readFileSync(path),
 		params = {
 			Bucket: bucket,
-			Key: `r-${key}`,
+			Key: `${key}`,
 			Body: fileContent
 		}
 
@@ -79,18 +60,23 @@ const uploadConvertedFile = async ({ key, path }) => {
 		if (err) {
 			throw err
 		}
-		console.log(`File uploaded successfully. ${data.Location}`)
+		cb()
 	})
 }
 
 const uploadToS3 = async (request, response, next) => {
 	const { key, resizedPath, path } = request.s3UploadData
+
 	try {
-		await uploadOriginal({ key, path })
-		await uploadConvertedFile({ key, path: resizedPath })
+		//pls fix. Stop descend to callback hell.
+		uploadConvertedFile({ key, path: resizedPath }, function() {
+			uploadOriginal({ key, path }, function() {
+				next()
+			})
+		})
 	} catch (error) {
 		console.error(error)
 	}
-	next()
 }
+
 module.exports = { _delete, uploadToS3 }
