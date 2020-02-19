@@ -139,8 +139,33 @@ const convertImage = async (request, response, next) => {
 	try {
 		let convertImage = sharp(path),
 			metaData = await convertImage.metadata()
-		const { width, height, exif } = metaData,
+		const { width, height, exif, orientation } = metaData,
 			megaPixels = width * height
+
+		let rotateDeg
+		if (orientation) {
+			switch (orientation) {
+				case 3:
+					rotateDeg = 180
+					break
+				case 6:
+					rotateDeg = 90
+					break
+				case 8:
+					rotateDeg = 270
+					break
+				default:
+					rotateDeg = 0
+					break
+			}
+		}
+
+		//Rotate cause browsers don't rotate image based on exif orientation
+		convertImage = !!rotateDeg
+			? await convertImage.rotate(rotateDeg)
+			: convertImage
+
+		//Resize and save to disk
 		// iPhone MegaPixel = 4032 * 3024 = 12,192,768
 		if (megaPixels > 12000000 && width > 2016 && height > 2016) {
 			await convertImage.resize(Math.round(width * 0.5)).toFile(resizedPath)
