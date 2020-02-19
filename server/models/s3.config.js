@@ -18,18 +18,21 @@ const s3 = new AWS.S3({
 	secretAccessKey
 })
 
-const _delete = keys => {
+const deleteFromS3 = keys => {
+	const buckets = [bucket, originalBucket]
 	const params = {
-		Bucket: bucket,
+		Bucket: null,
 		Delete: {
 			Objects: keys,
 			Quiet: false
 		}
 	}
-
-	s3.deleteObjects(params, function(err, data) {
-		if (err) throw err
-	})
+	for (const s3Bucket of buckets) {
+		params.Bucket = s3Bucket
+		s3.deleteObjects(params, function(err, data) {
+			if (err) throw err
+		})
+	}
 }
 
 const uploadOriginal = async ({ key, path }, cb) => {
@@ -44,7 +47,7 @@ const uploadOriginal = async ({ key, path }, cb) => {
 		if (err) {
 			throw err
 		}
-		cb()
+		cb(data)
 	})
 }
 
@@ -60,7 +63,7 @@ const uploadConvertedFile = async ({ key, path }, cb) => {
 		if (err) {
 			throw err
 		}
-		cb()
+		cb(data)
 	})
 }
 
@@ -69,8 +72,8 @@ const uploadToS3 = async (request, response, next) => {
 
 	try {
 		//pls fix. Stop descend to callback hell.
-		uploadConvertedFile({ key, path: resizedPath }, function() {
-			uploadOriginal({ key, path }, function() {
+		uploadConvertedFile({ key, path: resizedPath }, function(data) {
+			uploadOriginal({ key, path }, function(data) {
 				next()
 			})
 		})
@@ -79,4 +82,4 @@ const uploadToS3 = async (request, response, next) => {
 	}
 }
 
-module.exports = { _delete, uploadToS3 }
+module.exports = { deleteFromS3, uploadToS3 }

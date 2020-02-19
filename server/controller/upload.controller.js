@@ -4,7 +4,7 @@ const multer = require('multer'),
 const { query } = require('../models/psql.config'),
 	{ generateURL, parseExif, createFeature } = require('../utils/'),
 	{ host, bucket, bucketRegion } = require('../config').s3,
-	{ _delete, uploadConvertedFile } = require('../models/s3.config')
+	{ deleteFromS3, uploadConvertedFile } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
@@ -125,7 +125,7 @@ const deleteData = async (request, response, next) => {
 
 const deleteImages = async (request, response, next) => {
 	const keys = request.s3Keys
-	_delete(keys)
+	deleteFromS3(keys)
 	next()
 }
 
