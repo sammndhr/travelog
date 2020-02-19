@@ -23,8 +23,7 @@ router.post(
 	wrapAsync(saveAllData),
 	wrapAsync(convertImage),
 	wrapAsync(uploadToS3),
-	removeFromDisk,
-	wrapAsync(getGeoJson)
+	removeFromDisk
 )
 
 router.post(

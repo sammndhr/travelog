@@ -48,7 +48,8 @@ const uploadOriginal = async ({ key, path }, cb) => {
 
 	promise.then(
 		function(data) {
-			cb()
+			console.log(data.Location)
+			cb(data.Location)
 		},
 		function(err) {
 			throw err
@@ -69,7 +70,8 @@ const uploadConvertedFile = async ({ key, path }, cb) => {
 
 	promise.then(
 		function(data) {
-			cb()
+			console.log(data)
+			cb(data.Location)
 		},
 		function(err) {
 			throw err
@@ -78,6 +80,7 @@ const uploadConvertedFile = async ({ key, path }, cb) => {
 }
 
 const uploadToS3 = async (request, response, next) => {
+	console.log('Uploading to S3')
 	const { key, resizedPath, path } = request.s3UploadData
 
 	try {

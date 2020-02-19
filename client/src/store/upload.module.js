@@ -6,18 +6,22 @@ const state = {
 		type: 'FeatureCollection',
 		features: []
 	},
+	uploadCount: null,
 	status: {},
 	filteredGeoJson: []
 }
 
 const mutations = {
+	UPLOAD_COUNT(state, count) {
+		state.uploadCount = count
+	},
 	UPLOAD_REQUEST(state) {
 		state.status = { uploading: true }
 	},
 
-	UPLOAD_SUCCESS(state, geoJson) {
+	ALL_UPLOAD_SUCCESS(state) {
+		console.log('ALL UPLOADED')
 		state.status = { uploaded: true }
-		state.geoJson = geoJson
 	},
 
 	UPLOAD_FAILURE(state) {
@@ -57,8 +61,29 @@ const mutations = {
 }
 
 const actions = {
-	async upload({ dispatch, commit, rootState }, formData) {
+	uploadRequest({ commit }, count) {
+		commit('UPLOAD_COUNT', count)
 		commit('UPLOAD_REQUEST')
+	},
+
+	uploads({ dispatch, commit }, { uploadStatuses }) {
+		let allSucceeded = true
+		for (const success of uploadStatuses) {
+			if (!success) {
+				allSucceeded = false
+				break
+			}
+		}
+
+		if (allSucceeded) commit('ALL_UPLOAD_SUCCESS')
+
+		setTimeout(() => {
+			dispatch('alert/success', 'Upload successful', { root: true })
+			commit('UPLOAD_COUNT', 0)
+		})
+	},
+
+	async upload({ dispatch, commit, rootState }, formData) {
 		const options = {
 			method: 'POST',
 			headers: { 'x-access-token': rootState.account.user.token },
@@ -66,14 +91,7 @@ const actions = {
 			url: `${process.env.VUE_APP_BACKEND_URL}/uploads`
 		}
 		try {
-			const results = await axios(options)
-			if (results.status >= 200) {
-				const geoJson = results.data.geoJson
-				commit('UPLOAD_SUCCESS', geoJson)
-				setTimeout(() => {
-					dispatch('alert/success', 'Upload successful', { root: true })
-				})
-			}
+			return axios(options)
 		} catch (error) {
 			console.log(error)
 			const errorMessage = createErrorMessage(error)

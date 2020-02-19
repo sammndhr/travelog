@@ -87,6 +87,7 @@ const getGeoJson = async (request, response, next) => {
 		type: 'FeatureCollection',
 		features
 	}
+	console.log(geoJson.features.length)
 	return response.status(code).json({ geoJson })
 }
 
@@ -199,7 +200,7 @@ const uploadToDisk = multer({
 
 const removeFromDisk = (request, response, next) => {
 	const key = request.keyToDelete
-	console.log(key)
+	console.log('Removing from local disk', key)
 	const filesToDelete = [
 		`./uploads/converted/${key}`,
 		`./uploads/originals/${key}`
@@ -210,9 +211,9 @@ const removeFromDisk = (request, response, next) => {
 
 		fs.unlink(filesToDelete[1], err => {
 			if (err) throw err
-			next()
 		})
 	})
+	return response.status(201).json({ success: true })
 }
 
 module.exports = {

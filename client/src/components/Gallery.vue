@@ -136,6 +136,7 @@
 </template>
 
 <script>
+	/* eslint-disable */
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '../utils/'
@@ -166,7 +167,12 @@
 		},
 
 		computed: {
-			...mapState('data', ['status', 'geoJson', 'filteredGeoJson']),
+			...mapState('data', [
+				'status',
+				'geoJson',
+				'filteredGeoJson',
+				'uploadStatuses'
+			]),
 
 			filteredImages() {
 				const images = []
@@ -199,7 +205,13 @@
 		},
 
 		methods: {
-			...mapActions('data', ['upload', 'delete']),
+			...mapActions('data', [
+				'upload',
+				'delete',
+				'uploadRequest',
+				'uploads',
+				'getGeojson'
+			]),
 
 			toggleSelect({ i, key }) {
 				const copied = JSON.parse(JSON.stringify(this.images)),
@@ -271,9 +283,11 @@
 					return
 				}
 				const files = e.target.files,
+					// len = files.length,
 					images = await handleImages(files)
-
-				for (const image of images) {
+				const promises = []
+				for (let image of images) {
+					// const image = images[i]
 					const { key, exif, file } = image,
 						imageData = [],
 						formData = new FormData(),
@@ -283,8 +297,12 @@
 					imageData.push({ key, exif, extension })
 					formData.append('photos', file, newName)
 					formData.append('allImageData', JSON.stringify(imageData))
-					this.upload(formData)
+					const uploading = this.upload(formData)
+					promises.push(uploading)
 				}
+				Promise.all(promises).then(success => {
+					this.getGeojson()
+				})
 			}
 		}
 	}
