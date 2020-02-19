@@ -43,12 +43,17 @@ const uploadOriginal = async ({ key, path }, cb) => {
 			Body: fileContent
 		}
 
-	s3.upload(params, function(err, data) {
-		if (err) {
+	const upload = s3.upload(params),
+		promise = upload.promise()
+
+	promise.then(
+		function(data) {
+			cb()
+		},
+		function(err) {
 			throw err
 		}
-		cb(data)
-	})
+	)
 }
 
 const uploadConvertedFile = async ({ key, path }, cb) => {
@@ -59,12 +64,17 @@ const uploadConvertedFile = async ({ key, path }, cb) => {
 			Body: fileContent
 		}
 
-	s3.upload(params, function(err, data) {
-		if (err) {
+	const upload = s3.upload(params),
+		promise = upload.promise()
+
+	promise.then(
+		function(data) {
+			cb()
+		},
+		function(err) {
 			throw err
 		}
-		cb(data)
-	})
+	)
 }
 
 const uploadToS3 = async (request, response, next) => {
@@ -74,6 +84,7 @@ const uploadToS3 = async (request, response, next) => {
 		//pls fix. Stop descend to callback hell.
 		uploadConvertedFile({ key, path: resizedPath }, function(data) {
 			uploadOriginal({ key, path }, function(data) {
+				request.keyToDelete = key
 				next()
 			})
 		})

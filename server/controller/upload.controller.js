@@ -1,5 +1,6 @@
 const multer = require('multer'),
-	sharp = require('sharp')
+	sharp = require('sharp'),
+	fs = require('fs')
 
 const { query } = require('../models/psql.config'),
 	{ generateURL, parseExif, createFeature } = require('../utils/'),
@@ -141,7 +142,7 @@ const convertImage = async (request, response, next) => {
 		const { width, height, exif } = metaData,
 			megaPixels = width * height
 		// iPhone MegaPixel = 4032 * 3024 = 12,192,768
-		if (12000000 && width > 2016 && height > 2016) {
+		if (megaPixels > 12000000 && width > 2016 && height > 2016) {
 			await convertImage.resize(Math.round(width * 0.5)).toFile(resizedPath)
 		} else {
 			await convertImage.toFile(resizedPath)
@@ -171,11 +172,30 @@ const uploadToDisk = multer({
 	})
 })
 
+const removeFromDisk = (request, response, next) => {
+	const key = request.keyToDelete
+	console.log(key)
+	const filesToDelete = [
+		`./uploads/converted/${key}`,
+		`./uploads/originals/${key}`
+	]
+
+	fs.unlink(filesToDelete[0], err => {
+		if (err) throw err
+
+		fs.unlink(filesToDelete[1], err => {
+			if (err) throw err
+			next()
+		})
+	})
+}
+
 module.exports = {
 	saveAllData,
 	getGeoJson,
 	deleteData,
 	deleteImages,
 	convertImage,
-	uploadToDisk
+	uploadToDisk,
+	removeFromDisk
 }

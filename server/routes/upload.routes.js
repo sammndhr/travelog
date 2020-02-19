@@ -9,7 +9,8 @@ const { wrapAsync } = require('../utils'),
 		saveAllData,
 		getGeoJson,
 		convertImage,
-		uploadToDisk
+		uploadToDisk,
+		removeFromDisk
 	} = require('../controller/upload.controller'),
 	{ verifyToken } = require('../utils/')
 
@@ -22,6 +23,7 @@ router.post(
 	wrapAsync(saveAllData),
 	wrapAsync(convertImage),
 	wrapAsync(uploadToS3),
+	removeFromDisk,
 	wrapAsync(getGeoJson)
 )
 
