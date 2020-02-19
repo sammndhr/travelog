@@ -58,7 +58,6 @@ const mutations = {
 
 const actions = {
 	async upload({ dispatch, commit, rootState }, formData) {
-		console.log('uploading', formData)
 		commit('UPLOAD_REQUEST')
 		const options = {
 			method: 'POST',

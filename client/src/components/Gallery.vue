@@ -91,7 +91,6 @@
 
 							<img
 								class="gallery-image-mobile"
-								:class="`rotate-${image.orientation}`"
 								:src="image.url"
 								alt="gallery-img.jpeg"
 								@click="handleClickImage({ i, key: image.key })"
@@ -117,7 +116,6 @@
 							>
 							<img
 								class="gallery-image"
-								:class="`rotate-${image.orientation}`"
 								:src="image.url"
 								alt="gallery-img.jpeg"
 								@click="handleClickImage({ i, key: image.key })"
@@ -132,7 +130,6 @@
 				:images="imagesUrls"
 				:index="index"
 				@close="index = null"
-				:options="{ onslide: onslide }"
 			/>
 		</v-card>
 	</v-col>
@@ -178,7 +175,6 @@
 					obj.url = feature.properties.url
 					obj.key = feature.properties.key
 					obj.location = feature.properties.location
-					obj.orientation = feature.properties.orientation
 					obj.selected = false
 					images.push(obj)
 				})
@@ -204,34 +200,7 @@
 
 		methods: {
 			...mapActions('data', ['upload', 'delete']),
-			onslide: function(index, slide) {
-				let rotation = ''
-				const url = slide.getElementsByTagName('img')[0].src,
-					image = this.images[index],
-					key = image.key
 
-				if (url.includes(key)) {
-					switch (image.orientation) {
-						case 1:
-							rotation = 'transform: rotate(0deg);'
-							break
-						case 3:
-							rotation = 'transform: rotate(180deg);'
-							break
-						case 6:
-							rotation = 'transform: rotate(90deg);'
-							break
-						case 8:
-							rotation = 'transform: rotate(270deg);'
-							break
-						default:
-							rotation = ''
-							break
-					}
-				}
-
-				slide.getElementsByTagName('img')[0].style = rotation
-			},
 			toggleSelect({ i, key }) {
 				const copied = JSON.parse(JSON.stringify(this.images)),
 					selectedImage = copied[i]
@@ -303,7 +272,7 @@
 				}
 				const files = e.target.files,
 					images = await handleImages(files)
-				console.log(images)
+
 				for (const image of images) {
 					const { key, exif, file } = image,
 						imageData = [],
@@ -312,14 +281,10 @@
 						newName = `${key}.${extension}`
 
 					imageData.push({ key, exif, extension })
-					// allImageData.push({ key, exif, extension })
 					formData.append('photos', file, newName)
 					formData.append('allImageData', JSON.stringify(imageData))
 					this.upload(formData)
 				}
-
-				// formData.append('allImageData', JSON.stringify(allImageData))
-				// this.upload(formData)
 			}
 		}
 	}
@@ -369,24 +334,6 @@
 					&:last-child {
 						padding-right: 0;
 					}
-				}
-			}
-
-			.gallery-image-mobile,
-			.gallery-image {
-				background-size: cover;
-				cursor: pointer;
-				&.rotate-1 {
-					transform: rotate(0deg);
-				}
-				&.rotate-3 {
-					transform: rotate(180deg);
-				}
-				&.rotate-6 {
-					transform: rotate(90deg);
-				}
-				&.rotate-8 {
-					transform: rotate(270deg);
 				}
 			}
 

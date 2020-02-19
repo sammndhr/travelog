@@ -22,7 +22,6 @@
 					<div slot="marker" class="marker">
 						<img
 							class="marker-img"
-							:class="`rotate-${feature.properties.orientation}`"
 							:src="feature.properties.url"
 							alt="marker"
 						/>
