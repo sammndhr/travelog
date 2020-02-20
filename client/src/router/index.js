@@ -23,9 +23,11 @@ router.beforeEach((to, from, next) => {
 		authRequired = !publicPages.includes(to.path),
 		loggedIn = localStorage.getItem('user')
 	if (authRequired && !loggedIn && to.path !== '/login') {
-		return next('/login')
+		return next('/')
 	}
-
+	if (loggedIn && to.path === '/' && from.path === '/') {
+		return next('/log')
+	}
 	next()
 })
 
