@@ -6,7 +6,7 @@ const { wrapAsync } = require('../utils'),
 	{
 		deleteData,
 		deleteImages,
-		saveAllData,
+		saveData,
 		getGeoJson,
 		convertImage,
 		uploadToDisk,
@@ -20,9 +20,9 @@ router.post(
 	'/',
 	verifyToken,
 	uploadToDisk.array('photos', 200),
-	wrapAsync(saveAllData),
 	wrapAsync(convertImage),
 	wrapAsync(uploadToS3),
+	wrapAsync(saveData),
 	removeFromDisk
 )
 

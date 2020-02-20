@@ -1,5 +1,7 @@
-const axios = require('axios')
-const { mapbox } = require('../config/')
+const axios = require('axios'),
+	{ mapbox } = require('../config/'),
+	ExifReader = require('exifreader'),
+	fs = require('fs')
 
 async function reverseGeocode({ longitude, latitude }) {
 	let results,
@@ -106,6 +108,19 @@ const UploadHelper = {
 			dateCreated,
 			url
 		}
+	},
+
+	readExif(path) {
+		const file = fs.readFileSync(path)
+		const tags = ExifReader.load(file),
+			exifData = {}
+		delete tags['MakerNote']
+		for (const name in tags) {
+			exifData[name] =
+				name === 'Orientation' ? tags[name].value : tags[name].description
+		}
+
+		return exifData
 	}
 }
 

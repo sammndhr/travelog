@@ -3,9 +3,9 @@ const multer = require('multer'),
 	fs = require('fs')
 
 const { query } = require('../models/psql.config'),
-	{ generateURL, parseExif, createFeature } = require('../utils/'),
+	{ generateURL, parseExif, createFeature, readExif } = require('../utils/'),
 	{ host, bucket, bucketRegion } = require('../config').s3,
-	{ deleteFromS3, uploadConvertedFile } = require('../models/s3.config')
+	{ deleteFromS3 } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
@@ -42,8 +42,7 @@ const addExif = async ({ key, exif }) => {
 }
 
 const saveImageData = async ({ userId, imageData }) => {
-	const exif = imageData.exif,
-		{ key, extension } = imageData,
+	const { key, extension, exif } = imageData,
 		url = generateURL({ bucket, key, host, region: bucketRegion, extension })
 
 	let results
@@ -90,12 +89,16 @@ const getGeoJson = async (request, response, next) => {
 	return response.status(code).json({ geoJson })
 }
 
-const saveAllData = async (request, response, next) => {
+const saveData = async (request, response, next) => {
 	const allImageData = JSON.parse(request.body.allImageData),
 		userId = request.user.id //comes from the verify token middleware
 
 	try {
-		for (const imageData of allImageData) {
+		for (const data of allImageData) {
+			const { key, extension, name } = data,
+				path = `./uploads/originals/${name}`,
+				exif = readExif(path),
+				imageData = { key, extension, exif }
 			await saveImageData({ userId, imageData })
 		}
 	} catch (error) {
@@ -215,7 +218,7 @@ const removeFromDisk = (request, response, next) => {
 }
 
 module.exports = {
-	saveAllData,
+	saveData,
 	getGeoJson,
 	deleteData,
 	deleteImages,

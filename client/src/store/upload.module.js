@@ -57,7 +57,6 @@ const mutations = {
 
 const actions = {
 	uploadRequest({ commit }) {
-		commit('UPLOAD_COUNT')
 		commit('UPLOAD_REQUEST')
 	},
 
@@ -66,13 +65,12 @@ const actions = {
 
 		const promises = []
 		for (let image of images) {
-			const { key, exif, file } = image,
+			const { key, file } = image,
 				imageData = [],
 				formData = new FormData(),
 				extension = file.type.split('/').pop(),
 				newName = `${key}.${extension}`
-
-			imageData.push({ key, exif, extension })
+			imageData.push({ key, extension, name: newName })
 			formData.append('photos', file, newName)
 			formData.append('allImageData', JSON.stringify(imageData))
 			const uploading = dispatch('upload', formData)
