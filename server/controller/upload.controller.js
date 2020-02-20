@@ -3,22 +3,23 @@ const multer = require('multer'),
 	fs = require('fs')
 
 const { query } = require('../models/psql.config'),
-	{ generateURL, parseExif, createFeature, readExif } = require('../utils/'),
-	{ host, bucket, bucketRegion } = require('../config').s3,
+	{ parseExif, createFeature, readExif } = require('../utils/'),
 	{ deleteFromS3 } = require('../models/s3.config')
 
 const addImageData = async ({
 	userId,
 	key,
-	url,
+	convertedS3Url,
+	originalS3Url,
 	extension,
 	geoJsonFeature
 }) => {
 	let results
+	console.log(convertedS3Url, originalS3Url)
 	try {
 		results = await query(
-			'INSERT INTO images (user_id, key, url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5);',
-			[userId, key, url, extension, geoJsonFeature]
+			'INSERT INTO images (user_id, key, url, original_url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5, $6);',
+			[userId, key, convertedS3Url, originalS3Url, extension, geoJsonFeature]
 		)
 	} catch (error) {
 		console.error(error)
@@ -42,9 +43,8 @@ const addExif = async ({ key, exif }) => {
 }
 
 const saveImageData = async ({ userId, imageData }) => {
-	const { key, extension, exif } = imageData,
-		url = generateURL({ bucket, key, host, region: bucketRegion, extension })
-
+	const { key, extension, exif, originalS3Url, convertedS3Url } = imageData,
+		url = convertedS3Url
 	let results
 
 	try {
@@ -54,7 +54,8 @@ const saveImageData = async ({ userId, imageData }) => {
 			userId,
 			geoJsonFeature,
 			key,
-			url,
+			convertedS3Url,
+			originalS3Url,
 			extension
 		})
 		await addExif({ key, exif })
@@ -98,7 +99,9 @@ const saveData = async (request, response, next) => {
 			const { key, extension, name } = data,
 				path = `./uploads/originals/${name}`,
 				exif = readExif(path),
-				imageData = { key, extension, exif }
+				{ originalS3Url, convertedS3Url } = request,
+				imageData = { key, extension, exif, originalS3Url, convertedS3Url }
+
 			await saveImageData({ userId, imageData })
 		}
 	} catch (error) {

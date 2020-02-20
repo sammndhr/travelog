@@ -21,7 +21,8 @@ const createImageTable = async () => {
 			user_id integer REFERENCES users (user_id) NOT NULL,
 			key varchar(150) NOT NULL UNIQUE,
 			extension varchar(50) NOT NULL,
-			url varchar(200) NOT NULL,
+      url varchar(200) NOT NULL,
+      original_url varchar(200) NOT NULL,
 			geo_json_feature JSON
 		);`
 

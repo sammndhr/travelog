@@ -82,8 +82,10 @@ const uploadToS3 = async (request, response, next) => {
 
 	try {
 		//pls fix. Stop descend to callback hell.
-		uploadConvertedFile({ key, path: resizedPath }, function(url) {
-			uploadOriginal({ key, path }, function(url) {
+		uploadConvertedFile({ key, path: resizedPath }, function(convertedS3Url) {
+			request.convertedS3Url = convertedS3Url
+			uploadOriginal({ key, path }, function(originalS3Url) {
+				request.originalS3Url = originalS3Url
 				request.keyToDelete = key
 				next()
 			})
