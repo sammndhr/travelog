@@ -1,6 +1,7 @@
 <template>
 	<v-btn
-		:disabled="disabled"
+		:disabled="type === 'upload' ? uploading : disabled"
+		:loading="uploading"
 		elevation="3"
 		class="ma-2"
 		color="primary"
@@ -12,8 +13,15 @@
 	</v-btn>
 </template>
 <script>
+	import { mapState } from 'vuex'
 	export default {
 		name: 'Button',
+		data() {
+			return {
+				loader: null,
+				uploading: false
+			}
+		},
 		props: {
 			link: {
 				default: '',
@@ -35,6 +43,23 @@
 				default: false,
 				required: false,
 				type: Boolean
+			}
+		},
+		computed: {
+			...mapState('data', ['status'])
+		},
+		watch: {
+			status(data) {
+				if (data.uploading) this.loader = 'uploading'
+				const l = this.loader
+				if (data.fetched) {
+					this[l] = false
+					this.loader = null
+				}
+			},
+			loader() {
+				const l = this.loader
+				this[l] = !this[l]
 			}
 		},
 		methods: {

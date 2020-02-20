@@ -15,7 +15,6 @@ const addImageData = async ({
 	geoJsonFeature
 }) => {
 	let results
-	console.log(convertedS3Url, originalS3Url)
 	try {
 		results = await query(
 			'INSERT INTO images (user_id, key, url, original_url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5, $6);',
