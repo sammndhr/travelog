@@ -6,6 +6,7 @@ const {
 	S3_SECRET,
 	S3_REGION,
 	S3_BUCKET,
+	S3_ORIGINAL_BUCKET,
 	S3_HOST,
 	S3_BUCKET_REGION
 } = process.env
@@ -17,6 +18,7 @@ const config = {
 		region: S3_REGION,
 		apiVersion: '2006-03-01',
 		bucket: S3_BUCKET,
+		originalBucket: S3_ORIGINAL_BUCKET,
 		host: S3_HOST,
 		bucketRegion: S3_BUCKET_REGION
 	},

@@ -1,5 +1,7 @@
-const axios = require('axios')
-const { mapbox } = require('../config/')
+const axios = require('axios'),
+	{ mapbox } = require('../config/'),
+	ExifReader = require('exifreader'),
+	fs = require('fs')
 
 async function reverseGeocode({ longitude, latitude }) {
 	let results,
@@ -43,12 +45,6 @@ async function reverseGeocode({ longitude, latitude }) {
 }
 
 const UploadHelper = {
-	generateURL({ bucket, region, host, key, extension }) {
-		if (!bucket || !region || !host || !key || !extension)
-			throw 'Arguments not provided to generate url.'
-		return `https://${bucket}.${region}.${host}/${key}.${extension}`
-	},
-
 	createFeature({ latitude, longitude, height, width, ...rest }) {
 		const feature = {
 			type: 'Feature',
@@ -106,6 +102,19 @@ const UploadHelper = {
 			dateCreated,
 			url
 		}
+	},
+
+	readExif(path) {
+		const file = fs.readFileSync(path)
+		const tags = ExifReader.load(file),
+			exifData = {}
+		delete tags['MakerNote']
+		for (const name in tags) {
+			exifData[name] =
+				name === 'Orientation' ? tags[name].value : tags[name].description
+		}
+
+		return exifData
 	}
 }
 

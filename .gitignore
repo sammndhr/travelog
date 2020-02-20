@@ -105,8 +105,6 @@ dist
 
 .DS_Store
 
-# image uploads
-server/uploads
 
 # vscode workspace settings
 .vscode

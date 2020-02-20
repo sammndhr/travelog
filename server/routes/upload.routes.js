@@ -2,12 +2,15 @@ const express = require('express'),
 	router = express.Router()
 
 const { wrapAsync } = require('../utils'),
-	{ upload } = require('../models/s3.config'),
+	{ uploadToS3 } = require('../models/s3.config'),
 	{
 		deleteData,
 		deleteImages,
-		saveAllData,
-		getGeoJson
+		saveData,
+		getGeoJson,
+		convertImage,
+		uploadToDisk,
+		removeFromDisk
 	} = require('../controller/upload.controller'),
 	{ verifyToken } = require('../utils/')
 
@@ -16,9 +19,11 @@ router.get('/log', verifyToken, wrapAsync(getGeoJson))
 router.post(
 	'/',
 	verifyToken,
-	upload.array('photos', 200),
-	wrapAsync(saveAllData),
-	wrapAsync(getGeoJson)
+	uploadToDisk.array('photos', 200),
+	wrapAsync(convertImage),
+	wrapAsync(uploadToS3),
+	wrapAsync(saveData),
+	removeFromDisk
 )
 
 router.post(
