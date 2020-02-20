@@ -21,7 +21,7 @@
 			<v-btn to="/log" text color="primary">
 				Log
 			</v-btn>
-			<v-btn v-if="status.loggedIn" to="/login" text color="primary">
+			<v-btn v-if="status.loggedIn" to="/" text color="primary">
 				Logout
 			</v-btn>
 		</v-app-bar>
