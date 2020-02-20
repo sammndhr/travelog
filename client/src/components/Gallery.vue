@@ -136,7 +136,6 @@
 </template>
 
 <script>
-	/* eslint-disable */
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '../utils/'
@@ -205,13 +204,7 @@
 		},
 
 		methods: {
-			...mapActions('data', [
-				'upload',
-				'delete',
-				'uploadRequest',
-				'uploads',
-				'getGeojson'
-			]),
+			...mapActions('data', ['uploadAll', 'delete', 'getGeojson']),
 
 			toggleSelect({ i, key }) {
 				const copied = JSON.parse(JSON.stringify(this.images)),
@@ -283,26 +276,9 @@
 					return
 				}
 				const files = e.target.files,
-					// len = files.length,
 					images = await handleImages(files)
-				const promises = []
-				for (let image of images) {
-					// const image = images[i]
-					const { key, exif, file } = image,
-						imageData = [],
-						formData = new FormData(),
-						extension = file.type.split('/').pop(),
-						newName = `${key}.${extension}`
 
-					imageData.push({ key, exif, extension })
-					formData.append('photos', file, newName)
-					formData.append('allImageData', JSON.stringify(imageData))
-					const uploading = this.upload(formData)
-					promises.push(uploading)
-				}
-				Promise.all(promises).then(success => {
-					this.getGeojson()
-				})
+				this.uploadAll(images)
 			}
 		}
 	}

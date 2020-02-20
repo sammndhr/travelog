@@ -6,21 +6,16 @@ const state = {
 		type: 'FeatureCollection',
 		features: []
 	},
-	uploadCount: null,
 	status: {},
 	filteredGeoJson: []
 }
 
 const mutations = {
-	UPLOAD_COUNT(state, count) {
-		state.uploadCount = count
-	},
 	UPLOAD_REQUEST(state) {
 		state.status = { uploading: true }
 	},
 
-	ALL_UPLOAD_SUCCESS(state) {
-		console.log('ALL UPLOADED')
+	UPLOAD_SUCCESS(state) {
 		state.status = { uploaded: true }
 	},
 
@@ -61,25 +56,32 @@ const mutations = {
 }
 
 const actions = {
-	uploadRequest({ commit }, count) {
-		commit('UPLOAD_COUNT', count)
+	uploadRequest({ commit }) {
+		commit('UPLOAD_COUNT')
 		commit('UPLOAD_REQUEST')
 	},
 
-	uploads({ dispatch, commit }, { uploadStatuses }) {
-		let allSucceeded = true
-		for (const success of uploadStatuses) {
-			if (!success) {
-				allSucceeded = false
-				break
-			}
+	async uploadAll({ dispatch, commit }, images) {
+		dispatch('uploadRequest')
+
+		const promises = []
+		for (let image of images) {
+			const { key, exif, file } = image,
+				imageData = [],
+				formData = new FormData(),
+				extension = file.type.split('/').pop(),
+				newName = `${key}.${extension}`
+
+			imageData.push({ key, exif, extension })
+			formData.append('photos', file, newName)
+			formData.append('allImageData', JSON.stringify(imageData))
+			const uploading = dispatch('upload', formData)
+			promises.push(uploading)
 		}
 
-		if (allSucceeded) commit('ALL_UPLOAD_SUCCESS')
-
-		setTimeout(() => {
-			dispatch('alert/success', 'Upload successful', { root: true })
-			commit('UPLOAD_COUNT', 0)
+		Promise.all(promises).then(() => {
+			dispatch('getGeojson')
+			commit('UPLOAD_SUCCESS')
 		})
 	},
 
