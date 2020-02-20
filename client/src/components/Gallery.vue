@@ -7,11 +7,11 @@
 		>
 			<v-tabs
 				:height="$vuetify.breakpoint.xs ? '30px' : ''"
-				class="order-0"
+				class="order-0 tabs-background"
 				style="flex-grow: 0;"
-				background-color="primary accent-4"
+				background-color="transparent"
+				color="primary"
 				centered
-				dark
 			>
 				<v-tab @click="handleClickGallery">
 					Gallery
@@ -73,54 +73,64 @@
 					:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
 				>
 					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
-						<figure
-							:class="[{ selected: image.selected }, 'figure']"
+						<div
 							v-for="(image, i) in images"
 							:key="image.key"
+							class="figure-wrapper"
 						>
-							<v-icon
-								class="select-btn"
-								v-show="edit"
-								:color="image.selected ? 'primary' : 'grey'"
-								>{{
-									image.selected
-										? 'mdi-check-circle'
-										: 'mdi-checkbox-blank-circle-outline'
-								}}</v-icon
-							>
-
-							<img
-								class="gallery-image-mobile"
-								:src="image.url"
-								alt="gallery-img.jpeg"
-								@click="handleClickImage({ i, key: image.key })"
-							/>
-						</figure>
+							<figure :class="[{ selected: image.selected }, 'figure']">
+								<v-icon
+									class="select-btn-background"
+									v-show="edit && image.selected"
+									color="white"
+								>
+									mdi-checkbox-blank-circle
+								</v-icon>
+								<v-icon
+									class="select-btn"
+									v-show="edit"
+									:color="image.selected ? 'primary' : 'grey lighten-3'"
+								>
+									mdi-checkbox-marked-circle
+								</v-icon>
+								<img
+									class="gallery-image-mobile"
+									:src="image.url"
+									alt="gallery-img.jpeg"
+									@click="handleClickImage({ i, key: image.key })"
+								/>
+							</figure>
+						</div>
 					</div>
 					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
-						<figure
-							:style="{ marginBottom: gutter.default }"
+						<div
 							v-for="(image, i) in images"
 							:key="image.key"
-							:class="[{ selected: image.selected }, 'figure']"
+							class="figure-wrapper"
 						>
-							<v-icon
-								class="select-btn"
-								v-show="edit"
-								:color="image.selected ? 'primary' : 'grey'"
-								>{{
-									image.selected
-										? 'mdi-check-circle'
-										: 'mdi-checkbox-blank-circle-outline'
-								}}</v-icon
-							>
-							<img
-								class="gallery-image"
-								:src="image.url"
-								alt="gallery-img.jpeg"
-								@click="handleClickImage({ i, key: image.key })"
-							/>
-						</figure>
+							<figure :class="[{ selected: image.selected }, 'figure']">
+								<v-icon
+									class="select-btn-background"
+									v-show="edit && image.selected"
+									color="white"
+								>
+									mdi-checkbox-blank-circle
+								</v-icon>
+								<v-icon
+									class="select-btn"
+									v-show="edit"
+									:color="image.selected ? 'primary' : 'grey lighten-3'"
+								>
+									mdi-checkbox-marked-circle
+								</v-icon>
+								<img
+									class="gallery-image"
+									:src="image.url"
+									alt="gallery-img.jpeg"
+									@click="handleClickImage({ i, key: image.key })"
+								/>
+							</figure>
+						</div>
 					</masonry>
 				</v-col>
 			</v-row>
@@ -155,8 +165,8 @@
 		data() {
 			return {
 				index: null,
-				cols: { default: 4, 1600: 3, 700: 2 },
-				gutter: { default: '5px' },
+				cols: { default: 4, 1600: 3, 1300: 2 },
+				gutter: { default: '10px' },
 				showAlert: false,
 				edit: false,
 				images: this.filteredImages,
@@ -290,7 +300,7 @@
 		flex-direction: column;
 
 		&.mobile {
-			height: 45vh;
+			height: 38vh;
 		}
 
 		&.not-mobile {
@@ -298,7 +308,7 @@
 		}
 
 		.gallery {
-			margin: 8px;
+			margin: 10px;
 			overflow: hidden;
 			flex-grow: 1;
 			position: relative;
@@ -311,47 +321,57 @@
 				bottom: 0;
 				overflow: auto;
 				padding: 0;
-			}
 
-			.overflow-mobile {
-				display: flex;
-				align-content: center;
-				align-items: center;
-			}
-
-			.gallery-mobile {
-				display: flex;
-				align-items: center;
-
-				img {
-					padding-right: 8px;
-					&:last-child {
-						padding-right: 0;
+				/* common styles */
+				.figure-wrapper {
+					position: relative;
+					.figure {
+						&.selected {
+							border: 10px solid rgba(63, 187, 131, 0.2); /*primary*/
+						}
+						.select-btn,
+						.select-btn-background {
+							z-index: 5;
+							top: 2px;
+							right: 0;
+							position: absolute;
+							border-radius: 50%;
+						}
 					}
 				}
 			}
 
-			.gallery-image-mobile {
-				height: 158px;
-				display: block;
+			/* mobile styles */
+			&.overflow-mobile {
+				display: flex;
+				align-content: center;
+				align-items: center;
 			}
-			.gallery-image {
-				max-width: 400px;
-				width: 100%;
-				display: block;
-			}
-			.figure {
-				position: relative;
-				.select-btn {
-					z-index: 5;
-					top: 5px;
-					right: 5px;
-					position: absolute;
-					border-radius: 50%;
+			.gallery-mobile {
+				display: flex;
+				align-items: center;
+				.figure-wrapper {
+					margin-right: 10px;
+					&:last-child {
+						margin-right: 0;
+					}
+				}
+				.gallery-image-mobile {
+					height: 158px;
+					display: block;
 				}
 			}
-			.selected {
-				border: 5px solid #1976d2; /*primary*/
+
+			/* Desktop styles */
+			.masonary {
+				.figure-wrapper {
+					margin-bottom: 10px;
+					.gallery-image {
+						max-width: 400px;
+						width: 100%;
+						display: block;
+					}
+				}
 			}
 		}
 	}

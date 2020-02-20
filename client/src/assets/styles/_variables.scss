@@ -1,7 +1,12 @@
 /* Temporary colors for now */
-$green: #3fbb83;
-$yellow: #f6d55c;
-$blue: #3682ed;
-$red: #ff6666;
+$green: rgb(63, 187, 131); //#3fbb83
+$blue: rgb(54, 130, 237); //#3682ed
+$yellow: rgb(246, 213, 92); //#f6d55c
+$red: rgb(255, 102, 102); //#ff6666
 $black: #090909;
 $white: #fff;
+
+$primary: $green;
+$secondary: $blue;
+$accent: $yellow;
+$error: $red;
