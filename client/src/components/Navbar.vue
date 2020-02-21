@@ -21,7 +21,12 @@
 			<v-btn to="/log" text color="primary">
 				Log
 			</v-btn>
-			<v-btn v-if="status.loggedIn" to="/" text color="primary">
+			<v-btn
+				v-if="status.loggedIn"
+				@click="handleClickLogout"
+				text
+				color="primary"
+			>
 				Logout
 			</v-btn>
 		</v-app-bar>
@@ -39,13 +44,21 @@
 </template>
 
 <script>
-	import { mapState } from 'vuex'
+	import { mapState, mapActions } from 'vuex'
+	import router from './../router'
 
 	export default {
 		name: 'app',
 		components: {},
 		computed: {
 			...mapState('account', ['status'])
+		},
+		methods: {
+			...mapActions('account', ['logout']),
+			handleClickLogout() {
+				if (router.currentRoute.path !== '/') router.push('/') //Only reroute if logout button was clicked.
+				this.logout()
+			}
 		}
 	}
 </script>
