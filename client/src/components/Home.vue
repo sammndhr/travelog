@@ -13,13 +13,26 @@
 					/>
 				</template>
 				<template v-else>
-					<h2 class="headline font-weight-bold mb-3">
+					<h1 class="display-1 font-weight-bold mb-3">
 						Log your travels.
-					</h2>
-					<p class="subheading font-weight-regular">
-						Get started. Create an account
-					</p>
-					<Button text="Register" @clicked="handleClickRegister" />
+					</h1>
+					<template v-if="!loggedIn">
+						<p class="subheading font-weight-regular">
+							Get started. Create an account
+						</p>
+						<Button text="Register" @clicked="handleClickRegister" />
+					</template>
+					<template v-else>
+						<v-btn
+							to="/log"
+							class="title"
+							text
+							color="primary"
+							style="padding-left: 0;"
+						>
+							Get started.
+						</v-btn>
+					</template>
 				</template>
 			</v-col>
 			<v-col md="8" cols="12">
@@ -30,19 +43,28 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex'
 	import Button from './ui/Button'
 	import Register from './auth/Register'
 	export default {
 		name: 'Landing',
+
 		components: {
 			Register,
 			Button
 		},
+
 		data() {
 			return {
+				loggedIn: false,
 				register: false
 			}
 		},
+
+		computed: {
+			...mapState('account', ['status'])
+		},
+
 		methods: {
 			handleBackButtonClicked() {
 				this.register = false
@@ -50,6 +72,10 @@
 			handleClickRegister() {
 				this.register = true
 			}
+		},
+
+		mounted() {
+			this.loggedIn = this.status.loggedIn
 		}
 	}
 </script>
