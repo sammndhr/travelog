@@ -5,7 +5,7 @@
 			justify="space-between"
 			:class="$vuetify.breakpoint.xs ? 'text-center' : ''"
 		>
-			<v-col md="4" cols="12">
+			<v-col md="4" cols="12" :class="{ 'order-1': $vuetify.breakpoint.xs }">
 				<template v-if="register">
 					<Register
 						@backButtonClicked="handleBackButtonClicked"
@@ -35,7 +35,7 @@
 					</template>
 				</template>
 			</v-col>
-			<v-col md="8" cols="12">
+			<v-col md="8" cols="12" :class="{ 'order-0': $vuetify.breakpoint.xs }">
 				<v-img src="/images/landing.png"></v-img>
 			</v-col>
 		</v-row>

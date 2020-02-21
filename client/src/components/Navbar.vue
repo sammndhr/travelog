@@ -11,10 +11,6 @@
 			</v-btn>
 
 			<v-spacer></v-spacer>
-
-			<v-btn v-if="!status.loggedIn" to="/register" text color="primary">
-				Register
-			</v-btn>
 			<v-btn v-if="!status.loggedIn" to="/login" text color="primary">
 				Login
 			</v-btn>
