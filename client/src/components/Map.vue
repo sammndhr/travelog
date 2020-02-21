@@ -51,7 +51,7 @@
 	import { mapActions, mapState } from 'vuex'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
-	import { filter } from '../utils'
+	import { filter } from '@/utils'
 
 	export default {
 		components: {

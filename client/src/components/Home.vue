@@ -44,8 +44,8 @@
 
 <script>
 	import { mapState } from 'vuex'
-	import Button from './ui/Button'
-	import Register from './auth/Register'
+	import Button from '@/components/UI/Button'
+	import Register from '@/components/Auth/Register'
 	export default {
 		name: 'Landing',
 

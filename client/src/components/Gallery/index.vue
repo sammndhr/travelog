@@ -148,9 +148,9 @@
 <script>
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
-	import { supportsFileReader, handleImages } from '../utils/'
+	import { supportsFileReader, handleImages } from '@/utils/'
 
-	import Button from './ui/Button'
+	import Button from '@/components/UI/Button'
 
 	export default {
 		name: 'Travelog-Gallery',
@@ -324,6 +324,7 @@
 
 				/* common styles */
 				.figure-wrapper {
+					cursor: pointer;
 					position: relative;
 					.figure {
 						&.selected {

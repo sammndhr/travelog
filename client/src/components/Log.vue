@@ -12,9 +12,9 @@
 
 <script>
 	import { mapActions, mapState } from 'vuex'
-	import Alert from './Alert'
-	import Gallery from './Gallery'
-	import Map from './Map'
+	import Alert from '@/components/Alert'
+	import Gallery from '@/components/Gallery/'
+	import Map from '@/components/Map'
 
 	export default {
 		name: 'Log',
