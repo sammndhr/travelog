@@ -35,6 +35,8 @@ travelog/server:$ npm start
 5. [ ] Map marker onclick --> Scroll image into view, open note card
 6. [ ] Individual loader and status (add images on load and show loader/progress for each image).
 7. [ ] Disable Edit buttons while uploading
-8. [x] Pick color theme
-9. [x] Refac full page loader and move to upload button
-10. [x] ...
+8. [ ] Hide Home page component `Register` when `loggedIn`
+9. [x] Reroute to home on logout
+10. [x] Pick color theme
+11. [x] Refac full page loader and move to upload button
+12. [x] ...

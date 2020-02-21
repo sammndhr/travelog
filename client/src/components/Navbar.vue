@@ -45,8 +45,6 @@
 
 <script>
 	import { mapState, mapActions } from 'vuex'
-	import router from './../router'
-
 	export default {
 		name: 'app',
 		components: {},
@@ -56,7 +54,11 @@
 		methods: {
 			...mapActions('account', ['logout']),
 			handleClickLogout() {
-				if (router.currentRoute.path !== '/') router.push('/') //Only reroute if logout button was clicked.
+				if (this.$router.currentRoute.path !== '/') {
+					this.$router.push('/') //Only reroute if logout button was clicked.
+				} else {
+					this.$router.go()
+				}
 				this.logout()
 			}
 		}
