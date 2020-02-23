@@ -14,7 +14,7 @@
 				@load="onMapLoaded"
 			>
 				<MglMarker
-					v-for="feature in geoJson.features"
+					v-for="feature in hasLocationGeoJson.features"
 					:anchor="'top'"
 					:key="feature.properties.name"
 					:coordinates="feature.geometry.coordinates"
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-	import { mapActions, mapState } from 'vuex'
+	import { mapActions, mapGetters } from 'vuex'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
 	import { filter } from '@/utils'
@@ -68,6 +68,10 @@
 				anchor: 'bottom',
 				// map: null, //will break. Don't uncomment
 				zoom: 1,
+				geoJson: {
+					type: 'FeatureCollection',
+					features: []
+				},
 				geoJsonlayer: {
 					id: 'images',
 					type: 'symbol',
@@ -82,23 +86,11 @@
 		},
 
 		computed: {
-			...mapState({
-				geoJson({ data }) {
-					const features = data.geoJson.features,
-						geoJson = JSON.parse(JSON.stringify(data.geoJson))
-
-					const featuresWithLocation = features.filter(feature => {
-						return feature.geometry.coordinates.length > 0
-					})
-
-					geoJson.features = featuresWithLocation
-					return geoJson
-				}
-			})
+			...mapGetters('data', ['hasLocationGeoJson'])
 		},
 
 		watch: {
-			geoJson() {
+			hasLocationGeoJson() {
 				if (!this.map) return
 				this.filter()
 			}
@@ -108,7 +100,7 @@
 			...mapActions('data', ['getFilteredGeoJson']),
 
 			filter() {
-				const geoJson = this.geoJson,
+				const geoJson = this.hasLocationGeoJson,
 					// works fine without map being set in data
 					bounds = this.map.getBounds()
 				const filteredGeoJson = filter({ bounds, geoJson })

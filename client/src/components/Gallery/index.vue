@@ -1,13 +1,13 @@
 <template>
 	<v-col align-self="start" cols="12" xl="6" md="5">
-		<v-card
+		<v-sheet
 			class="gallery-wrapper"
 			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
-			outlined
+			elevation="3"
 		>
 			<v-tabs
 				:height="$vuetify.breakpoint.xs ? '30px' : ''"
-				class="order-0 tabs-background"
+				class="order-0"
 				style="flex-grow: 0;"
 				background-color="transparent"
 				color="primary"
@@ -102,36 +102,75 @@
 							</figure>
 						</div>
 					</div>
-					<masonry v-else class="masonary" :cols="cols" :gutter="gutter">
-						<div
-							v-for="(image, i) in images"
-							:key="image.key"
-							class="figure-wrapper"
-						>
-							<figure :class="[{ selected: image.selected }, 'figure']">
-								<v-icon
-									class="select-btn-background"
-									v-show="edit && image.selected"
-									color="white"
+					<template v-else>
+						<v-card class="pa-2" outlined tile>
+							<masonry class="masonary" :cols="cols" :gutter="gutter">
+								<div
+									v-for="(image, i) in images"
+									:key="image.key"
+									class="figure-wrapper"
 								>
-									mdi-checkbox-blank-circle
-								</v-icon>
-								<v-icon
-									class="select-btn"
-									v-show="edit"
-									:color="image.selected ? 'primary' : 'grey lighten-3'"
+									<figure :class="[{ selected: image.selected }, 'figure']">
+										<v-icon
+											class="select-btn-background"
+											v-show="edit && image.selected"
+											color="white"
+										>
+											mdi-checkbox-blank-circle
+										</v-icon>
+										<v-icon
+											class="select-btn"
+											v-show="edit"
+											:color="image.selected ? 'primary' : 'grey lighten-3'"
+										>
+											mdi-checkbox-marked-circle
+										</v-icon>
+										<img
+											class="gallery-image"
+											:src="image.url"
+											alt="gallery-img.jpeg"
+											@click="handleClickImage({ i, key: image.key })"
+										/>
+									</figure>
+								</div>
+							</masonry>
+						</v-card>
+						<v-card class="pa-2" outlined tile>
+							<h3 class="subtitle-1 font-weight-bold">
+								Images with no location
+							</h3>
+							<masonry class="masonary" :cols="cols" :gutter="gutter">
+								<div
+									v-for="(image, i) in noLocationImages"
+									:key="image.key"
+									class="figure-wrapper"
 								>
-									mdi-checkbox-marked-circle
-								</v-icon>
-								<img
-									class="gallery-image"
-									:src="image.url"
-									alt="gallery-img.jpeg"
-									@click="handleClickImage({ i, key: image.key })"
-								/>
-							</figure>
-						</div>
-					</masonry>
+									<figure :class="[{ selected: image.selected }, 'figure']">
+										<v-icon
+											class="select-btn-background"
+											v-show="edit && image.selected"
+											color="white"
+										>
+											mdi-checkbox-blank-circle
+										</v-icon>
+										<v-icon
+											class="select-btn"
+											v-show="edit"
+											:color="image.selected ? 'primary' : 'grey lighten-3'"
+										>
+											mdi-checkbox-marked-circle
+										</v-icon>
+										<img
+											class="gallery-image"
+											:src="image.url"
+											alt="gallery-img.jpeg"
+											@click="handleClickImage({ i, key: image.key })"
+										/>
+									</figure>
+								</div>
+							</masonry>
+						</v-card>
+					</template>
 				</v-col>
 			</v-row>
 
@@ -141,12 +180,12 @@
 				:index="index"
 				@close="index = null"
 			/>
-		</v-card>
+		</v-sheet>
 	</v-col>
 </template>
 
 <script>
-	import { mapActions, mapState } from 'vuex'
+	import { mapActions, mapState, mapGetters } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '@/utils/'
 
@@ -166,7 +205,7 @@
 			return {
 				index: null,
 				cols: { default: 4, 1600: 3, 1300: 2 },
-				gutter: { default: '10px' },
+				gutter: { default: '8px' },
 				showAlert: false,
 				edit: false,
 				images: this.filteredImages,
@@ -182,6 +221,23 @@
 				'filteredGeoJson',
 				'uploadStatuses'
 			]),
+			...mapGetters('data', ['noLocationGeoJson']),
+			noLocationImages() {
+				const images = []
+				this.noLocationGeoJson.features.forEach(feature => {
+					const obj = {}
+					obj.url = feature.properties.url
+					obj.key = feature.properties.key
+					obj.location = feature.properties.location
+					obj.selected = false
+					images.push(obj)
+				})
+
+				images.map(feature => {
+					return feature.url
+				})
+				return images
+			},
 
 			filteredImages() {
 				const images = []
@@ -308,7 +364,7 @@
 		}
 
 		.gallery {
-			margin: 10px;
+			margin: 8px;
 			overflow: hidden;
 			flex-grow: 1;
 			position: relative;
@@ -328,7 +384,7 @@
 					position: relative;
 					.figure {
 						&.selected {
-							border: 10px solid rgba(63, 187, 131, 0.2); /*primary*/
+							border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
 						}
 						.select-btn,
 						.select-btn-background {
@@ -352,7 +408,7 @@
 				display: flex;
 				align-items: center;
 				.figure-wrapper {
-					margin-right: 10px;
+					margin-right: 8px;
 					&:last-child {
 						margin-right: 0;
 					}
@@ -366,7 +422,10 @@
 			/* Desktop styles */
 			.masonary {
 				.figure-wrapper {
-					margin-bottom: 10px;
+					margin-bottom: 8px;
+					&:last-child {
+						margin-bottom: 0;
+					}
 					.gallery-image {
 						max-width: 400px;
 						width: 100%;

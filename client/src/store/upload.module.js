@@ -55,6 +55,32 @@ const mutations = {
 	}
 }
 
+const getters = {
+	hasLocationGeoJson: state => {
+		const features = state.geoJson.features,
+			geoJson = JSON.parse(JSON.stringify(state.geoJson))
+
+		const featuresWithLocation = features.filter(feature => {
+			return feature.geometry.coordinates.length > 0
+		})
+
+		geoJson.features = featuresWithLocation
+		return geoJson
+	},
+
+	noLocationGeoJson: state => {
+		const features = state.geoJson.features,
+			geoJson = JSON.parse(JSON.stringify(state.geoJson))
+
+		const noLocationFeatures = features.filter(feature => {
+			return feature.geometry.coordinates.length < 1
+		})
+
+		geoJson.features = noLocationFeatures
+		return geoJson
+	}
+}
+
 const actions = {
 	uploadRequest({ commit }) {
 		commit('UPLOAD_REQUEST')
@@ -158,5 +184,6 @@ export const data = {
 	namespaced: true,
 	state,
 	actions,
-	mutations
+	mutations,
+	getters
 }
