@@ -9,7 +9,8 @@ const state = {
 	},
 	status: {},
 	filteredGeoJson: [],
-	hasLocationImages: { images: [], urls: [] }
+	hasLocationImages: { images: [], urls: [] },
+	noLocationImages: { images: [], urls: [] }
 }
 
 const mutations = {
@@ -52,11 +53,16 @@ const mutations = {
 		state.geoJson.features = []
 	},
 
-	SET_FILTERED_GEOJSON(state, filteredGeoJson) {
+	UPDATE_FILTERED_GEOJSON(state, filteredGeoJson) {
 		state.filteredGeoJson = filteredGeoJson
 	},
-	SET_HAS_LOCATION_IMAGES(state, hasLocationImages) {
+
+	UPDATE_HAS_LOCATION_IMAGES(state, hasLocationImages) {
 		state.hasLocationImages = hasLocationImages
+	},
+
+	UPDATE_NO_LOCATION_IMAGES(state, noLocationImages) {
+		state.noLocationImages = noLocationImages
 	}
 }
 
@@ -156,7 +162,7 @@ const actions = {
 		}
 	},
 
-	async getGeojson({ dispatch, commit, rootState }) {
+	async getGeojson({ dispatch, commit, getters, rootState }) {
 		commit('GET_GEOSON_REQUEST')
 		const options = {
 			method: 'GET',
@@ -169,6 +175,9 @@ const actions = {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
 				setTimeout(() => {
+					const noLocationGeoJson = getters.noLocationGeoJson,
+						noLocationImages = geoJsonToImages(noLocationGeoJson)
+					dispatch('updateNoLocationImages', noLocationImages)
 					dispatch('alert/success', 'Fetch successful', { root: true })
 				})
 			}
@@ -180,15 +189,19 @@ const actions = {
 		}
 	},
 
-	getFilteredImages({ commit }, hasLocationImages) {
-		commit('SET_HAS_LOCATION_IMAGES', hasLocationImages)
+	updateFilteredImages({ commit }, hasLocationImages) {
+		commit('UPDATE_HAS_LOCATION_IMAGES', hasLocationImages)
 	},
 
-	getFilteredGeoJson({ dispatch, commit }, filteredGeoJson) {
+	updateNoLocationImages({ commit }, noLocationImages) {
+		commit('UPDATE_NO_LOCATION_IMAGES', noLocationImages)
+	},
+
+	updateFilteredGeoJson({ dispatch, commit }, filteredGeoJson) {
 		const hasLocationImages = geoJsonToImages(filteredGeoJson)
 
-		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
-		dispatch('getFilteredImages', hasLocationImages)
+		commit('UPDATE_FILTERED_GEOJSON', filteredGeoJson)
+		dispatch('updateFilteredImages', hasLocationImages)
 	}
 }
 

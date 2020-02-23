@@ -97,14 +97,14 @@
 		},
 
 		methods: {
-			...mapActions('data', ['getFilteredGeoJson']),
+			...mapActions('data', ['updateFilteredGeoJson']),
 
 			filter() {
 				const geoJson = this.hasLocationGeoJson,
 					// works fine without map being set in data
 					bounds = this.map.getBounds()
 				const filteredGeoJson = filterInBoundsGeoJson({ bounds, geoJson })
-				this.getFilteredGeoJson(filteredGeoJson)
+				this.updateFilteredGeoJson(filteredGeoJson)
 			},
 
 			createImage(width) {
@@ -174,7 +174,6 @@
 	}
 
 	.map-wrapper {
-		/* width: max-content; */
 		min-width: min-content;
 		height: 85vh;
 

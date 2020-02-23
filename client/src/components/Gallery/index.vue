@@ -139,7 +139,7 @@
 							</h3>
 							<masonry class="masonary" :cols="cols" :gutter="gutter">
 								<div
-									v-for="(image, i) in noLocationImages"
+									v-for="(image, i) in noLocationImages.images"
 									:key="image.key"
 									class="figure-wrapper"
 								>
@@ -183,9 +183,9 @@
 </template>
 
 <script>
-	import { mapActions, mapState, mapGetters } from 'vuex'
+	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
-	import { supportsFileReader, handleImages, geoJsonToImages } from '@/utils/'
+	import { supportsFileReader, handleImages } from '@/utils/'
 
 	import Button from '@/components/UI/Button'
 
@@ -213,13 +213,7 @@
 		},
 
 		computed: {
-			...mapState('data', ['hasLocationImages']),
-			...mapGetters('data', ['noLocationGeoJson']),
-
-			noLocationImages() {
-				const { images } = geoJsonToImages(this.noLocationGeoJson)
-				return images
-			}
+			...mapState('data', ['hasLocationImages', 'noLocationImages'])
 		},
 
 		watch: {
