@@ -28,6 +28,20 @@
 				<v-col align="center">
 					<template v-if="edit">
 						<Button
+							type="upload"
+							text="Upload"
+							@clicked="$refs.fileInput.click()"
+						/>
+						<input
+							hidden
+							ref="fileInput"
+							id="upload-images"
+							type="file"
+							accept="image/*, image/heic"
+							multiple="{true}"
+							@change="handleChange"
+						/>
+						<Button
 							:disabled="images.length > 0 ? false : true"
 							text="Select All"
 							@clicked="handleClickSelectAll"
@@ -44,22 +58,6 @@
 							@clicked="handleClickCancel"
 						/>
 					</template>
-
-					<Button
-						v-if="!edit"
-						type="upload"
-						text="Upload"
-						@clicked="$refs.fileInput.click()"
-					/>
-					<input
-						hidden
-						ref="fileInput"
-						id="upload-images"
-						type="file"
-						accept="image/*, image/heic"
-						multiple="{true}"
-						@change="handleChange"
-					/>
 				</v-col>
 			</v-row>
 
