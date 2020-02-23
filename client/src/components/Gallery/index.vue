@@ -42,7 +42,7 @@
 							@change="handleChange"
 						/>
 						<Button
-							:disabled="images.length > 0 ? false : true"
+							:disabled="hasLocationImages.images.length > 0 ? false : true"
 							text="Select All"
 							@clicked="handleClickSelectAll"
 						/>
@@ -72,7 +72,7 @@
 				>
 					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
 						<div
-							v-for="(image, i) in images"
+							v-for="(image, i) in hasLocationImages.images"
 							:key="image.key"
 							class="figure-wrapper"
 						>
@@ -104,7 +104,7 @@
 						<v-card class="pa-2" outlined tile>
 							<masonry class="masonary" :cols="cols" :gutter="gutter">
 								<div
-									v-for="(image, i) in images"
+									v-for="(image, i) in hasLocationImages.images"
 									:key="image.key"
 									class="figure-wrapper"
 								>
@@ -174,7 +174,7 @@
 
 			<VueGallery
 				v-if="!edit"
-				:images="imagesUrls"
+				:images="hasLocationImages.urls"
 				:index="index"
 				@close="index = null"
 			/>
@@ -186,7 +186,6 @@
 	import { mapActions, mapState } from 'vuex'
 	import VueGallery from 'vue-gallery'
 	import { supportsFileReader, handleImages } from '@/utils/'
-
 	import Button from '@/components/UI/Button'
 
 	export default {
@@ -206,8 +205,6 @@
 				gutter: { default: '8px' },
 				showAlert: false,
 				edit: false,
-				images: [],
-				imagesUrls: [],
 				selectionCount: 0
 			}
 		},
@@ -216,24 +213,20 @@
 			...mapState('data', ['hasLocationImages', 'noLocationImages'])
 		},
 
-		watch: {
-			hasLocationImages({ images, urls }) {
-				this.imagesUrls = urls
-				this.images = images
-			}
-		},
-
 		components: {
 			VueGallery,
 			Button
 		},
 
 		methods: {
-			...mapActions('data', ['uploadAll', 'delete', 'getGeojson']),
+			...mapActions('data', ['uploadAll', 'delete', 'updateFilteredImages']),
 
 			toggleSelect({ i, key }) {
-				const copied = JSON.parse(JSON.stringify(this.images)),
-					selectedImage = copied[i]
+				const hasLocationImages = JSON.parse(
+					JSON.stringify(this.hasLocationImages)
+				)
+				const images = hasLocationImages.images,
+					selectedImage = images[i]
 				if (selectedImage.key === key) {
 					selectedImage.selected = !selectedImage.selected
 					if (selectedImage.selected) {
@@ -243,22 +236,22 @@
 							this.selectionCount--
 						}
 					}
-					this.images = copied
+					this.updateFilteredImages(hasLocationImages)
 				}
 			},
 
 			unselectAllItems() {
-				for (const image of this.images) {
+				for (const image of this.hasLocationImages.images) {
 					image.selected = false
 				}
 				this.selectionCount = 0
 			},
 
 			selectAllItems() {
-				for (const image of this.images) {
+				for (const image of this.hasLocationImages.images) {
 					image.selected = true
 				}
-				this.selectionCount = this.images.length
+				this.selectionCount = this.hasLocationImages.images.length
 			},
 
 			handleClickImage({ i, key }) {
@@ -285,10 +278,13 @@
 			},
 
 			handleClickDelete() {
-				const imagesToDelete = this.images.reduce((filtered, image) => {
-					if (image.selected) filtered.push(image.key)
-					return filtered
-				}, [])
+				const imagesToDelete = this.hasLocationImages.images.reduce(
+					(filtered, image) => {
+						if (image.selected) filtered.push(image.key)
+						return filtered
+					},
+					[]
+				)
 				this.selectionCount = 0
 				this.delete({ imagesToDelete })
 			},
