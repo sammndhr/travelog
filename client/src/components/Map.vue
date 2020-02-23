@@ -51,7 +51,7 @@
 	import { mapActions, mapGetters } from 'vuex'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
-	import { filter } from '@/utils'
+	import { filterInBoundsGeoJson } from '@/utils'
 
 	export default {
 		components: {
@@ -103,7 +103,7 @@
 				const geoJson = this.hasLocationGeoJson,
 					// works fine without map being set in data
 					bounds = this.map.getBounds()
-				const filteredGeoJson = filter({ bounds, geoJson })
+				const filteredGeoJson = filterInBoundsGeoJson({ bounds, geoJson })
 				this.getFilteredGeoJson(filteredGeoJson)
 			},
 

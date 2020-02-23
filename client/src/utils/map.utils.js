@@ -4,23 +4,23 @@ function inBounds({ bounds, longitude, latitude }) {
 	return lng && lat
 }
 
-function filter({ geoJson, bounds }) {
-	const features = geoJson.features,
-		//This won't work for "Symbol features that have been hidden due to text or icon collision." :/
-		// const features = map.queryRenderedFeatures({ layers: ['images'] })
-		// https://docs.mapbox.com/mapbox-gl-js/api/#map#queryrenderedfeatures
-
-		filteredGeoJson = []
+function filterInBoundsGeoJson({ geoJson, bounds }) {
+	const filteredGeoJson = {
+			type: 'FeatureCollection',
+			features: []
+		},
+		features = geoJson.features
+	//This won't work for "Symbol features that have been hidden due to text or icon collision." :/
+	// const features = map.queryRenderedFeatures({ layers: ['images'] })
+	// https://docs.mapbox.com/mapbox-gl-js/api/#map#queryrenderedfeatures
 
 	if (features) {
-		for (const feature of features) {
-			if (feature) {
-				const [longitude, latitude] = feature.geometry.coordinates,
-					isRendered = inBounds({ longitude, latitude, bounds })
-				if (isRendered) filteredGeoJson.push(feature)
-			}
-		}
+		filteredGeoJson.features = features.filter(feature => {
+			const [longitude, latitude] = feature.geometry.coordinates,
+				isRendered = inBounds({ longitude, latitude, bounds })
+			return isRendered
+		})
 		return filteredGeoJson
 	}
 }
-export { inBounds, filter }
+export { inBounds, filterInBoundsGeoJson }
