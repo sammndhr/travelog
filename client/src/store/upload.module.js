@@ -10,7 +10,8 @@ const state = {
 	status: {},
 	filteredGeoJson: [],
 	hasLocationImages: { images: [], urls: [] },
-	noLocationImages: { images: [], urls: [] }
+	noLocationImages: { images: [], urls: [] },
+	selectionCount: 0
 }
 
 const mutations = {
@@ -63,6 +64,21 @@ const mutations = {
 
 	UPDATE_NO_LOCATION_IMAGES(state, noLocationImages) {
 		state.noLocationImages = noLocationImages
+	},
+
+	INCREMENT_SELECTION_COUNT(state) {
+		state.selectionCount++
+	},
+
+	DECREMENT_SELECTION_COUNT(state) {
+		state.selectionCount--
+	},
+
+	RESET_SELECTION_COUNT(state) {
+		state.selectionCount = 0
+	},
+	UPDATE_SELECTION_COUNT(state, selectionCount) {
+		state.selectionCount = selectionCount
 	}
 }
 
@@ -202,6 +218,18 @@ const actions = {
 
 		commit('UPDATE_FILTERED_GEOJSON', filteredGeoJson)
 		dispatch('updateFilteredImages', hasLocationImages)
+	},
+
+	updateSelectionCount({ commit }, { type, count }) {
+		const mutationTypes = {
+			increment: 'INCREMENT_SELECTION_COUNT',
+			decrement: 'DECREMENT_SELECTION_COUNT',
+			reset: 'RESET_SELECTION_COUNT'
+		}
+		if (type === 'update') commit('UPDATE_SELECTION_COUNT', count)
+		else {
+			commit(mutationTypes[type])
+		}
 	}
 }
 

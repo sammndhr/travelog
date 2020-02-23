@@ -60,133 +60,17 @@
 					</template>
 				</v-col>
 			</v-row>
-
-			<v-row
-				id="gallery"
-				:class="{ 'order-2': $vuetify.breakpoint.xs }"
-				class="gallery"
-			>
-				<v-col
-					class="overflow"
-					:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
-				>
-					<div class="gallery-mobile" v-if="$vuetify.breakpoint.xs">
-						<div
-							v-for="(image, i) in hasLocationImages.images"
-							:key="image.key"
-							class="figure-wrapper"
-						>
-							<figure :class="[{ selected: image.selected }, 'figure']">
-								<v-icon
-									class="select-btn-background"
-									v-show="edit && image.selected"
-									color="white"
-								>
-									mdi-checkbox-blank-circle
-								</v-icon>
-								<v-icon
-									class="select-btn"
-									v-show="edit"
-									:color="image.selected ? 'primary' : 'grey lighten-3'"
-								>
-									mdi-checkbox-marked-circle
-								</v-icon>
-								<img
-									class="gallery-image-mobile"
-									:src="image.url"
-									alt="gallery-img.jpeg"
-									@click="handleClickImage({ i, key: image.key })"
-								/>
-							</figure>
-						</div>
-					</div>
-					<template v-else>
-						<v-card class="pa-2" outlined tile>
-							<masonry class="masonary" :cols="cols" :gutter="gutter">
-								<div
-									v-for="(image, i) in hasLocationImages.images"
-									:key="image.key"
-									class="figure-wrapper"
-								>
-									<figure :class="[{ selected: image.selected }, 'figure']">
-										<v-icon
-											class="select-btn-background"
-											v-show="edit && image.selected"
-											color="white"
-										>
-											mdi-checkbox-blank-circle
-										</v-icon>
-										<v-icon
-											class="select-btn"
-											v-show="edit"
-											:color="image.selected ? 'primary' : 'grey lighten-3'"
-										>
-											mdi-checkbox-marked-circle
-										</v-icon>
-										<img
-											class="gallery-image"
-											:src="image.url"
-											alt="gallery-img.jpeg"
-											@click="handleClickImage({ i, key: image.key })"
-										/>
-									</figure>
-								</div>
-							</masonry>
-						</v-card>
-						<v-card class="pa-2" outlined tile>
-							<h3 class="subtitle-1 font-weight-bold">
-								Images with no location
-							</h3>
-							<masonry class="masonary" :cols="cols" :gutter="gutter">
-								<div
-									v-for="(image, i) in noLocationImages.images"
-									:key="image.key"
-									class="figure-wrapper"
-								>
-									<figure :class="[{ selected: image.selected }, 'figure']">
-										<v-icon
-											class="select-btn-background"
-											v-show="edit && image.selected"
-											color="white"
-										>
-											mdi-checkbox-blank-circle
-										</v-icon>
-										<v-icon
-											class="select-btn"
-											v-show="edit"
-											:color="image.selected ? 'primary' : 'grey lighten-3'"
-										>
-											mdi-checkbox-marked-circle
-										</v-icon>
-										<img
-											class="gallery-image"
-											:src="image.url"
-											alt="gallery-img.jpeg"
-											@click="handleClickImage({ i, key: image.key })"
-										/>
-									</figure>
-								</div>
-							</masonry>
-						</v-card>
-					</template>
-				</v-col>
-			</v-row>
-
-			<VueGallery
-				v-if="!edit"
-				:images="hasLocationImages.urls"
-				:index="index"
-				@close="index = null"
-			/>
+			<ImagesWrapper :edit="edit" />
 		</v-sheet>
 	</v-col>
 </template>
 
 <script>
 	import { mapActions, mapState } from 'vuex'
-	import VueGallery from 'vue-gallery'
+
 	import { supportsFileReader, handleImages } from '@/utils/'
 	import Button from '@/components/UI/Button'
+	import ImagesWrapper from './ImagesWrapper'
 
 	export default {
 		name: 'Travelog-Gallery',
@@ -200,66 +84,59 @@
 
 		data() {
 			return {
-				index: null,
-				cols: { default: 4, 1600: 3, 1300: 2 },
-				gutter: { default: '8px' },
 				showAlert: false,
-				edit: false,
-				selectionCount: 0
+				edit: false
 			}
 		},
 
 		computed: {
-			...mapState('data', ['hasLocationImages', 'noLocationImages'])
+			...mapState('data', [
+				'hasLocationImages',
+				'noLocationImages',
+				'selectionCount'
+			])
 		},
 
 		components: {
-			VueGallery,
-			Button
+			Button,
+			ImagesWrapper
 		},
 
 		methods: {
-			...mapActions('data', ['uploadAll', 'delete', 'updateFilteredImages']),
+			...mapActions('data', [
+				'uploadAll',
+				'delete',
+				'updateFilteredImages',
+				'updateSelectionCount'
+			]),
 
-			toggleSelect({ i, key }) {
-				const hasLocationImages = JSON.parse(
-					JSON.stringify(this.hasLocationImages)
+			handleClickDelete() {
+				const imagesToDelete = this.hasLocationImages.images.reduce(
+					(filtered, image) => {
+						if (image.selected) filtered.push(image.key)
+						return filtered
+					},
+					[]
 				)
-				const images = hasLocationImages.images,
-					selectedImage = images[i]
-				if (selectedImage.key === key) {
-					selectedImage.selected = !selectedImage.selected
-					if (selectedImage.selected) {
-						this.selectionCount++
-					} else {
-						{
-							this.selectionCount--
-						}
-					}
-					this.updateFilteredImages(hasLocationImages)
-				}
+				this.updateSelectionCount({ type: 'reset' })
+				this.delete({ imagesToDelete })
 			},
 
 			unselectAllItems() {
 				for (const image of this.hasLocationImages.images) {
 					image.selected = false
 				}
-				this.selectionCount = 0
+				this.updateSelectionCount({ type: 'reset' })
 			},
 
 			selectAllItems() {
 				for (const image of this.hasLocationImages.images) {
 					image.selected = true
 				}
-				this.selectionCount = this.hasLocationImages.images.length
+				const count = this.hasLocationImages.images.length
+				this.updateSelectionCount({ type: 'update', count })
 			},
 
-			handleClickImage({ i, key }) {
-				if (!this.edit) this.index = i
-				else {
-					this.toggleSelect({ i, key })
-				}
-			},
 			handleClickSelectAll() {
 				this.selectAllItems()
 			},
@@ -275,18 +152,6 @@
 			handleClickGallery() {
 				this.unselectAllItems()
 				this.edit = false
-			},
-
-			handleClickDelete() {
-				const imagesToDelete = this.hasLocationImages.images.reduce(
-					(filtered, image) => {
-						if (image.selected) filtered.push(image.key)
-						return filtered
-					},
-					[]
-				)
-				this.selectionCount = 0
-				this.delete({ imagesToDelete })
 			},
 
 			async handleChange(e) {
@@ -316,78 +181,6 @@
 
 		&.not-mobile {
 			height: 85vh;
-		}
-
-		.gallery {
-			margin: 8px;
-			overflow: hidden;
-			flex-grow: 1;
-			position: relative;
-
-			.overflow {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				overflow: auto;
-				padding: 0;
-
-				/* common styles */
-				.figure-wrapper {
-					cursor: pointer;
-					position: relative;
-					.figure {
-						&.selected {
-							border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
-						}
-						.select-btn,
-						.select-btn-background {
-							z-index: 5;
-							top: 2px;
-							right: 0;
-							position: absolute;
-							border-radius: 50%;
-						}
-					}
-				}
-			}
-
-			/* mobile styles */
-			&.overflow-mobile {
-				display: flex;
-				align-content: center;
-				align-items: center;
-			}
-			.gallery-mobile {
-				display: flex;
-				align-items: center;
-				.figure-wrapper {
-					margin-right: 8px;
-					&:last-child {
-						margin-right: 0;
-					}
-				}
-				.gallery-image-mobile {
-					height: 158px;
-					display: block;
-				}
-			}
-
-			/* Desktop styles */
-			.masonary {
-				.figure-wrapper {
-					margin-bottom: 8px;
-					&:last-child {
-						margin-bottom: 0;
-					}
-					.gallery-image {
-						max-width: 400px;
-						width: 100%;
-						display: block;
-					}
-				}
-			}
 		}
 	}
 </style>
