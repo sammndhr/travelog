@@ -213,25 +213,17 @@
 		},
 
 		computed: {
-			...mapState('data', [
-				'status',
-				'geoJson',
-				'filteredGeoJson',
-				'uploadStatuses'
-			]),
-
+			...mapState('data', ['hasLocationImages']),
 			...mapGetters('data', ['noLocationGeoJson']),
 
 			noLocationImages() {
 				const { images } = geoJsonToImages(this.noLocationGeoJson)
-
 				return images
 			}
 		},
 
 		watch: {
-			filteredGeoJson(newGeoJson) {
-				const { images, urls } = geoJsonToImages(newGeoJson)
+			hasLocationImages({ images, urls }) {
 				this.imagesUrls = urls
 				this.images = images
 			}

@@ -1,4 +1,5 @@
 import { createErrorMessage } from '@/utils'
+import { geoJsonToImages } from '@/utils/'
 import axios from 'axios'
 
 const state = {
@@ -7,7 +8,8 @@ const state = {
 		features: []
 	},
 	status: {},
-	filteredGeoJson: []
+	filteredGeoJson: [],
+	hasLocationImages: { images: [], urls: [] }
 }
 
 const mutations = {
@@ -52,6 +54,9 @@ const mutations = {
 
 	SET_FILTERED_GEOJSON(state, filteredGeoJson) {
 		state.filteredGeoJson = filteredGeoJson
+	},
+	SET_HAS_LOCATION_IMAGES(state, hasLocationImages) {
+		state.hasLocationImages = hasLocationImages
 	}
 }
 
@@ -175,8 +180,15 @@ const actions = {
 		}
 	},
 
-	getFilteredGeoJson({ commit }, filteredGeoJson) {
+	getFilteredImages({ commit }, hasLocationImages) {
+		commit('SET_HAS_LOCATION_IMAGES', hasLocationImages)
+	},
+
+	getFilteredGeoJson({ dispatch, commit }, filteredGeoJson) {
+		const hasLocationImages = geoJsonToImages(filteredGeoJson)
+
 		commit('SET_FILTERED_GEOJSON', filteredGeoJson)
+		dispatch('getFilteredImages', hasLocationImages)
 	}
 }
 
