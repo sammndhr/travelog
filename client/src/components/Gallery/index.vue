@@ -67,7 +67,6 @@
 
 <script>
 	import { mapActions, mapState } from 'vuex'
-
 	import { supportsFileReader, handleImages } from '@/utils/'
 	import Button from '@/components/UI/Button'
 	import ImagesWrapper from './ImagesWrapper'
