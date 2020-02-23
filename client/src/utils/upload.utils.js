@@ -24,10 +24,27 @@ async function handleImages(files) {
 	// Don't use for...in, will throw err cause it'll loop through 'length' and 'item' properties
 	for (const file of files) {
 		const currKey = keys.pop()
-
 		images.push({ key: currKey, file: file })
 	}
 	return images
 }
 
-export { supportsFileReader, handleImages }
+function geoJsonToImages(geoJson) {
+	const images = []
+	geoJson.features.forEach(feature => {
+		const obj = {}
+		obj.url = feature.properties.url
+		obj.key = feature.properties.key
+		obj.location = feature.properties.location
+		obj.selected = false
+		images.push(obj)
+	})
+
+	const urls = images.map(feature => {
+		return feature.url
+	})
+
+	return { images, urls }
+}
+
+export { supportsFileReader, handleImages, geoJsonToImages }

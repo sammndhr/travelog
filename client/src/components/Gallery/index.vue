@@ -185,7 +185,7 @@
 <script>
 	import { mapActions, mapState, mapGetters } from 'vuex'
 	import VueGallery from 'vue-gallery'
-	import { supportsFileReader, handleImages } from '@/utils/'
+	import { supportsFileReader, handleImages, geoJsonToImages } from '@/utils/'
 
 	import Button from '@/components/UI/Button'
 
@@ -206,7 +206,7 @@
 				gutter: { default: '8px' },
 				showAlert: false,
 				edit: false,
-				images: this.filteredImages,
+				images: [],
 				imagesUrls: [],
 				selectionCount: 0
 			}
@@ -219,46 +219,21 @@
 				'filteredGeoJson',
 				'uploadStatuses'
 			]),
+
 			...mapGetters('data', ['noLocationGeoJson']),
+
 			noLocationImages() {
-				const images = []
-				this.noLocationGeoJson.features.forEach(feature => {
-					const obj = {}
-					obj.url = feature.properties.url
-					obj.key = feature.properties.key
-					obj.location = feature.properties.location
-					obj.selected = false
-					images.push(obj)
-				})
+				const { images } = geoJsonToImages(this.noLocationGeoJson)
 
-				images.map(feature => {
-					return feature.url
-				})
-				return images
-			},
-
-			filteredImages() {
-				const images = []
-				this.filteredGeoJson.forEach(feature => {
-					const obj = {}
-					obj.url = feature.properties.url
-					obj.key = feature.properties.key
-					obj.location = feature.properties.location
-					obj.selected = false
-					images.push(obj)
-				})
 				return images
 			}
 		},
 
 		watch: {
-			filteredImages(newImages) {
-				//Because you don't mutate filteredImages, so you set images to filteredImages (to keep track of what images are selected)
-				const imagesUrls = newImages.map(feature => {
-					return feature.url
-				})
-				this.imagesUrls = imagesUrls
-				this.images = newImages
+			filteredGeoJson(newGeoJson) {
+				const { images, urls } = geoJsonToImages(newGeoJson)
+				this.imagesUrls = urls
+				this.images = images
 			}
 		},
 
