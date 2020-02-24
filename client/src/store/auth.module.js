@@ -1,6 +1,6 @@
+import router from '@/router'
+import { createErrorMessage, handleResponse, _logout } from '@/utils/'
 import axios from 'axios'
-import router from '../router'
-import { createErrorMessage, handleResponse, _logout } from '../utils/'
 
 const user = JSON.parse(localStorage.getItem('user'))
 

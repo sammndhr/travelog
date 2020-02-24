@@ -1,5 +1,5 @@
+import { createErrorMessage } from '@/utils'
 import axios from 'axios'
-import { createErrorMessage } from '../utils'
 
 const authHeader = () => {
 	let user = JSON.parse(localStorage.getItem('user'))
