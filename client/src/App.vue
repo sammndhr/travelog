@@ -32,6 +32,13 @@
 </script>
 
 <style lang="scss">
+	.gallery-wrapper {
+		.v-window,
+		.v-window__container {
+			height: 100% !important;
+		}
+	}
+
 	.main-content {
 		margin-top: 64px;
 	}

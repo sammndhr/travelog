@@ -4,8 +4,8 @@
 			<Alert />
 		</v-row>
 		<v-row align="center" justify="center">
-			<Map />
 			<Gallery />
+			<Map />
 		</v-row>
 	</div>
 </template>

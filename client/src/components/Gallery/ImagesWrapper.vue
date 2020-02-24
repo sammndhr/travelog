@@ -115,6 +115,7 @@
 <style lang="scss" scoped>
 	.gallery {
 		margin: 8px;
+		height: 100%;
 		overflow: hidden;
 		flex-grow: 1;
 		position: relative;
