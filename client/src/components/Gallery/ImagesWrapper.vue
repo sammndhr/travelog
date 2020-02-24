@@ -9,6 +9,7 @@
 			:class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
 		>
 			<MobileImages
+				@uploadClicked="$refs.fileInput.click()"
 				@clicked="handleClickImage"
 				:edit="edit"
 				v-if="$vuetify.breakpoint.xs"
@@ -16,10 +17,20 @@
 			/>
 
 			<Images
+				@uploadClicked="$refs.fileInput.click()"
 				@clicked="handleClickImage"
 				:edit="edit"
 				v-else
 				:images="currImages.images"
+			/>
+			<input
+				hidden
+				ref="fileInput"
+				id="upload-images"
+				type="file"
+				accept="image/*, image/heic"
+				multiple="{true}"
+				@change="handleChange"
 			/>
 			<VueGallery
 				v-if="!edit"
@@ -36,6 +47,8 @@
 	import { mapActions, mapState } from 'vuex'
 	import MobileImages from './MobileImages'
 	import Images from './Images'
+	import { supportsFileReader, handleImages } from '@/utils/'
+
 	export default {
 		data() {
 			return {
@@ -55,7 +68,11 @@
 		},
 
 		methods: {
-			...mapActions('data', ['updateCurrImages', 'updateSelectionCount']),
+			...mapActions('data', [
+				'updateCurrImages',
+				'updateSelectionCount',
+				'uploadAll'
+			]),
 			toggleSelect({ i, key }) {
 				const images = JSON.parse(JSON.stringify(this.currImages))
 				const imagesArr = images.images,
@@ -78,6 +95,18 @@
 				else {
 					this.toggleSelect({ i, key })
 				}
+			},
+			async handleChange(e) {
+				if (!supportsFileReader()) {
+					console.log(
+						'Sorry, your web browser does not support the FileReader API.'
+					)
+					return
+				}
+				const files = e.target.files,
+					images = await handleImages(files)
+
+				this.uploadAll(images)
 			}
 		}
 	}

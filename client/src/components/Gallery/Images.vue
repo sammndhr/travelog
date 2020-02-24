@@ -1,6 +1,15 @@
 <template>
 	<v-card class="pa-2" outlined tile>
 		<masonry class="masonary" :cols="cols" :gutter="gutter">
+			<v-card
+				@click="handleUploadClick"
+				class="figure-wrapper upload-wrapper"
+				outlined
+			>
+				<v-icon color="primary" x-large class="upload-icon">
+					mdi-plus
+				</v-icon>
+			</v-card>
 			<div v-for="(image, i) in images" :key="image.key" class="figure-wrapper">
 				<figure :class="[{ selected: image.selected }, 'figure']">
 					<v-icon
@@ -54,6 +63,10 @@
 		methods: {
 			handleClick({ i, key }) {
 				this.$emit('clicked', { i, key })
+			},
+
+			handleUploadClick() {
+				this.$emit('uploadClicked')
 			}
 		}
 	}
@@ -62,6 +75,18 @@
 <style lang="scss" scoped>
 	/* common styles */
 	.figure-wrapper {
+		&.upload-wrapper {
+			width: 100%;
+			padding-top: 99%;
+			position: relative;
+			.upload-icon {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+		}
 		cursor: pointer;
 		position: relative;
 		.figure {

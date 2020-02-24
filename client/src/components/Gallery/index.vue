@@ -29,20 +29,6 @@
 					<Button text="No Location" @clicked="toggleNoLocationImages" />
 					<template v-if="edit">
 						<Button
-							type="upload"
-							text="Upload"
-							@clicked="$refs.fileInput.click()"
-						/>
-						<input
-							hidden
-							ref="fileInput"
-							id="upload-images"
-							type="file"
-							accept="image/*, image/heic"
-							multiple="{true}"
-							@change="handleChange"
-						/>
-						<Button
 							:disabled="currImages.images.length > 0 ? false : true"
 							text="Select All"
 							@clicked="handleClickSelectAll"
@@ -68,7 +54,6 @@
 
 <script>
 	import { mapActions, mapState, mapGetters } from 'vuex'
-	import { supportsFileReader, handleImages } from '@/utils/'
 	import Button from '@/components/UI/Button'
 	import ImagesWrapper from './ImagesWrapper'
 
@@ -114,7 +99,6 @@
 
 		methods: {
 			...mapActions('data', [
-				'uploadAll',
 				'delete',
 				'updateCurrImages',
 				'updateSelectionCount',
@@ -171,19 +155,6 @@
 			handleClickGallery() {
 				this.unselectAllItems()
 				this.edit = false
-			},
-
-			async handleChange(e) {
-				if (!supportsFileReader()) {
-					console.log(
-						'Sorry, your web browser does not support the FileReader API.'
-					)
-					return
-				}
-				const files = e.target.files,
-					images = await handleImages(files)
-
-				this.uploadAll(images)
 			}
 		}
 	}

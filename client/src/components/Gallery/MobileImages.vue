@@ -1,5 +1,16 @@
 <template>
 	<div class="gallery-mobile">
+		<div class="figure-wrapper">
+			<v-card @click="handleUploadClick" class="upload" outlined>
+				<v-icon
+					color="primary"
+					x-large
+					style="position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+				>
+					mdi-plus
+				</v-icon>
+			</v-card>
+		</div>
 		<div v-for="(image, i) in images" :key="image.key" class="figure-wrapper">
 			<figure :class="[{ selected: image.selected }, 'figure']">
 				<v-icon
@@ -45,6 +56,9 @@
 		methods: {
 			handleClick({ i, key }) {
 				this.$emit('clicked', { i, key })
+			},
+			handleUploadClick() {
+				this.$emit('uploadClicked')
 			}
 		}
 	}
@@ -52,6 +66,10 @@
 
 <style lang="scss" scoped>
 	/* common styles */
+	.upload {
+		width: 158px;
+		height: 158px;
+	}
 	.figure-wrapper {
 		cursor: pointer;
 		position: relative;
