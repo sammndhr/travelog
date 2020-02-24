@@ -26,6 +26,7 @@
 				style="flex-grow: 0;"
 			>
 				<v-col align="center">
+					<Button text="No Location" @clicked="toggleNoLocationImages" />
 					<template v-if="edit">
 						<Button
 							type="upload"
@@ -42,7 +43,7 @@
 							@change="handleChange"
 						/>
 						<Button
-							:disabled="hasLocationImages.images.length > 0 ? false : true"
+							:disabled="currImages.images.length > 0 ? false : true"
 							text="Select All"
 							@clicked="handleClickSelectAll"
 						/>
@@ -66,13 +67,18 @@
 </template>
 
 <script>
-	import { mapActions, mapState } from 'vuex'
+	import { mapActions, mapState, mapGetters } from 'vuex'
 	import { supportsFileReader, handleImages } from '@/utils/'
 	import Button from '@/components/UI/Button'
 	import ImagesWrapper from './ImagesWrapper'
 
 	export default {
 		name: 'Travelog-Gallery',
+
+		components: {
+			Button,
+			ImagesWrapper
+		},
 		props: {
 			fadeUp: {
 				type: Boolean,
@@ -80,7 +86,6 @@
 				default: true
 			}
 		},
-
 		data() {
 			return {
 				showAlert: false,
@@ -89,28 +94,39 @@
 		},
 
 		computed: {
+			...mapGetters('data', ['hasLocationImages', 'noLocationImages']),
+
 			...mapState('data', [
-				'hasLocationImages',
-				'noLocationImages',
-				'selectionCount'
+				'selectionCount',
+				'currImages',
+				'hasLocation',
+				'filteredImages'
 			])
 		},
 
-		components: {
-			Button,
-			ImagesWrapper
+		watch: {
+			filteredImages(newImages) {
+				if (this.hasLocation) {
+					this.updateCurrImages(newImages)
+				}
+			}
 		},
 
 		methods: {
 			...mapActions('data', [
 				'uploadAll',
 				'delete',
-				'updateFilteredImages',
-				'updateSelectionCount'
+				'updateCurrImages',
+				'updateSelectionCount',
+				'toggleHasLocation'
 			]),
 
+			toggleNoLocationImages() {
+				this.toggleHasLocation()
+			},
+
 			handleClickDelete() {
-				const imagesToDelete = this.hasLocationImages.images.reduce(
+				const imagesToDelete = this.currImages.images.reduce(
 					(filtered, image) => {
 						if (image.selected) filtered.push(image.key)
 						return filtered
@@ -122,17 +138,21 @@
 			},
 
 			unselectAllItems() {
-				for (const image of this.hasLocationImages.images) {
+				const currImages = JSON.parse(JSON.stringify(this.currImages))
+				for (const image of currImages.images) {
 					image.selected = false
 				}
+				this.updateCurrImages(currImages)
 				this.updateSelectionCount({ type: 'reset' })
 			},
 
 			selectAllItems() {
-				for (const image of this.hasLocationImages.images) {
+				const currImages = JSON.parse(JSON.stringify(this.currImages))
+				for (const image of currImages.images) {
 					image.selected = true
 				}
-				const count = this.hasLocationImages.images.length
+				this.updateCurrImages(currImages)
+				const count = this.currImages.images.length
 				this.updateSelectionCount({ type: 'update', count })
 			},
 

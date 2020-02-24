@@ -7,11 +7,15 @@ const state = {
 		type: 'FeatureCollection',
 		features: []
 	},
+	filteredGeoJson: {
+		type: 'FeatureCollection',
+		features: []
+	},
+	filteredImages: { images: [], urls: [] },
 	status: {},
-	filteredGeoJson: [],
-	hasLocationImages: { images: [], urls: [] },
-	noLocationImages: { images: [], urls: [] },
-	selectionCount: 0
+	currImages: { images: [], urls: [] },
+	selectionCount: 0,
+	hasLocation: true
 }
 
 const mutations = {
@@ -58,12 +62,12 @@ const mutations = {
 		state.filteredGeoJson = filteredGeoJson
 	},
 
-	UPDATE_HAS_LOCATION_IMAGES(state, hasLocationImages) {
-		state.hasLocationImages = hasLocationImages
+	UPDATE_FILTERED_IMAGES(state, filteredImages) {
+		state.filteredImages = filteredImages
 	},
 
-	UPDATE_NO_LOCATION_IMAGES(state, noLocationImages) {
-		state.noLocationImages = noLocationImages
+	UPDATE_CURR_IMAGES(state, currImages) {
+		state.currImages = currImages
 	},
 
 	INCREMENT_SELECTION_COUNT(state) {
@@ -77,8 +81,13 @@ const mutations = {
 	RESET_SELECTION_COUNT(state) {
 		state.selectionCount = 0
 	},
+
 	UPDATE_SELECTION_COUNT(state, selectionCount) {
 		state.selectionCount = selectionCount
+	},
+
+	TOGGLE_HAS_LOCATION(state) {
+		state.hasLocation = !state.hasLocation
 	}
 }
 
@@ -105,6 +114,18 @@ const getters = {
 
 		geoJson.features = noLocationFeatures
 		return geoJson
+	},
+
+	hasLocationImages: (state, getters) => {
+		const geoJson = getters.hasLocationGeoJson
+		const images = geoJsonToImages(geoJson)
+		return images
+	},
+
+	noLocationImages: (state, getters) => {
+		const geoJson = getters.noLocationGeoJson
+		const images = geoJsonToImages(geoJson)
+		return images
 	}
 }
 
@@ -166,6 +187,7 @@ const actions = {
 			if (results.status >= 200) {
 				const geoJson = results.data.geoJson
 				commit('DELETE_SUCCESS', geoJson)
+				dispatch('getGeojson')
 				setTimeout(() => {
 					dispatch('alert/success', 'Delete successful', { root: true })
 				})
@@ -178,7 +200,7 @@ const actions = {
 		}
 	},
 
-	async getGeojson({ dispatch, commit, getters, rootState }) {
+	async getGeojson({ dispatch, commit, state, getters, rootState }) {
 		commit('GET_GEOSON_REQUEST')
 		const options = {
 			method: 'GET',
@@ -191,10 +213,10 @@ const actions = {
 				const geoJson = results.data.geoJson
 				commit('GET_GEOSON_SUCCESS', geoJson)
 				setTimeout(() => {
-					const noLocationGeoJson = getters.noLocationGeoJson,
-						noLocationImages = geoJsonToImages(noLocationGeoJson)
-					dispatch('updateNoLocationImages', noLocationImages)
 					dispatch('alert/success', 'Fetch successful', { root: true })
+					state.hasLocation
+						? dispatch('updateCurrImages', getters.hasLocationImages)
+						: dispatch('updateCurrImages', getters.noLocationImages)
 				})
 			}
 		} catch (error) {
@@ -205,19 +227,18 @@ const actions = {
 		}
 	},
 
-	updateFilteredImages({ commit }, hasLocationImages) {
-		commit('UPDATE_HAS_LOCATION_IMAGES', hasLocationImages)
-	},
-
-	updateNoLocationImages({ commit }, noLocationImages) {
-		commit('UPDATE_NO_LOCATION_IMAGES', noLocationImages)
-	},
-
 	updateFilteredGeoJson({ dispatch, commit }, filteredGeoJson) {
-		const hasLocationImages = geoJsonToImages(filteredGeoJson)
-
+		const filteredImages = geoJsonToImages(filteredGeoJson)
 		commit('UPDATE_FILTERED_GEOJSON', filteredGeoJson)
-		dispatch('updateFilteredImages', hasLocationImages)
+		dispatch('updateFilteredImages', filteredImages)
+	},
+
+	updateFilteredImages({ commit }, filteredImages) {
+		commit('UPDATE_FILTERED_IMAGES', filteredImages)
+	},
+
+	updateCurrImages({ commit }, currImages) {
+		commit('UPDATE_CURR_IMAGES', currImages)
 	},
 
 	updateSelectionCount({ commit }, { type, count }) {
@@ -230,6 +251,15 @@ const actions = {
 		else {
 			commit(mutationTypes[type])
 		}
+	},
+
+	toggleHasLocation({ commit, state, getters, dispatch }) {
+		commit('TOGGLE_HAS_LOCATION')
+		const images = state.hasLocation
+			? getters.hasLocationImages
+			: getters.noLocationImages
+
+		dispatch('updateCurrImages', images)
 	}
 }
 

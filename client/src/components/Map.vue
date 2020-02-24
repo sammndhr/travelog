@@ -90,6 +90,7 @@
 		},
 
 		watch: {
+			// Need to watch hasLocationGeoJson cause filteredGeoJson isn't reactive to hasLocationGeoJson only (map.on('moveend') is another one)
 			hasLocationGeoJson() {
 				if (!this.map) return
 				this.filter()

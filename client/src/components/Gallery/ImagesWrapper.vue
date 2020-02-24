@@ -12,18 +12,18 @@
 				@clicked="handleClickImage"
 				:edit="edit"
 				v-if="$vuetify.breakpoint.xs"
-				:images="hasLocationImages.images"
+				:images="currImages.images"
 			/>
 
 			<Images
 				@clicked="handleClickImage"
 				:edit="edit"
 				v-else
-				:images="hasLocationImages.images"
+				:images="currImages.images"
 			/>
 			<VueGallery
 				v-if="!edit"
-				:images="hasLocationImages.urls"
+				:images="currImages.urls"
 				:index="index"
 				@close="index = null"
 			/>
@@ -51,16 +51,15 @@
 			Images
 		},
 		computed: {
-			...mapState('data', ['hasLocationImages', 'noLocationImages'])
+			...mapState('data', ['currImages'])
 		},
+
 		methods: {
-			...mapActions('data', ['updateFilteredImages', 'updateSelectionCount']),
+			...mapActions('data', ['updateCurrImages', 'updateSelectionCount']),
 			toggleSelect({ i, key }) {
-				const hasLocationImages = JSON.parse(
-					JSON.stringify(this.hasLocationImages)
-				)
-				const images = hasLocationImages.images,
-					selectedImage = images[i]
+				const images = JSON.parse(JSON.stringify(this.currImages))
+				const imagesArr = images.images,
+					selectedImage = imagesArr[i]
 				if (selectedImage.key === key) {
 					selectedImage.selected = !selectedImage.selected
 					if (selectedImage.selected) {
@@ -70,12 +69,10 @@
 							this.updateSelectionCount({ type: 'decrement' })
 						}
 					}
-					this.updateFilteredImages(hasLocationImages)
+					this.updateCurrImages(images)
 				}
 			},
-			handleClicky({ i, key }) {
-				console.log(i, key)
-			},
+
 			handleClickImage({ i, key }) {
 				if (!this.edit) this.index = i
 				else {
