@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<v-card outlined class="mx-2 my-6 pa-3 secondary lighten-4">
 		<Button
 			:disabled="currImages.images.length > 0 ? false : true"
 			text="Select All"
@@ -16,7 +16,7 @@
 			text="Cancel"
 			@clicked="handleClickCancel"
 		/>
-	</div>
+	</v-card>
 </template>
 
 <script>

@@ -80,7 +80,7 @@
 		.figure {
 			height: 150px;
 			&.selected {
-				border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
+				border: 8px solid rgba(63, 187, 131, 0.3); /*primary*/
 			}
 			.select-btn,
 			.select-btn-background {

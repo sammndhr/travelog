@@ -15,21 +15,49 @@
 			class="figure-wrapper"
 			@click="handleClick({ i, key: image.key })"
 		>
-			<figure :class="[{ selected: image.selected }, 'figure']">
-				<v-icon
-					class="select-btn-background"
-					v-show="edit && image.selected"
-					color="white"
-				>
-					mdi-checkbox-blank-circle
-				</v-icon>
-				<v-icon
-					class="select-btn"
-					v-show="edit"
-					:color="image.selected ? 'primary' : 'grey lighten-3'"
-				>
-					mdi-checkbox-marked-circle
-				</v-icon>
+			<figure
+				:class="[{ selected: image.selected }, 'figure']"
+				@mouseenter="handleMouseEnter(i)"
+				@mouseleave="handleMouseLeave(i)"
+			>
+				<template v-if="edit">
+					<v-icon
+						large
+						class="select-btn-background"
+						v-show="!image.selected && !hovering[i]"
+						color="white"
+						style="opacity: 0.5;"
+					>
+						mdi-checkbox-blank-circle-outline
+					</v-icon>
+
+					<v-icon
+						large
+						v-show="hovering[i]"
+						class="select-btn"
+						color="white"
+						style="opacity: 0.8;"
+					>
+						mdi-checkbox-marked-circle
+					</v-icon>
+
+					<v-icon
+						large
+						class="select-btn-background"
+						v-show="image.selected"
+						color="white"
+					>
+						mdi-checkbox-blank-circle
+					</v-icon>
+					<v-icon
+						large
+						v-show="image.selected"
+						class="select-btn"
+						color="primary"
+					>
+						mdi-checkbox-marked-circle
+					</v-icon>
+				</template>
 				<img class="gallery-image" :src="image.url" alt="gallery-img.jpeg" />
 			</figure>
 		</div>
@@ -54,13 +82,31 @@
 		},
 		data() {
 			return {
+				hovering: new Array(this.images.length).fill(false),
 				gutter: { default: '8px' },
 				cols: { default: 4, 1600: 3, 1300: 2 }
+			}
+		},
+		watch: {
+			images(val) {
+				this.hovering = new Array(val.length).fill(false)
 			}
 		},
 		methods: {
 			handleClick({ i, key }) {
 				this.$emit('clicked', { i, key })
+			},
+
+			handleMouseEnter(i) {
+				const hovering = JSON.parse(JSON.stringify(this.hovering))
+				hovering[i] = true
+				this.hovering = hovering
+			},
+
+			handleMouseLeave(i) {
+				const hovering = JSON.parse(JSON.stringify(this.hovering))
+				hovering[i] = false
+				this.hovering = hovering
 			},
 
 			handleUploadClick() {
@@ -90,7 +136,7 @@
 		position: relative;
 		.figure {
 			&.selected {
-				border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
+				border: 8px solid rgba(63, 187, 131, 0.3); /*primary*/
 			}
 			.select-btn,
 			.select-btn-background {

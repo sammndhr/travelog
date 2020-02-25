@@ -1,9 +1,12 @@
 <template>
 	<v-btn
-		:disabled="type === 'upload' ? uploading : disabled"
-		:loading="uploading"
+		:disabled="disabled"
+		dark
 		elevation="3"
 		class="ma-2"
+		:style="{
+			backgroundColor: disabled ? 'rgba(0, 0, 0, 0.5) !important' : ''
+		}"
 		color="primary"
 		@click="handleClick"
 		:to="link"
