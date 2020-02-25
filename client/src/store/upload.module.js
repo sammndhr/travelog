@@ -270,8 +270,18 @@ const actions = {
 
 		dispatch('updateCurrImages', images)
 	},
+
 	updateWarning({ commit }, message) {
 		commit('UPDATE_WARNING_MESSAGE', message)
+	},
+
+	unselectAllItems({ state, dispatch }) {
+		const currImages = JSON.parse(JSON.stringify(state.currImages))
+		for (const image of currImages.images) {
+			image.selected = false
+		}
+		dispatch('updateCurrImages', currImages)
+		dispatch('updateSelectionCount', { type: 'reset' })
 	}
 }
 

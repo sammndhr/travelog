@@ -77,25 +77,7 @@
 									{{ warning }}
 								</v-alert>
 							</div>
-							<template v-if="edit">
-								<Button
-									:disabled="currImages.images.length > 0 ? false : true"
-									text="Select All"
-									@clicked="handleClickSelectAll"
-								/>
-								<Button
-									:disabled="selectionCount > 0 ? false : true"
-									text="Delete"
-									@clicked="handleClickDelete"
-								/>
-
-								<Button
-									:disabled="selectionCount > 0 ? false : true"
-									text="Cancel"
-									@clicked="handleClickCancel"
-								/>
-							</template>
-
+							<EditControls v-if="edit" />
 							<ImagesWrapper :edit="edit" :galleryId="`gallery-${item}`" />
 						</v-tab-item>
 					</v-tabs>
@@ -107,16 +89,17 @@
 
 <script>
 	import { mapActions, mapState, mapGetters } from 'vuex'
-	import Button from '@/components/UI/Button'
-
 	import ImagesWrapper from './ImagesWrapper'
+	import EditControls from './EditControls'
 
 	export default {
 		name: 'Travelog-Gallery',
+
 		components: {
-			Button,
-			ImagesWrapper
+			ImagesWrapper,
+			EditControls
 		},
+
 		props: {
 			fadeUp: {
 				type: Boolean,
@@ -124,6 +107,7 @@
 				default: true
 			}
 		},
+
 		data() {
 			return {
 				edit: false,
@@ -155,63 +139,27 @@
 			...mapActions('data', [
 				'delete',
 				'updateCurrImages',
-				'updateSelectionCount',
 				'updateHasLocation',
-				'updateWarning'
+				'updateWarning',
+				'unselectAllItems'
 			]),
 
 			handleClickHasLoc() {
 				this.updateHasLocation(true)
 				this.updateWarning('')
 			},
+
 			handleClickNoLoc() {
 				this.updateWarning('')
 				this.updateHasLocation(false)
 			},
+
 			handleTabItemClick() {
 				this.updateWarning('')
-			},
-			handleClickDelete() {
-				const imagesToDelete = this.currImages.images.reduce(
-					(filtered, image) => {
-						if (image.selected) filtered.push(image.key)
-						return filtered
-					},
-					[]
-				)
-				this.updateSelectionCount({ type: 'reset' })
-				this.delete({ imagesToDelete })
-			},
-
-			unselectAllItems() {
-				const currImages = JSON.parse(JSON.stringify(this.currImages))
-				for (const image of currImages.images) {
-					image.selected = false
-				}
-				this.updateCurrImages(currImages)
-				this.updateSelectionCount({ type: 'reset' })
-			},
-
-			selectAllItems() {
-				const currImages = JSON.parse(JSON.stringify(this.currImages))
-				for (const image of currImages.images) {
-					image.selected = true
-				}
-				this.updateCurrImages(currImages)
-				const count = this.currImages.images.length
-				this.updateSelectionCount({ type: 'update', count })
-			},
-
-			handleClickSelectAll() {
-				this.selectAllItems()
 			},
 
 			handleClickEdit() {
 				this.edit = true
-			},
-
-			handleClickCancel() {
-				this.unselectAllItems()
 			},
 
 			handleClickGallery() {
