@@ -62,6 +62,7 @@
 			edit: { default: false, required: true, type: Boolean },
 			galleryId: { default: '', required: false, type: String }
 		},
+
 		components: {
 			VueGallery,
 			MobileImages,
@@ -77,6 +78,7 @@
 				'updateSelectionCount',
 				'uploadAll'
 			]),
+
 			toggleSelect({ i, key }) {
 				const images = JSON.parse(JSON.stringify(this.currImages))
 				const imagesArr = images.images,

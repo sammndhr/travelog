@@ -14,7 +14,7 @@
 				@load="onMapLoaded"
 			>
 				<MglMarker
-					v-for="feature in hasLocationGeoJson.features"
+					v-for="feature in geoJson.features"
 					:anchor="'top'"
 					:key="feature.properties.name"
 					:coordinates="feature.geometry.coordinates"
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-	import { mapActions, mapGetters } from 'vuex'
+	import { mapActions, mapGetters, mapState } from 'vuex'
 	import { MglMap, MglPopup, MglGeojsonLayer, MglMarker } from 'vue-mapbox'
 	import Mapbox from 'mapbox-gl/dist/mapbox-gl.js'
 	import { filterInBoundsGeoJson } from '@/utils'
@@ -68,10 +68,6 @@
 				anchor: 'bottom',
 				// map: null, //will break. Don't uncomment
 				zoom: 1,
-				geoJson: {
-					type: 'FeatureCollection',
-					features: []
-				},
 				geoJsonlayer: {
 					id: 'images',
 					type: 'symbol',
@@ -86,12 +82,20 @@
 		},
 
 		computed: {
-			...mapGetters('data', ['hasLocationGeoJson'])
+			...mapGetters('data', ['hasLocationGeoJson']),
+			...mapState('data', ['hasLocation']),
+			geoJson() {
+				const geoJsonEmpty = {
+					type: 'FeatureCollection',
+					features: []
+				}
+				return this.hasLocation ? this.hasLocationGeoJson : geoJsonEmpty
+			}
 		},
 
 		watch: {
-			// Need to watch hasLocationGeoJson cause filteredGeoJson isn't reactive to hasLocationGeoJson only (map.on('moveend') is another one)
-			hasLocationGeoJson() {
+			// Need to watch geoJson cause filteredGeoJson isn't reactive to geoJson only (map.on('moveend') is another one)
+			geoJson() {
 				if (!this.map) return
 				this.filter()
 			}
@@ -101,7 +105,7 @@
 			...mapActions('data', ['updateFilteredGeoJson']),
 
 			filter() {
-				const geoJson = this.hasLocationGeoJson,
+				const geoJson = this.geoJson,
 					// works fine without map being set in data
 					bounds = this.map.getBounds()
 				const filteredGeoJson = filterInBoundsGeoJson({ bounds, geoJson })
