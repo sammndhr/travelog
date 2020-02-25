@@ -116,11 +116,10 @@
 
 <style lang="scss" scoped>
 	.gallery {
-		margin: 0 8px;
+		margin: 8px;
 		overflow: hidden;
 		flex-grow: 1;
 		position: relative;
-
 		.overflow {
 			position: absolute;
 			top: 0;

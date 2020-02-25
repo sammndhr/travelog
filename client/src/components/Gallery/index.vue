@@ -6,6 +6,7 @@
 			elevation="3"
 		>
 			<v-tabs
+				@change="handleTabItemClick"
 				active-class="active-tab"
 				dark
 				:right="false"
@@ -20,14 +21,26 @@
 				<v-tab @click="handleClickEdit" href="#tab-edit">
 					Edit
 				</v-tab>
-
 				<v-tab-item
-					class="secondary lighten-2"
+					class="secondary tab-item lighten-2"
 					v-for="items in tabs"
 					:key="`tab-${items}`"
 					:value="'tab-' + items"
 					style="height:100%;"
 				>
+					<div class="pa-3">
+						<v-alert
+							dismissible
+							v-if="warning"
+							type="warning"
+							text
+							dense
+							outlined
+							transition="slide-y-transition"
+						>
+							{{ warning }}
+						</v-alert>
+					</div>
 					<v-col align="center">
 						<Button text="No Location" @clicked="toggleNoLocationImages" />
 						<template v-if="edit">
@@ -59,6 +72,7 @@
 <script>
 	import { mapActions, mapState, mapGetters } from 'vuex'
 	import Button from '@/components/UI/Button'
+
 	import ImagesWrapper from './ImagesWrapper'
 
 	export default {
@@ -83,12 +97,12 @@
 
 		computed: {
 			...mapGetters('data', ['hasLocationImages', 'noLocationImages']),
-
 			...mapState('data', [
 				'selectionCount',
 				'currImages',
 				'hasLocation',
-				'filteredImages'
+				'filteredImages',
+				'warning'
 			])
 		},
 
@@ -105,13 +119,16 @@
 				'delete',
 				'updateCurrImages',
 				'updateSelectionCount',
-				'toggleHasLocation'
+				'toggleHasLocation',
+				'updateWarning'
 			]),
 
 			toggleNoLocationImages() {
 				this.toggleHasLocation()
 			},
-
+			handleTabItemClick() {
+				this.updateWarning('')
+			},
 			handleClickDelete() {
 				const imagesToDelete = this.currImages.images.reduce(
 					(filtered, image) => {

@@ -15,7 +15,8 @@ const state = {
 	status: {},
 	currImages: { images: [], urls: [] },
 	selectionCount: 0,
-	hasLocation: true
+	hasLocation: true,
+	warning: null
 }
 
 const mutations = {
@@ -88,6 +89,9 @@ const mutations = {
 
 	TOGGLE_HAS_LOCATION(state) {
 		state.hasLocation = !state.hasLocation
+	},
+	UPDATE_WARNING_MESSAGE(state, message) {
+		state.warning = message
 	}
 }
 
@@ -152,7 +156,7 @@ const actions = {
 		}
 
 		Promise.all(promises).then(() => {
-			dispatch('getGeojson')
+			// dispatch('getGeojson')
 			commit('UPLOAD_SUCCESS')
 		})
 	},
@@ -165,7 +169,12 @@ const actions = {
 			url: `${process.env.VUE_APP_BACKEND_URL}/uploads`
 		}
 		try {
-			return axios(options)
+			const res = await axios(options)
+			const message = `Some images uploaded without location!`
+			if (res.data.feature.geometry.coordinates.length < 2)
+				dispatch('updateWarning', message)
+			dispatch('getGeojson')
+			return res
 		} catch (error) {
 			console.log(error)
 			const errorMessage = createErrorMessage(error)
@@ -260,6 +269,9 @@ const actions = {
 			: getters.noLocationImages
 
 		dispatch('updateCurrImages', images)
+	},
+	updateWarning({ commit }, message) {
+		commit('UPDATE_WARNING_MESSAGE', message)
 	}
 }
 

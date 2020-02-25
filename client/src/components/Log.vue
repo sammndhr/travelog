@@ -23,12 +23,15 @@
 			...mapState('data', ['status'])
 		},
 		methods: {
-			...mapActions('data', ['upload', 'getGeojson'])
+			...mapActions('data', ['upload', 'getGeojson', 'updateWarning'])
 		},
 		beforeRouteEnter(to, from, next) {
 			next(vm => {
 				vm.getGeojson()
 			})
+		},
+		mounted() {
+			this.updateWarning('')
 		}
 	}
 </script>
