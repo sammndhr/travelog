@@ -42,7 +42,7 @@
 						<v-tab
 							@click="handleClickHasLoc"
 							style="width: 48%;"
-							href="#tab-hasLoc"
+							href="#tab-hasLocation"
 							class="primary--text"
 						>
 							<v-icon>mdi-map-marker</v-icon>
@@ -50,7 +50,7 @@
 						<v-tab
 							@click="handleClickNoLoc"
 							style="width: 48%;"
-							href="#tab-noLoc"
+							href="#tab-noLocation"
 							class="primary--text"
 						>
 							<v-icon>mdi-map-marker-off</v-icon>
@@ -96,7 +96,7 @@
 								/>
 							</template>
 
-							<ImagesWrapper :edit="edit" />
+							<ImagesWrapper :edit="edit" :galleryId="`gallery-${item}`" />
 						</v-tab-item>
 					</v-tabs>
 				</v-tab-item>
@@ -128,7 +128,7 @@
 			return {
 				edit: false,
 				tabs: ['gallery', 'edit'],
-				tabsL: ['hasLoc', 'noLoc']
+				tabsL: ['hasLocation', 'noLocation']
 			}
 		},
 

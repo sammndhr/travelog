@@ -35,6 +35,7 @@
 				@change="handleChange"
 			/>
 			<VueGallery
+				:id="galleryId"
 				v-if="!edit"
 				:images="currImages.urls"
 				:index="index"
@@ -58,7 +59,8 @@
 			}
 		},
 		props: {
-			edit: { default: false, required: true, type: Boolean }
+			edit: { default: false, required: true, type: Boolean },
+			galleryId: { default: '', required: false, type: String }
 		},
 		components: {
 			VueGallery,
