@@ -9,7 +9,12 @@
 				mdi-plus
 			</v-icon>
 		</v-card>
-		<div v-for="(image, i) in images" :key="image.key" class="figure-wrapper">
+		<div
+			v-for="(image, i) in images"
+			:key="image.key"
+			class="figure-wrapper"
+			@click="handleClick({ i, key: image.key })"
+		>
 			<figure :class="[{ selected: image.selected }, 'figure']">
 				<v-icon
 					class="select-btn-background"
@@ -25,12 +30,7 @@
 				>
 					mdi-checkbox-marked-circle
 				</v-icon>
-				<img
-					class="gallery-image"
-					:src="image.url"
-					alt="gallery-img.jpeg"
-					@click="handleClick({ i, key: image.key })"
-				/>
+				<img class="gallery-image" :src="image.url" alt="gallery-img.jpeg" />
 			</figure>
 		</div>
 	</masonry>

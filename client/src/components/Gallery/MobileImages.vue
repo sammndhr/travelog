@@ -11,7 +11,12 @@
 				</v-icon>
 			</v-card>
 		</div>
-		<div v-for="(image, i) in images" :key="image.key" class="figure-wrapper">
+		<div
+			v-for="(image, i) in images"
+			:key="image.key"
+			class="figure-wrapper"
+			@click="handleClick({ i, key: image.key })"
+		>
 			<figure :class="[{ selected: image.selected }, 'figure']">
 				<v-icon
 					class="select-btn-background"
@@ -31,7 +36,6 @@
 					class="gallery-image-mobile"
 					:src="image.url"
 					alt="gallery-img.jpeg"
-					@click="handleClick({ i, key: image.key })"
 				/>
 			</figure>
 		</div>
@@ -74,6 +78,7 @@
 		cursor: pointer;
 		position: relative;
 		.figure {
+			height: 150px;
 			&.selected {
 				border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
 			}
@@ -101,7 +106,7 @@
 			}
 		}
 		.gallery-image-mobile {
-			height: 150px;
+			height: 100%;
 			display: block;
 			object-fit: contain;
 		}

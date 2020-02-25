@@ -24,6 +24,7 @@
 				v-else
 				:images="currImages.images"
 			/>
+
 			<input
 				hidden
 				ref="fileInput"
