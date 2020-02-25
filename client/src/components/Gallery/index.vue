@@ -42,7 +42,7 @@
 						<v-tab
 							@click="handleClickHasLoc"
 							style="width: 48%;"
-							href="#tab-hasLocation"
+							href="#tab-hasLoc"
 							class="primary--text"
 						>
 							<v-icon>mdi-map-marker</v-icon>
@@ -50,7 +50,7 @@
 						<v-tab
 							@click="handleClickNoLoc"
 							style="width: 48%;"
-							href="#tab-noLocation"
+							href="#tab-noLoc"
 							class="primary--text"
 						>
 							<v-icon>mdi-map-marker-off</v-icon>
@@ -127,9 +127,8 @@
 		data() {
 			return {
 				edit: false,
-				hasLocation: true,
 				tabs: ['gallery', 'edit'],
-				tabsL: ['hasLocation', 'noLocation']
+				tabsL: ['hasLoc', 'noLoc']
 			}
 		},
 
@@ -139,7 +138,8 @@
 				'selectionCount',
 				'currImages',
 				'filteredImages',
-				'warning'
+				'warning',
+				'hasLocation'
 			])
 		},
 
