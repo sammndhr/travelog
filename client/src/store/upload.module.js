@@ -87,8 +87,8 @@ const mutations = {
 		state.selectionCount = selectionCount
 	},
 
-	TOGGLE_HAS_LOCATION(state) {
-		state.hasLocation = !state.hasLocation
+	UPDATE_HAS_LOCATION(state, hasLocation) {
+		state.hasLocation = hasLocation
 	},
 	UPDATE_WARNING_MESSAGE(state, message) {
 		state.warning = message
@@ -156,7 +156,7 @@ const actions = {
 		}
 
 		Promise.all(promises).then(() => {
-			// dispatch('getGeojson')
+			dispatch('getGeojson')
 			commit('UPLOAD_SUCCESS')
 		})
 	},
@@ -262,8 +262,8 @@ const actions = {
 		}
 	},
 
-	toggleHasLocation({ commit, state, getters, dispatch }) {
-		commit('TOGGLE_HAS_LOCATION')
+	updateHasLocation({ commit, state, getters, dispatch }, hasLocation) {
+		commit('UPDATE_HAS_LOCATION', hasLocation)
 		const images = state.hasLocation
 			? getters.hasLocationImages
 			: getters.noLocationImages

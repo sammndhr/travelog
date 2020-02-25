@@ -14,7 +14,6 @@
 				:height="$vuetify.breakpoint.xs ? '30px' : '100%'"
 				color="primary"
 			>
-				<v-tabs-slider></v-tabs-slider>
 				<v-tab @click="handleClickGallery" href="#tab-gallery">
 					Gallery
 				</v-tab>
@@ -22,47 +21,84 @@
 					Edit
 				</v-tab>
 				<v-tab-item
+					:transition="false"
+					:reverse-transition="false"
 					class="secondary tab-item lighten-2"
-					v-for="items in tabs"
-					:key="`tab-${items}`"
-					:value="'tab-' + items"
+					v-for="item in tabs"
+					:key="`tab-${item}`"
+					:value="'tab-' + item"
 					style="height:100%;"
 				>
-					<div class="pa-3">
-						<v-alert
-							dismissible
-							v-if="warning"
-							type="warning"
-							text
-							dense
-							outlined
-							transition="slide-y-transition"
-						>
-							{{ warning }}
-						</v-alert>
-					</div>
-					<v-col align="center">
-						<Button text="No Location" @clicked="toggleNoLocationImages" />
-						<template v-if="edit">
-							<Button
-								:disabled="currImages.images.length > 0 ? false : true"
-								text="Select All"
-								@clicked="handleClickSelectAll"
-							/>
-							<Button
-								:disabled="selectionCount > 0 ? false : true"
-								text="Delete"
-								@clicked="handleClickDelete"
-							/>
+					<v-tabs
+						:height="noLocationImages.images.length ? '40px' : '0px'"
+						class="tabs-location"
+						background-color="secondary lighten-2"
+						style="height:100%;"
+						color="primary"
+						centered
+					>
+						<v-tabs-slider color="primary slider"></v-tabs-slider>
 
-							<Button
-								:disabled="selectionCount > 0 ? false : true"
-								text="Cancel"
-								@clicked="handleClickCancel"
-							/>
-						</template>
-					</v-col>
-					<ImagesWrapper :edit="edit" />
+						<v-tab
+							@click="handleClickHasLoc"
+							style="width: 48%;"
+							href="#tab-hasLocation"
+							class="primary--text"
+						>
+							<v-icon>mdi-map-marker</v-icon>
+						</v-tab>
+						<v-tab
+							@click="handleClickNoLoc"
+							style="width: 48%;"
+							href="#tab-noLocation"
+							class="primary--text"
+						>
+							<v-icon>mdi-map-marker-off</v-icon>
+						</v-tab>
+
+						<v-tab-item
+							class="secondary lighten-2"
+							:transition="false"
+							:reverse-transition="false"
+							v-for="item in tabsL"
+							:key="`tab-${item}`"
+							:value="'tab-' + item"
+							style="height:100%;"
+						>
+							<div v-if="warning" class="pa-3">
+								<v-alert
+									dismissible
+									type="warning"
+									text
+									dense
+									outlined
+									transition="slide-y-transition"
+								>
+									{{ warning }}
+								</v-alert>
+							</div>
+							<template v-if="edit">
+								<Button
+									:disabled="currImages.images.length > 0 ? false : true"
+									text="Select All"
+									@clicked="handleClickSelectAll"
+								/>
+								<Button
+									:disabled="selectionCount > 0 ? false : true"
+									text="Delete"
+									@clicked="handleClickDelete"
+								/>
+
+								<Button
+									:disabled="selectionCount > 0 ? false : true"
+									text="Cancel"
+									@clicked="handleClickCancel"
+								/>
+							</template>
+
+							<ImagesWrapper :edit="edit" />
+						</v-tab-item>
+					</v-tabs>
 				</v-tab-item>
 			</v-tabs>
 		</v-sheet>
@@ -91,7 +127,9 @@
 		data() {
 			return {
 				edit: false,
-				tabs: ['gallery', 'edit']
+				hasLocation: true,
+				tabs: ['gallery', 'edit'],
+				tabsL: ['hasLocation', 'noLocation']
 			}
 		},
 
@@ -100,7 +138,6 @@
 			...mapState('data', [
 				'selectionCount',
 				'currImages',
-				'hasLocation',
 				'filteredImages',
 				'warning'
 			])
@@ -119,12 +156,17 @@
 				'delete',
 				'updateCurrImages',
 				'updateSelectionCount',
-				'toggleHasLocation',
+				'updateHasLocation',
 				'updateWarning'
 			]),
 
-			toggleNoLocationImages() {
-				this.toggleHasLocation()
+			handleClickHasLoc() {
+				this.updateHasLocation(true)
+				this.updateWarning('')
+			},
+			handleClickNoLoc() {
+				this.updateWarning('')
+				this.updateHasLocation(false)
 			},
 			handleTabItemClick() {
 				this.updateWarning('')
@@ -191,6 +233,10 @@
 
 		.active-tab {
 			background-color: #4a4a4a;
+		}
+		.tabs-location {
+			padding: 8px;
+			padding-top: 16px;
 		}
 	}
 </style>
