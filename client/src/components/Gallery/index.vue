@@ -6,48 +6,65 @@
 			elevation="3"
 		>
 			<v-tabs
-				:height="$vuetify.breakpoint.xs ? '30px' : ''"
-				class="order-0"
-				style="flex-grow: 0;"
-				background-color="transparent"
+				@change="handleTabItemClick"
+				active-class="active-tab"
+				dark
+				:right="false"
+				:vertical="$vuetify.breakpoint.xs ? false : true"
+				:height="$vuetify.breakpoint.xs ? '30px' : '100%'"
 				color="primary"
-				centered
 			>
-				<v-tab @click="handleClickGallery">
+				<v-tabs-slider></v-tabs-slider>
+				<v-tab @click="handleClickGallery" href="#tab-gallery">
 					Gallery
 				</v-tab>
-				<v-tab @click="handleClickEdit">
+				<v-tab @click="handleClickEdit" href="#tab-edit">
 					Edit
 				</v-tab>
+				<v-tab-item
+					class="secondary tab-item lighten-2"
+					v-for="items in tabs"
+					:key="`tab-${items}`"
+					:value="'tab-' + items"
+					style="height:100%;"
+				>
+					<div class="pa-3">
+						<v-alert
+							dismissible
+							v-if="warning"
+							type="warning"
+							text
+							dense
+							outlined
+							transition="slide-y-transition"
+						>
+							{{ warning }}
+						</v-alert>
+					</div>
+					<v-col align="center">
+						<Button text="No Location" @clicked="toggleNoLocationImages" />
+						<template v-if="edit">
+							<Button
+								:disabled="currImages.images.length > 0 ? false : true"
+								text="Select All"
+								@clicked="handleClickSelectAll"
+							/>
+							<Button
+								:disabled="selectionCount > 0 ? false : true"
+								text="Delete"
+								@clicked="handleClickDelete"
+							/>
+
+							<Button
+								:disabled="selectionCount > 0 ? false : true"
+								text="Cancel"
+								@clicked="handleClickCancel"
+							/>
+						</template>
+					</v-col>
+					<ImagesWrapper :edit="edit" />
+				</v-tab-item>
 			</v-tabs>
-
-			<v-row
-				:class="{ 'order-3': $vuetify.breakpoint.xs }"
-				style="flex-grow: 0;"
-			>
-				<v-col align="center">
-					<Button text="No Location" @clicked="toggleNoLocationImages" />
-					<template v-if="edit">
-						<Button
-							:disabled="currImages.images.length > 0 ? false : true"
-							text="Select All"
-							@clicked="handleClickSelectAll"
-						/>
-						<Button
-							:disabled="selectionCount > 0 ? false : true"
-							text="Delete"
-							@clicked="handleClickDelete"
-						/>
-
-						<Button
-							:disabled="selectionCount > 0 ? false : true"
-							text="Cancel"
-							@clicked="handleClickCancel"
-						/>
-					</template>
-				</v-col>
-			</v-row>
-			<ImagesWrapper :edit="edit" />
 		</v-sheet>
 	</v-col>
 </template>
@@ -55,11 +72,11 @@
 <script>
 	import { mapActions, mapState, mapGetters } from 'vuex'
 	import Button from '@/components/UI/Button'
+
 	import ImagesWrapper from './ImagesWrapper'
 
 	export default {
 		name: 'Travelog-Gallery',
-
 		components: {
 			Button,
 			ImagesWrapper
@@ -73,19 +90,19 @@
 		},
 		data() {
 			return {
-				showAlert: false,
-				edit: false
+				edit: false,
+				tabs: ['gallery', 'edit']
 			}
 		},
 
 		computed: {
 			...mapGetters('data', ['hasLocationImages', 'noLocationImages']),
-
 			...mapState('data', [
 				'selectionCount',
 				'currImages',
 				'hasLocation',
-				'filteredImages'
+				'filteredImages',
+				'warning'
 			])
 		},
 
@@ -102,13 +119,16 @@
 				'delete',
 				'updateCurrImages',
 				'updateSelectionCount',
-				'toggleHasLocation'
+				'toggleHasLocation',
+				'updateWarning'
 			]),
 
 			toggleNoLocationImages() {
 				this.toggleHasLocation()
 			},
-
+			handleTabItemClick() {
+				this.updateWarning('')
+			},
 			handleClickDelete() {
 				const imagesToDelete = this.currImages.images.reduce(
 					(filtered, image) => {
@@ -165,12 +185,12 @@
 		display: flex;
 		flex-direction: column;
 
-		&.mobile {
-			height: 38vh;
-		}
-
 		&.not-mobile {
 			height: 85vh;
+		}
+
+		.active-tab {
+			background-color: #4a4a4a;
 		}
 	}
 </style>

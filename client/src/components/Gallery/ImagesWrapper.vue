@@ -3,6 +3,7 @@
 		id="gallery"
 		:class="{ 'order-2': $vuetify.breakpoint.xs }"
 		class="gallery"
+		:style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }"
 	>
 		<v-col
 			class="overflow"
@@ -23,6 +24,7 @@
 				v-else
 				:images="currImages.images"
 			/>
+
 			<input
 				hidden
 				ref="fileInput"
@@ -118,7 +120,6 @@
 		overflow: hidden;
 		flex-grow: 1;
 		position: relative;
-
 		.overflow {
 			position: absolute;
 			top: 0;

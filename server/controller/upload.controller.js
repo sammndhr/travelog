@@ -17,7 +17,7 @@ const addImageData = async ({
 	let results
 	try {
 		results = await query(
-			'INSERT INTO images (user_id, key, url, original_url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5, $6);',
+			'INSERT INTO images (user_id, key, url, original_url, extension, geo_json_feature) VALUES ($1, $2, $3, $4, $5, $6) returning *;',
 			[userId, key, convertedS3Url, originalS3Url, extension, geoJsonFeature]
 		)
 	} catch (error) {
@@ -92,7 +92,7 @@ const getGeoJson = async (request, response, next) => {
 const saveData = async (request, response, next) => {
 	const allImageData = JSON.parse(request.body.allImageData),
 		userId = request.user.id //comes from the verify token middleware
-
+	let results
 	try {
 		for (const data of allImageData) {
 			const { key, extension, name } = data,
@@ -101,13 +101,14 @@ const saveData = async (request, response, next) => {
 				{ originalS3Url, convertedS3Url } = request,
 				imageData = { key, extension, exif, originalS3Url, convertedS3Url }
 
-			await saveImageData({ userId, imageData })
+			results = await saveImageData({ userId, imageData })
 		}
 	} catch (error) {
 		console.error(error)
 		throw error
 	}
 	request.code = 201
+	request.feature = results.rows[0].geo_json_feature
 	next()
 }
 
@@ -216,7 +217,7 @@ const removeFromDisk = (request, response, next) => {
 			if (err) throw err
 		})
 	})
-	return response.status(201).json({ success: true })
+	return response.status(201).json({ success: true, feature: request.feature })
 }
 
 module.exports = {

@@ -11,7 +11,12 @@
 				</v-icon>
 			</v-card>
 		</div>
-		<div v-for="(image, i) in images" :key="image.key" class="figure-wrapper">
+		<div
+			v-for="(image, i) in images"
+			:key="image.key"
+			class="figure-wrapper"
+			@click="handleClick({ i, key: image.key })"
+		>
 			<figure :class="[{ selected: image.selected }, 'figure']">
 				<v-icon
 					class="select-btn-background"
@@ -31,7 +36,6 @@
 					class="gallery-image-mobile"
 					:src="image.url"
 					alt="gallery-img.jpeg"
-					@click="handleClick({ i, key: image.key })"
 				/>
 			</figure>
 		</div>
@@ -65,15 +69,16 @@
 </script>
 
 <style lang="scss" scoped>
-	/* common styles */
 	.upload {
-		width: 158px;
-		height: 158px;
+		width: 150px;
+		height: 150px;
 	}
+	/* common styles */
 	.figure-wrapper {
 		cursor: pointer;
 		position: relative;
 		.figure {
+			height: 150px;
 			&.selected {
 				border: 8px solid rgba(63, 187, 131, 0.2); /*primary*/
 			}
@@ -87,18 +92,23 @@
 			}
 		}
 	}
+	//mobile
 	.gallery-mobile {
 		display: flex;
 		align-items: center;
+		height: 100%;
+
 		.figure-wrapper {
 			margin-right: 8px;
+
 			&:last-child {
 				margin-right: 0;
 			}
 		}
 		.gallery-image-mobile {
-			height: 158px;
+			height: 100%;
 			display: block;
+			object-fit: contain;
 		}
 	}
 </style>
