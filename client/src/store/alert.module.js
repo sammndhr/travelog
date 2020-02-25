@@ -12,6 +12,10 @@ const mutations = {
 		state.type = 'error'
 		state.message = message
 	},
+	WARNING(state, message) {
+		state.type = 'warning'
+		state.message = message
+	},
 	CLEAR(state) {
 		state.type = null
 		state.message = null
@@ -21,6 +25,9 @@ const mutations = {
 const actions = {
 	success({ commit }, message) {
 		commit('SUCCESS', message)
+	},
+	warning({ commit }, message) {
+		commit('WARNING', message)
 	},
 	error({ commit }, message) {
 		commit('ERROR', message)

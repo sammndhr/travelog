@@ -63,7 +63,6 @@
 
 	export default {
 		name: 'Travelog-Gallery',
-
 		components: {
 			Button,
 			ImagesWrapper
@@ -77,7 +76,6 @@
 		},
 		data() {
 			return {
-				showAlert: false,
 				edit: false,
 				tabs: ['gallery', 'edit']
 			}
@@ -170,13 +168,10 @@
 		display: flex;
 		flex-direction: column;
 
-		&.mobile {
-			height: 45vh;
-		}
-
 		&.not-mobile {
 			height: 85vh;
 		}
+
 		.active-tab {
 			background-color: #4a4a4a;
 		}

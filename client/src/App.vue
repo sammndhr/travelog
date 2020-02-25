@@ -32,10 +32,12 @@
 </script>
 
 <style lang="scss">
-	.gallery-wrapper {
-		.v-window,
-		.v-window__container {
-			height: 100% !important;
+	@media only screen and (min-width: 600px) {
+		.gallery-wrapper {
+			.v-window,
+			.v-window__container {
+				height: 100% !important;
+			}
 		}
 	}
 

@@ -65,11 +65,11 @@
 </script>
 
 <style lang="scss" scoped>
-	/* common styles */
 	.upload {
-		width: 158px;
-		height: 158px;
+		width: 150px;
+		height: 150px;
 	}
+	/* common styles */
 	.figure-wrapper {
 		cursor: pointer;
 		position: relative;
@@ -87,18 +87,23 @@
 			}
 		}
 	}
+	//mobile
 	.gallery-mobile {
 		display: flex;
 		align-items: center;
+		height: 100%;
+
 		.figure-wrapper {
 			margin-right: 8px;
+
 			&:last-child {
 				margin-right: 0;
 			}
 		}
 		.gallery-image-mobile {
-			height: 158px;
+			height: 150px;
 			display: block;
+			object-fit: contain;
 		}
 	}
 </style>

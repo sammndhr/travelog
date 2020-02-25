@@ -3,6 +3,7 @@
 		id="gallery"
 		:class="{ 'order-2': $vuetify.breakpoint.xs }"
 		class="gallery"
+		:style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }"
 	>
 		<v-col
 			class="overflow"
@@ -114,8 +115,7 @@
 
 <style lang="scss" scoped>
 	.gallery {
-		margin: 8px;
-		height: 100%;
+		margin: 0 8px;
 		overflow: hidden;
 		flex-grow: 1;
 		position: relative;
