@@ -32,15 +32,6 @@
 </script>
 
 <style lang="scss">
-	@media only screen and (min-width: 600px) {
-		.gallery-wrapper {
-			.v-window,
-			.v-window__container {
-				height: 100% !important;
-			}
-		}
-	}
-
 	.main-content {
 		margin-top: 64px;
 	}

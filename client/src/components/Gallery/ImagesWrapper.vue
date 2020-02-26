@@ -1,9 +1,10 @@
 <template>
+	<!-- :style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }" -->
 	<v-row
+		style="flex-grow:1 !important; flex-shrink: 0 !important;"
 		id="gallery"
 		:class="{ 'order-2': $vuetify.breakpoint.xs }"
 		class="gallery"
-		:style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }"
 	>
 		<v-col
 			class="overflow"
@@ -120,7 +121,6 @@
 
 <style lang="scss" scoped>
 	.gallery {
-		margin: 8px;
 		overflow: hidden;
 		flex-grow: 1;
 		position: relative;
@@ -131,7 +131,6 @@
 			right: 0;
 			bottom: 0;
 			overflow: auto;
-			padding: 0;
 		}
 
 		/* mobile styles */

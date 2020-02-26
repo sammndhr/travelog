@@ -1,10 +1,7 @@
 <template>
 	<v-col align-self="start" cols="12" xl="6" md="5">
-		<v-sheet
-			class="gallery-wrapper"
-			:class="$vuetify.breakpoint.xs ? 'mobile' : 'not-mobile'"
-			elevation="3"
-		>
+		<v-sheet class="gallery-wrapper" elevation="3" :height="height"
+			><!-- Set the height on sheet wrapping first tabs component so the vertical tabs will take up full height  -->
 			<v-tabs
 				@change="handleTabItemClick"
 				active-class="active-tab"
@@ -20,6 +17,7 @@
 				<v-tab @click="handleClickEdit" href="#tab-edit">
 					Edit
 				</v-tab>
+
 				<v-tab-item
 					:transition="false"
 					:reverse-transition="false"
@@ -27,29 +25,27 @@
 					v-for="item in tabs"
 					:key="`tab-${item}`"
 					:value="'tab-' + item"
-					style="height:100%;"
 				>
 					<v-tabs
 						:height="noLocationImages.images.length ? '40px' : '0px'"
 						class="tabs-location"
 						background-color="secondary lighten-2"
-						style="height:100%;"
 						color="primary"
 						centered
 					>
 						<v-tabs-slider color="primary slider"></v-tabs-slider>
 
 						<v-tab
-							@click="handleClickHasLoc"
 							style="width: 48%;"
+							@click="handleClickHasLoc"
 							href="#tab-hasLocation"
 							class="primary--text"
 						>
 							<v-icon>mdi-map-marker</v-icon>
 						</v-tab>
 						<v-tab
-							@click="handleClickNoLoc"
 							style="width: 48%;"
+							@click="handleClickNoLoc"
 							href="#tab-noLocation"
 							class="primary--text"
 						>
@@ -57,28 +53,38 @@
 						</v-tab>
 
 						<v-tab-item
-							class="secondary lighten-2"
-							:transition="false"
-							:reverse-transition="false"
+							class="secondary lighten-2 location-tab-item"
 							v-for="item in tabsL"
 							:key="`tab-${item}`"
 							:value="'tab-' + item"
-							style="height:100%;"
 						>
-							<div v-if="warning" class="pa-3">
-								<v-alert
-									dismissible
-									type="warning"
-									text
-									dense
-									outlined
-									transition="slide-y-transition"
-								>
-									{{ warning }}
-								</v-alert>
-							</div>
-							<EditControls v-if="edit" />
-							<ImagesWrapper :edit="edit" :galleryId="`gallery-${item}`" />
+							<v-container
+								:style="{
+									height: noLocationImages.images.length
+										? `calc(${height} - 40px);`
+										: height
+								}"
+								class="location-container"
+							>
+								<v-row v-if="warning">
+									<v-col>
+										<v-alert
+											class="mb-0"
+											dismissible
+											type="warning"
+											text
+											dense
+											outlined
+											transition="slide-y-transition"
+										>
+											{{ warning }}
+										</v-alert>
+									</v-col>
+								</v-row>
+								<EditControls />
+								<!-- <EditControls v-if="edit" /> -->
+								<ImagesWrapper :edit="edit" :galleryId="`gallery-${item}`" />
+							</v-container>
 						</v-tab-item>
 					</v-tabs>
 				</v-tab-item>
@@ -111,6 +117,7 @@
 		data() {
 			return {
 				edit: false,
+				height: this.$vuetify.breakpoint.xs ? '60vh' : '85vh',
 				tabs: ['gallery', 'edit'],
 				tabsL: ['hasLocation', 'noLocation']
 			}
@@ -174,17 +181,25 @@
 	.gallery-wrapper {
 		display: flex;
 		flex-direction: column;
-
-		&.not-mobile {
-			height: 85vh;
-		}
-
 		.active-tab {
 			background-color: #4a4a4a;
 		}
-		.tabs-location {
-			padding: 8px;
-			padding-top: 16px;
+
+		.location-tab-item {
+			height: 100%;
+			.container.location-container {
+				display: flex;
+				flex-direction: column;
+
+				.row {
+					flex-grow: unset;
+					flex-shrink: unset;
+				}
+			}
+			.container >>> .row {
+				flex-shrink: unset;
+				flex-grow: unset;
+			}
 		}
 	}
 </style>
