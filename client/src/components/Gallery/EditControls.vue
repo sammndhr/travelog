@@ -1,22 +1,27 @@
 <template>
-	<v-card outlined class="mx-2 my-6 pa-3 secondary lighten-4">
-		<Button
-			:disabled="currImages.images.length > 0 ? false : true"
-			text="Select All"
-			@clicked="handleClickSelectAll"
-		/>
-		<Button
-			:disabled="selectionCount > 0 ? false : true"
-			text="Delete"
-			@clicked="handleClickDelete"
-		/>
+	<!-- mx-2 my-6 pa-3  -->
+	<v-row>
+		<v-col>
+			<v-card outlined class="secondary lighten-4">
+				<Button
+					:disabled="currImages.images.length > 0 ? false : true"
+					text="Select All"
+					@clicked="handleClickSelectAll"
+				/>
+				<Button
+					:disabled="selectionCount > 0 ? false : true"
+					text="Delete"
+					@clicked="handleClickDelete"
+				/>
 
-		<Button
-			:disabled="selectionCount > 0 ? false : true"
-			text="Cancel"
-			@clicked="handleClickCancel"
-		/>
-	</v-card>
+				<Button
+					:disabled="selectionCount > 0 ? false : true"
+					text="Cancel"
+					@clicked="handleClickCancel"
+				/>
+			</v-card>
+		</v-col>
+	</v-row>
 </template>
 
 <script>

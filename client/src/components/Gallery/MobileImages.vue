@@ -96,7 +96,7 @@
 	.gallery-mobile {
 		display: flex;
 		align-items: center;
-		height: 100%;
+		/* height: 100%; */
 
 		.figure-wrapper {
 			margin-right: 8px;
