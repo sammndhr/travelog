@@ -1,8 +1,7 @@
 <template>
-	<!-- mx-2 my-6 pa-3  -->
 	<v-row>
 		<v-col>
-			<v-card outlined class="secondary lighten-4">
+			<v-card outlined class="secondary lighten-3">
 				<Button
 					:disabled="currImages.images.length > 0 ? false : true"
 					text="Select All"

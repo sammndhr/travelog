@@ -6,16 +6,37 @@
 				@change="handleTabItemClick"
 				active-class="active-tab"
 				dark
+				icons-and-text
+				:hide-slider="true"
+				background-color="#0E1813"
 				:right="false"
-				:vertical="$vuetify.breakpoint.xs ? false : true"
-				:height="$vuetify.breakpoint.xs ? '30px' : '100%'"
-				color="primary"
+				:vertical="true"
+				height="100%"
+				color="white"
 			>
-				<v-tab @click="handleClickGallery" href="#tab-gallery">
-					Gallery
+				<v-tab
+					style="height: 82px; font-weight: 600;"
+					class="caption"
+					:style="{ minWidth: $vuetify.breakpoint.xs ? '40px' : '90px' }"
+					@click="handleClickGallery"
+					href="#tab-gallery"
+				>
+					<template v-if="$vuetify.breakpoint.xs ? false : true">
+						Gallery
+					</template>
+					<v-icon>mdi-tooltip-image</v-icon>
 				</v-tab>
-				<v-tab @click="handleClickEdit" href="#tab-edit">
-					Edit
+				<v-tab
+					style="height: 82px; font-weight: 600;"
+					:style="{ minWidth: $vuetify.breakpoint.xs ? '40px' : '90px' }"
+					class="caption"
+					@click="handleClickEdit"
+					href="#tab-edit"
+				>
+					<template v-if="$vuetify.breakpoint.xs ? false : true">
+						Edit
+					</template>
+					<v-icon>mdi-trash-can</v-icon>
 				</v-tab>
 
 				<v-tab-item
@@ -27,7 +48,7 @@
 					:value="'tab-' + item"
 				>
 					<v-tabs
-						:height="noLocationImages.images.length ? '40px' : '0px'"
+						:height="noLocationImages.images.length ? '48px' : '0px'"
 						class="tabs-location"
 						background-color="secondary lighten-2"
 						color="primary"
@@ -61,7 +82,7 @@
 							<v-container
 								:style="{
 									height: noLocationImages.images.length
-										? `calc(${height} - 40px);`
+										? `calc(${height} - 48px)`
 										: height
 								}"
 								class="location-container"
@@ -81,8 +102,12 @@
 										</v-alert>
 									</v-col>
 								</v-row>
-								<EditControls />
-								<!-- <EditControls v-if="edit" /> -->
+								<v-row>
+									<v-col>
+										<h3 class="white--text">{{ headers[item] }}</h3>
+									</v-col>
+								</v-row>
+								<EditControls v-if="edit" />
 								<ImagesWrapper :edit="edit" :galleryId="`gallery-${item}`" />
 							</v-container>
 						</v-tab-item>
@@ -119,7 +144,11 @@
 				edit: false,
 				height: this.$vuetify.breakpoint.xs ? '60vh' : '85vh',
 				tabs: ['gallery', 'edit'],
-				tabsL: ['hasLocation', 'noLocation']
+				tabsL: ['hasLocation', 'noLocation'],
+				headers: {
+					hasLocation: 'Mapped Images',
+					noLocation: 'Missing Location'
+				}
 			}
 		},
 
@@ -182,7 +211,7 @@
 		display: flex;
 		flex-direction: column;
 		.active-tab {
-			background-color: #4a4a4a;
+			background-color: #39433d; //secondary lighten-2
 		}
 
 		.location-tab-item {
@@ -200,6 +229,9 @@
 				flex-shrink: unset;
 				flex-grow: unset;
 			}
+		}
+		.v-tab {
+			text-transform: unset;
 		}
 	}
 </style>

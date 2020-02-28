@@ -136,7 +136,7 @@
 		position: relative;
 		.figure {
 			&.selected {
-				border: 8px solid rgba(63, 187, 131, 0.3); /*primary*/
+				border: 8px solid rgba(255, 255, 255, 0.4); /*primary*/
 			}
 			.select-btn,
 			.select-btn-background {

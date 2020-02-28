@@ -11,3 +11,18 @@ $primary: $green;
 $secondary: $gray;
 $accent: $yellow;
 $error: $red;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap');
+
+$body-font-family: 'Open Sans', BlinkMacSystemFont, -apple-system, 'Roboto',
+	Helvetica Neue, Helvetica, Arial, sans-serif;
+
+$typoOptions: display-4, display-3, display-2, display-1, headline, title,
+	subtitle-1, subtitle-2, body-1, body-2, caption, overline;
+#app {
+	font-family: $body-font-family !important;
+	@each $typoOption in $typoOptions {
+		.#{$typoOption} {
+			font-family: $body-font-family !important;
+		}
+	}
+}
