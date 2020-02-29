@@ -242,8 +242,9 @@ const actions = {
 		dispatch('updateFilteredImages', filteredImages)
 	},
 
-	updateFilteredImages({ commit }, filteredImages) {
+	updateFilteredImages({ commit, dispatch }, filteredImages) {
 		commit('UPDATE_FILTERED_IMAGES', filteredImages)
+		dispatch('unselectAllItems')
 	},
 
 	updateCurrImages({ commit }, currImages) {

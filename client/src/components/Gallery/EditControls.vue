@@ -1,23 +1,29 @@
 <template>
 	<v-row>
 		<v-col>
-			<v-card outlined class="secondary lighten-3">
-				<Button
-					:disabled="currImages.images.length > 0 ? false : true"
-					text="Select All"
-					@clicked="handleClickSelectAll"
-				/>
-				<Button
-					:disabled="selectionCount > 0 ? false : true"
-					text="Delete"
-					@clicked="handleClickDelete"
-				/>
+			<v-card flat tile>
+				<v-toolbar dark dense class="secondary lighten-3">
+					<IconButton
+						v-show="selectionCount > 0"
+						icon="mdi-close"
+						@clicked="handleClickCancel"
+					/>
 
-				<Button
-					:disabled="selectionCount > 0 ? false : true"
-					text="Cancel"
-					@clicked="handleClickCancel"
-				/>
+					<v-toolbar-title v-show="selectionCount > 0" class="pl-0">
+						{{ selectionCount }} selected</v-toolbar-title
+					>
+					<v-spacer></v-spacer>
+					<IconButton
+						v-show="currImages.images.length !== selectionCount"
+						icon="mdi-checkbox-multiple-marked-outline"
+						@clicked="handleClickSelectAll"
+					/>
+					<IconButton
+						v-show="selectionCount > 0"
+						icon="mdi-trash-can"
+						@clicked="handleClickDelete"
+					/>
+				</v-toolbar>
 			</v-card>
 		</v-col>
 	</v-row>
@@ -25,12 +31,12 @@
 
 <script>
 	import { mapActions, mapState } from 'vuex'
-	import Button from '@/components/UI/Button'
+	import IconButton from '@/components/UI/IconButton'
 
 	export default {
 		name: 'EditControls',
 		components: {
-			Button
+			IconButton
 		},
 
 		computed: {

@@ -12,7 +12,6 @@
 		:to="link"
 	>
 		{{ text }}
-		<v-icon v-show="type === 'upload'" right dark>mdi-cloud-upload</v-icon>
 	</v-btn>
 </template>
 <script>

@@ -22,7 +22,6 @@
 			>
 				<template v-if="edit">
 					<v-icon
-						large
 						class="select-btn-background"
 						v-show="!image.selected && !hovering[i]"
 						color="white"
@@ -32,7 +31,6 @@
 					</v-icon>
 
 					<v-icon
-						large
 						v-show="hovering[i]"
 						class="select-btn"
 						color="white"
@@ -42,19 +40,13 @@
 					</v-icon>
 
 					<v-icon
-						large
 						class="select-btn-background"
 						v-show="image.selected"
 						color="white"
 					>
 						mdi-checkbox-blank-circle
 					</v-icon>
-					<v-icon
-						large
-						v-show="image.selected"
-						class="select-btn"
-						color="primary"
-					>
+					<v-icon v-show="image.selected" class="select-btn" color="primary">
 						mdi-checkbox-marked-circle
 					</v-icon>
 				</template>

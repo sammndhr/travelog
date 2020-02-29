@@ -26,6 +26,7 @@
 					</template>
 					<v-icon>mdi-tooltip-image</v-icon>
 				</v-tab>
+				<!-- v-if="currImages.images.length > 0" -->
 				<v-tab
 					style="height: 82px; font-weight: 600;"
 					:style="{ minWidth: $vuetify.breakpoint.xs ? '40px' : '90px' }"
