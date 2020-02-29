@@ -4,6 +4,7 @@
 			<v-card flat tile>
 				<v-toolbar dark dense class="secondary lighten-3">
 					<IconButton
+						tooltip="Cancel"
 						v-show="selectionCount > 0"
 						icon="mdi-close"
 						@clicked="handleClickCancel"
@@ -14,11 +15,13 @@
 					>
 					<v-spacer></v-spacer>
 					<IconButton
+						tooltip="Select All"
 						v-show="currImages.images.length !== selectionCount"
 						icon="mdi-checkbox-multiple-marked-outline"
 						@clicked="handleClickSelectAll"
 					/>
 					<IconButton
+						tooltip="Delete"
 						v-show="selectionCount > 0"
 						icon="mdi-trash-can"
 						@clicked="handleClickDelete"
