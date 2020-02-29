@@ -147,7 +147,7 @@
 				tabsL: ['hasLocation', 'noLocation'],
 				headers: {
 					hasLocation: 'Mapped Images',
-					noLocation: 'Missing Location'
+					noLocation: 'Unmapped Images'
 				}
 			}
 		},
