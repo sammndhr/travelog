@@ -1,7 +1,7 @@
 <template>
 	<!-- :style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }" -->
 	<v-row
-		style="flex-grow:1 !important; flex-shrink: 0 !important;"
+		style="flex-grow:1 !important; flex-shrink: 1 !important; height: 100% !important;"
 		id="gallery"
 		:class="{ 'order-2': $vuetify.breakpoint.xs }"
 		class="gallery"

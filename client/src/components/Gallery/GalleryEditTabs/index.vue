@@ -1,39 +1,72 @@
 <template>
-	<!-- :height="noLocationCount ? '40px' : '0px'" -->
-	<v-tabs
-		v-model="tab"
-		height="40px"
-		class="tabs-location"
-		background-color="secondary lighten-2"
-		color="primary"
-		centered
+	<v-container
+		:style="{
+			height: mainHeight
+		}"
+		class="loc-container-wrapper secondary lighten-1"
 	>
-		<v-tabs-slider color="primary slider"></v-tabs-slider>
-		<v-tabs-slider color="primary slider"></v-tabs-slider>
-
-		<v-tab
-			v-for="(tab, i) in tabs"
-			:key="`tab-${tab.title}`"
-			style="width: 48%;"
-			:href="`#${i}`"
-			class="primary--text"
+		<v-row>
+			<v-col>
+				<h3 class="white--text">{{ title }}</h3>
+			</v-col>
+		</v-row>
+		<v-tabs
+			active-class="active-tab"
+			v-model="tab"
+			height="40px"
+			class="tabs-location"
+			background-color="secondary lighten-1"
+			color="primary"
+			centered
+			dark
 		>
-			<v-icon>{{ tab.icon }}</v-icon>
-		</v-tab>
+			<v-tabs-slider color="primary slider"></v-tabs-slider>
+			<v-tabs-slider color="primary slider"></v-tabs-slider>
 
-		<v-tabs-items v-model="tab">
-			<v-tab-item
-				class="secondary lighten-2 location-tab-item"
+			<v-tab
 				v-for="(tab, i) in tabs"
-				:key="`tab-item-${tab.title}`"
-				:value="`${i}`"
+				:key="`tab-${tab.title}`"
+				style="width: 48%;"
+				:href="`#${i}`"
+				class="primary--text"
 			>
-				<TabItem :edit="tab.edit" :galleryId="`gallery-${tab.title}`">
-					<slot />
-				</TabItem>
-			</v-tab-item>
-		</v-tabs-items>
-	</v-tabs>
+				<v-icon>{{ tab.icon }}</v-icon>
+				<span class="tab-text">{{ tab.text }}</span>
+			</v-tab>
+
+			<v-tabs-items v-model="tab" class="edit-tabs">
+				<v-tab-item
+					:transition="false"
+					:reverse-transition="false"
+					class="secondary lighten-1 location-tab-item"
+					v-for="(tab, i) in tabs"
+					:key="`tab-item-${tab.title}`"
+					:value="`${i}`"
+				>
+					<v-alert
+						v-if="warning"
+						class="mb-0 mt-4"
+						dismissible
+						type="warning"
+						text
+						dense
+						outlined
+						transition="slide-y-transition"
+					>
+						{{ warning }}
+					</v-alert>
+
+					<TabItem
+						:edit="tab.edit"
+						:title="title"
+						:galleryId="`gallery-${tab.title}`"
+					>
+						<slot />
+					</TabItem>
+				</v-tab-item>
+			</v-tabs-items>
+		</v-tabs>
+	</v-container>
 </template>
 
 <script>
@@ -48,9 +81,15 @@
 		data() {
 			return {
 				tab: 0,
+
 				tabs: [
-					{ title: 'gallery', icon: 'mdi-tooltip-image', edit: false },
-					{ title: 'edit', icon: 'mdi-trash-can', edit: true }
+					{
+						title: 'gallery',
+						text: 'Gallery',
+						icon: 'mdi-tooltip-image',
+						edit: false
+					},
+					{ title: 'edit', text: 'Edit', icon: 'mdi-trash-can', edit: true }
 				]
 			}
 		},
@@ -63,13 +102,60 @@
 
 		computed: {
 			...mapGetters('data', ['noLocationCount']),
-			...mapState('data', ['hasLocation'])
+			...mapState('data', ['hasLocation', 'warning']),
+			...mapState(['mainHeight']),
+			title() {
+				return this.hasLocation ? 'Mapped Images' : 'Unmapped Images'
+			}
 		}
 	}
 </script>
 
-<style lang="scss" scoped>
-	.location-tab-item {
-		height: 100%;
+<style lang="scss">
+	.loc-container-wrapper {
+		.location-tab-item {
+			border: none;
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+		}
+		.tab-text {
+			font-weight: 600;
+			padding-left: 8px;
+			text-transform: none;
+			color: rgba(255, 255, 255, 0.7);
+		}
+		.active-tab {
+			.tab-text {
+				color: $primary;
+			}
+		}
+	}
+	.loc-container-wrapper {
+		.row {
+			flex-grow: unset;
+			flex-shrink: unset;
+		}
+		.tabs-location {
+			height: calc(100% - 40px);
+		}
+		.edit-tabs {
+			height: calc(100% - 40px);
+		}
+		.edit-tabs >>> .v-window__container {
+			height: 100% !important;
+		}
+
+		.location-tab-item {
+			height: 100% !important;
+		}
+		.v-window__container {
+			height: 100% !important;
+		}
+
+		.container >>> .row {
+			flex-shrink: unset;
+			flex-grow: unset;
+		}
 	}
 </style>

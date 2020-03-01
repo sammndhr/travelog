@@ -2,7 +2,7 @@
 	<v-row v-if="currImagesCount > 0">
 		<v-col>
 			<v-card flat tile>
-				<v-toolbar dark dense class="secondary lighten-3">
+				<v-toolbar dark dense class="secondary lighten-2">
 					<IconButton
 						tooltip="Cancel"
 						:show="selectionCount > 0"

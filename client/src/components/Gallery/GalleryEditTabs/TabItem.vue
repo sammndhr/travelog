@@ -1,26 +1,11 @@
 <template>
-	<v-container
-		:style="{
+	<!-- :style="{
 			height: `calc(${mainHeight} - 40px)`
-		}"
+		}" -->
+	<v-container
 		class="location-container"
+		style="flex-grow:1 !important; flex-shrink: 0 !important;"
 	>
-		<v-row v-if="warning">
-			<v-col>
-				<v-alert
-					class="mb-0"
-					dismissible
-					type="warning"
-					text
-					dense
-					outlined
-					transition="slide-y-transition"
-				>
-					{{ warning }}
-				</v-alert>
-			</v-col>
-		</v-row>
-		<slot />
 		<EditControls v-if="edit" />
 		<ImagesWrapper
 			:edit="edit"
@@ -48,6 +33,11 @@
 				type: String,
 				default: '',
 				required: false
+			},
+			title: {
+				type: String,
+				default: '',
+				required: false
 			}
 		},
 
@@ -58,7 +48,7 @@
 		computed: {
 			...mapGetters('data', ['noLocationCount']),
 			...mapState(['mainHeight']),
-			...mapState('data', ['warning', 'currImages'])
+			...mapState('data', ['currImages'])
 		},
 		methods: {
 			...mapActions('data', [
@@ -99,7 +89,8 @@
 		.container.location-container {
 			display: flex;
 			flex-direction: column;
-
+			height: 100%;
+			min-height: 100%;
 			.row {
 				flex-grow: unset;
 				flex-shrink: unset;

@@ -11,11 +11,17 @@
 				color="secondary"
 				:permanent="true"
 			>
-				<v-list dense nav>
+				<v-list class="nav-list" dense nav dark>
 					<v-list-item-group mandatory v-model="model" color="primary">
-						<v-list-item v-for="item in items" :key="item.title" link>
+						<v-list-item
+							active-class="active-tab-list"
+							class="tab-list-item"
+							v-for="item in items"
+							:key="item.title"
+							inactive
+						>
 							<v-list-item-icon>
-								<v-icon>{{ item.icon }}</v-icon>
+								<v-icon class="tab-icon">{{ item.icon }}</v-icon>
 							</v-list-item-icon>
 							<v-list-item-content>
 								<v-list-item-title>
@@ -73,11 +79,25 @@
 
 <style lang="scss" scoped>
 	.gallery-wrapper {
+		.nav-list {
+			padding: 0;
+		}
 		display: flex;
 		flex-wrap: nowrap;
-		.active-tab {
-			color: $primary;
-			background-color: #4a4a4a;
+		.tab-icon {
+			color: rgba(255, 255, 255, 0.7);
+		}
+		.tab-list-item {
+			margin: 0 !important;
+			padding: 8px !important;
+			border-radius: 0 !important;
+		}
+		.active-tab-list {
+			background-color: #232c27 !important;
+
+			.tab-icon {
+				color: $primary;
+			}
 		}
 	}
 </style>
