@@ -2,37 +2,36 @@
 	<v-col align-self="start" cols="12" xl="6" md="5">
 		<v-sheet class="gallery-wrapper" :height="mainHeight"
 			><!-- Set the height on sheet wrapping first tabs component so the vertical tabs will take up full height  -->
-			<v-navigation-drawer
-				v-model="drawer"
-				:expand-on-hover="expandOnHover"
-				:mini-variant="miniVariant"
-				:mini-variant-width="miniWidth"
+			<v-tabs
+				v-model="tab"
+				active-class="active-tab"
 				dark
-				color="secondary"
-				:permanent="true"
+				icons-and-text
+				:hide-slider="true"
+				background-color="#0E1813"
+				:right="false"
+				:vertical="true"
+				height="100%"
+				color="white"
 			>
-				<v-list class="nav-list" dense nav dark>
-					<v-list-item-group mandatory v-model="model" color="primary">
-						<v-list-item
-							active-class="active-tab-list"
-							class="tab-list-item"
-							v-for="item in items"
-							:key="item.title"
-							inactive
-						>
-							<v-list-item-icon>
-								<v-icon class="tab-icon">{{ item.icon }}</v-icon>
-							</v-list-item-icon>
-							<v-list-item-content>
-								<v-list-item-title>
-									{{ item.title }}
-								</v-list-item-title>
-							</v-list-item-content>
-						</v-list-item>
-					</v-list-item-group>
-				</v-list>
-			</v-navigation-drawer>
-			<TabItem />
+				<v-tab v-for="(item, i) in items" :key="item.title" :href="`#${i}`">
+					<template v-if="$vuetify.breakpoint.xs ? false : true">
+						{{ item.text }}
+					</template>
+					<v-icon>{{ item.icon }}</v-icon>
+				</v-tab>
+
+				<v-tabs-items v-model="tab">
+					<v-tab-item
+						v-for="(item, i) in items"
+						:key="`tab-item-${item.title}`"
+						:value="`${i}`"
+						class="secondary tab-item lighten-2"
+					>
+						<TabItem />
+					</v-tab-item>
+				</v-tabs-items>
+			</v-tabs>
 		</v-sheet>
 	</v-col>
 </template>
@@ -48,20 +47,28 @@
 
 		data() {
 			return {
-				miniVariant: true,
-				miniWidth: '65px',
 				expandOnHover: false,
 				items: [
-					{ title: 'Mapped', icon: 'mdi-map-marker', hasLocation: true },
-					{ title: 'Unmapped', icon: 'mdi-map-marker-off', hasLocation: false }
+					{
+						title: 'mapped',
+						text: 'Mapped',
+						icon: 'mdi-map-marker',
+						hasLocation: true
+					},
+					{
+						title: 'unmapped',
+						text: 'Unmapped',
+						icon: 'mdi-map-marker-off',
+						hasLocation: false
+					}
 				],
-				drawer: true,
-				model: 0
+
+				tab: 0
 			}
 		},
 
 		watch: {
-			model(val) {
+			tab(val) {
 				this.updateHasLocation(this.items[val].hasLocation)
 			}
 		},
@@ -79,25 +86,15 @@
 
 <style lang="scss" scoped>
 	.gallery-wrapper {
-		.nav-list {
-			padding: 0;
-		}
 		display: flex;
-		flex-wrap: nowrap;
-		.tab-icon {
-			color: rgba(255, 255, 255, 0.7);
+		flex-direction: column;
+		.active-tab {
+			background-color: #232c27;
 		}
-		.tab-list-item {
-			margin: 0 !important;
-			padding: 8px !important;
-			border-radius: 0 !important;
-		}
-		.active-tab-list {
-			background-color: #232c27 !important;
-
-			.tab-icon {
-				color: $primary;
-			}
+		.v-tab {
+			text-transform: unset;
+			font-weight: 600;
+			font-size: 10px;
 		}
 	}
 </style>

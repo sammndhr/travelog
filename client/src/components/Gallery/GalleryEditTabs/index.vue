@@ -5,15 +5,14 @@
 		}"
 		class="loc-container-wrapper secondary lighten-1"
 	>
-		<v-row>
+		<v-row no-gutters="">
 			<v-col>
-				<h3 class="white--text">{{ title }}</h3>
+				<h3 class="white--text mb-2 px-2">{{ title }}</h3>
 			</v-col>
 		</v-row>
 		<v-tabs
 			active-class="active-tab"
 			v-model="tab"
-			height="40px"
 			class="tabs-location"
 			background-color="secondary lighten-1"
 			color="primary"
@@ -113,6 +112,9 @@
 
 <style lang="scss">
 	.loc-container-wrapper {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
 		.location-tab-item {
 			border: none;
 			display: flex;
@@ -137,10 +139,10 @@
 			flex-shrink: unset;
 		}
 		.tabs-location {
-			height: calc(100% - 40px);
+			height: calc(100%);
 		}
 		.edit-tabs {
-			height: calc(100% - 40px);
+			height: calc(100% - 48px);
 		}
 		.edit-tabs >>> .v-window__container {
 			height: 100% !important;

@@ -1,7 +1,4 @@
 <template>
-	<!-- :style="{
-			height: `calc(${mainHeight} - 40px)`
-		}" -->
 	<v-container
 		class="location-container"
 		style="flex-grow:1 !important; flex-shrink: 0 !important;"
@@ -73,13 +70,13 @@
 					this.updateCurrImages(images)
 				}
 			}
-		},
-		beforeMount() {
-			this.updateHasLocation(true)
-		},
-		beforeDestroy() {
-			this.updateHasLocation(false)
 		}
+		// beforeMount() {
+		// 	this.updateHasLocation(true)
+		// },
+		// beforeDestroy() {
+		// 	this.updateHasLocation(false)
+		// }
 	}
 </script>
 
