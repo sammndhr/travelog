@@ -35,8 +35,6 @@
 
 			<v-tabs-items v-model="tab" class="edit-tabs">
 				<v-tab-item
-					:transition="false"
-					:reverse-transition="false"
 					class="secondary lighten-1 location-tab-item"
 					v-for="(tab, i) in tabs"
 					:key="`tab-item-${tab.title}`"

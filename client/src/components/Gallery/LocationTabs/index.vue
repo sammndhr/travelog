@@ -23,6 +23,8 @@
 
 				<v-tabs-items v-model="tab">
 					<v-tab-item
+						:transition="false"
+						:reverse-transition="false"
 						v-for="(item, i) in items"
 						:key="`tab-item-${item.title}`"
 						:value="`${i}`"
