@@ -70,16 +70,22 @@
 		watch: {
 			tab(val) {
 				this.updateHasLocation(this.items[val].hasLocation)
+			},
+
+			filteredImages(newImages) {
+				if (this.hasLocation) {
+					this.updateCurrImages(newImages)
+				}
 			}
 		},
 
 		computed: {
 			...mapState(['mainHeight']),
-			...mapState('data', ['noLocationCount'])
+			...mapState('data', ['hasLocation', 'noLocationCount', 'filteredImages'])
 		},
 
 		methods: {
-			...mapActions('data', ['updateHasLocation'])
+			...mapActions('data', ['updateHasLocation', 'updateCurrImages'])
 		}
 	}
 </script>
