@@ -54,23 +54,26 @@
 	import { supportsFileReader, handleImages } from '@/utils/'
 
 	export default {
-		data() {
-			return {
-				index: null
-			}
-		},
-		props: {
-			edit: { default: false, required: true, type: Boolean },
-			galleryId: { default: '', required: false, type: String }
-		},
-
+		name: 'ImagesWrapper',
 		components: {
 			VueGallery,
 			MobileImages,
 			Images
 		},
+
+		data() {
+			return {
+				index: null
+			}
+		},
+
+		props: {
+			edit: { default: false, required: true, type: Boolean },
+			galleryId: { default: '', required: false, type: String }
+		},
+
 		computed: {
-			...mapState('data', ['currImages'])
+			...mapState('data', ['currImages', 'isEdit'])
 		},
 
 		methods: {

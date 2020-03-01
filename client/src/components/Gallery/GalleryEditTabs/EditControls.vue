@@ -1,11 +1,11 @@
 <template>
-	<v-row>
+	<v-row v-if="currImagesCount > 0">
 		<v-col>
 			<v-card flat tile>
 				<v-toolbar dark dense class="secondary lighten-3">
 					<IconButton
 						tooltip="Cancel"
-						v-show="selectionCount > 0"
+						:show="selectionCount > 0"
 						icon="mdi-close"
 						@clicked="handleClickCancel"
 					/>
@@ -16,13 +16,13 @@
 					<v-spacer></v-spacer>
 					<IconButton
 						tooltip="Select All"
-						v-show="currImages.images.length !== selectionCount"
+						:show="currImagesCount !== selectionCount"
 						icon="mdi-checkbox-multiple-marked-outline"
 						@clicked="handleClickSelectAll"
 					/>
 					<IconButton
 						tooltip="Delete"
-						v-show="selectionCount > 0"
+						:show="selectionCount > 0"
 						icon="mdi-trash-can"
 						@clicked="handleClickDelete"
 					/>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-	import { mapActions, mapState } from 'vuex'
+	import { mapActions, mapState, mapGetters } from 'vuex'
 	import IconButton from '@/components/UI/IconButton'
 
 	export default {
@@ -43,7 +43,8 @@
 		},
 
 		computed: {
-			...mapState('data', ['selectionCount', 'currImages'])
+			...mapState('data', ['selectionCount', 'currImages']),
+			...mapGetters('data', ['currImagesCount'])
 		},
 
 		methods: {
@@ -72,7 +73,7 @@
 					image.selected = true
 				}
 				this.updateCurrImages(currImages)
-				const count = this.currImages.images.length
+				const count = this.currImagesCount
 				this.updateSelectionCount({ type: 'update', count })
 			},
 

@@ -16,7 +16,8 @@ const state = {
 	currImages: { images: [], urls: [] },
 	selectionCount: 0,
 	hasLocation: true,
-	warning: null
+	warning: null,
+	isEdit: false
 }
 
 const mutations = {
@@ -92,6 +93,9 @@ const mutations = {
 	},
 	UPDATE_WARNING_MESSAGE(state, message) {
 		state.warning = message
+	},
+	UPDATE_IS_EDIT(state, isEdit) {
+		state.isEdit = isEdit
 	}
 }
 
@@ -130,6 +134,14 @@ const getters = {
 		const geoJson = getters.noLocationGeoJson
 		const images = geoJsonToImages(geoJson)
 		return images
+	},
+
+	noLocationCount: (state, getters) => {
+		return getters.noLocationImages.images.length
+	},
+
+	currImagesCount: state => {
+		return state.currImages.images.length
 	}
 }
 
@@ -283,6 +295,9 @@ const actions = {
 		}
 		dispatch('updateCurrImages', currImages)
 		dispatch('updateSelectionCount', { type: 'reset' })
+	},
+	updateIsEdit({ commit }, isEdit) {
+		commit('UPDATE_IS_EDIT', isEdit)
 	}
 }
 

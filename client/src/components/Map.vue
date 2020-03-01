@@ -3,6 +3,7 @@
 		<v-card
 			class="map-wrapper"
 			:class="$vuetify.breakpoint.xs ? 'mobile' : ''"
+			:style="{ height: mainHeight }"
 			outlined
 		>
 			<MglMap
@@ -84,6 +85,7 @@
 		computed: {
 			...mapGetters('data', ['hasLocationGeoJson']),
 			...mapState('data', ['hasLocation']),
+			...mapState(['mainHeight']),
 			geoJson() {
 				const geoJsonEmpty = {
 					type: 'FeatureCollection',
@@ -180,7 +182,6 @@
 
 	.map-wrapper {
 		min-width: min-content;
-		height: 85vh;
 
 		&.mobile {
 			height: 60vh;

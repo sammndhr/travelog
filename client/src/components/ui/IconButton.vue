@@ -1,7 +1,14 @@
 <template>
 	<v-tooltip dark bottom>
 		<template v-slot:activator="{ on }">
-			<v-btn color="primary" icon v-on="on" dark @click="handleClick">
+			<v-btn
+				v-show="show"
+				color="primary"
+				icon
+				v-on="on"
+				dark
+				@click="handleClick"
+			>
 				<v-icon>{{ icon }}</v-icon>
 			</v-btn>
 		</template>
@@ -22,6 +29,11 @@
 				default: '',
 				required: false,
 				type: String
+			},
+			show: {
+				default: false,
+				required: false,
+				type: Boolean
 			}
 		},
 
