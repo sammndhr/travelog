@@ -1,5 +1,7 @@
 # travelog
 
+Travel diary to map travel pictures. [travelog.dev](http://travelog.dev/)
+
 Directory structure
 
 ```bash
