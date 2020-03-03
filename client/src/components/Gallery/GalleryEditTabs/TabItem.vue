@@ -71,31 +71,22 @@
 				}
 			}
 		}
-		// beforeMount() {
-		// 	this.updateHasLocation(true)
-		// },
-		// beforeDestroy() {
-		// 	this.updateHasLocation(false)
-		// }
 	}
 </script>
 
 <style lang="scss" scoped>
-	.location-tab-item {
+	.container.location-container {
+		display: flex;
+		flex-direction: column;
 		height: 100%;
-		.container.location-container {
-			display: flex;
-			flex-direction: column;
-			height: 100%;
-			min-height: 100%;
-			.row {
-				flex-grow: unset;
-				flex-shrink: unset;
-			}
-		}
-		.container >>> .row {
-			flex-shrink: unset;
+		min-height: 100%;
+		.row {
 			flex-grow: unset;
+			flex-shrink: unset;
 		}
+	}
+	.container >>> .row {
+		flex-shrink: unset;
+		flex-grow: unset;
 	}
 </style>

@@ -113,7 +113,29 @@
 		display: flex;
 		flex-direction: column;
 		flex-wrap: nowrap;
+
+		.row {
+			flex-grow: unset;
+			flex-shrink: unset;
+		}
+		.tabs-location {
+			height: calc(100%);
+		}
+		.edit-tabs {
+			height: calc(100% - 48px);
+		}
+
+		.v-window__container {
+			height: 100% !important;
+		}
+
+		.container >>> .row {
+			flex-shrink: unset;
+			flex-grow: unset;
+		}
+
 		.location-tab-item {
+			height: 100% !important;
 			border: none;
 			display: flex;
 			flex-direction: column;
@@ -129,33 +151,6 @@
 			.tab-text {
 				color: $primary;
 			}
-		}
-	}
-	.loc-container-wrapper {
-		.row {
-			flex-grow: unset;
-			flex-shrink: unset;
-		}
-		.tabs-location {
-			height: calc(100%);
-		}
-		.edit-tabs {
-			height: calc(100% - 48px);
-		}
-		.edit-tabs >>> .v-window__container {
-			height: 100% !important;
-		}
-
-		.location-tab-item {
-			height: 100% !important;
-		}
-		.v-window__container {
-			height: 100% !important;
-		}
-
-		.container >>> .row {
-			flex-shrink: unset;
-			flex-grow: unset;
 		}
 	}
 </style>
