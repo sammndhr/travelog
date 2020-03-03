@@ -1,32 +1,32 @@
 {
-	"name": "travelog",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"dev": "DEBUG=travelog:* && node models/createTables.js && nodemon ./bin/www",
-		"start": "node ./bin/www"
-	},
-	"engines": {
-		"node": "12.x"
-	},
-	"dependencies": {
-		"aws-sdk": "^2.630.0",
-		"axios": "^0.19.2",
-		"bcrypt": "^4.0.0",
-		"body-parser": "^1.19.0",
-		"cookie-parser": "~1.4.4",
-		"cors": "^2.8.5",
-		"debug": "^4.1.1",
-		"dotenv": "^8.2.0",
-		"exifreader": "^2.13.1",
-		"express": "^4.17.1",
-		"http-errors": "^1.7.3",
-		"jsonwebtoken": "^8.5.1",
-		"morgan": "~1.9.1",
-		"multer": "^1.4.2",
-		"pg": "^7.18.2",
-		"pug": "^2.0.4",
-		"sharp": "^0.24.1"
-	},
-	"devDependencies": {}
+  "name": "travelog",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "DEBUG=travelog:* && node models/createTables.js && nodemon ./bin/www",
+    "start": "node ./bin/www"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.630.0",
+    "axios": "^0.19.2",
+    "bcrypt": "^4.0.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
+    "exifreader": "^2.13.1",
+    "express": "^4.17.1",
+    "http-errors": "^1.7.3",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.2",
+    "pg": "^7.18.2",
+    "pug": "^2.0.4",
+    "sharp": "^0.24.1"
+  },
+  "devDependencies": {}
 }

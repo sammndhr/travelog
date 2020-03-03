@@ -7,12 +7,12 @@ import { data } from './upload.module'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-	state: {
-		mainHeight: '85vh'
-	},
-	modules: {
-		alert,
-		account,
-		data
-	}
+  state: {
+    mainHeight: '85vh'
+  },
+  modules: {
+    alert,
+    account,
+    data
+  }
 })

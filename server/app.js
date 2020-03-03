@@ -31,21 +31,21 @@ app.use('/uploads', uploadRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	next(createError(404))
+  next(createError(404))
 })
 
 app.use(function(err, req, res, next) {
-	console.log(
-		'XXXXXXX__________ERROR caught in final error handler__________XXXXXXX'
-	)
-	console.log(err)
+  console.log(
+    'XXXXXXX__________ERROR caught in final error handler__________XXXXXXX'
+  )
+  console.log(err)
 
-	res.locals.message = err.message
-	res.locals.error = req.app.get('env') === 'development' ? err : {}
+  res.locals.message = err.message
+  res.locals.error = req.app.get('env') === 'development' ? err : {}
 
-	// render the error page
-	res.status(err.status || 500)
-	res.render('error')
+  // render the error page
+  res.status(err.status || 500)
+  res.render('error')
 })
 
 module.exports = app
