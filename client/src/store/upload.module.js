@@ -1,6 +1,6 @@
+import axios from 'axios'
 import { createErrorMessage } from '@/utils'
 import { geoJsonToImages } from '@/utils/'
-import axios from 'axios'
 
 const state = {
   geoJson: {

@@ -1,14 +1,6 @@
 <template>
   <masonry class="masonary" :cols="cols" :gutter="gutter">
-    <v-card
-      @click="handleUploadClick"
-      class="figure-wrapper upload-wrapper white darken-1"
-      outlined
-    >
-      <v-icon color="primary" x-large class="upload-icon">
-        mdi-cloud-upload
-      </v-icon>
-    </v-card>
+    <UploadButton @uploadClicked="handleUploadClick" />
     <div
       v-for="(image, i) in images"
       :key="image.key"
@@ -57,6 +49,7 @@
 </template>
 
 <script>
+  import UploadButton from '@/components/UI/UploadButton'
   export default {
     name: 'Images',
     props: {
@@ -78,6 +71,9 @@
         gutter: { default: '8px' },
         cols: { default: 4, 1600: 3, 1300: 2 }
       }
+    },
+    components: {
+      UploadButton
     },
     watch: {
       images(val) {
@@ -107,23 +103,9 @@
     }
   }
 </script>
-
 <style lang="scss" scoped>
   /* common styles */
   .figure-wrapper {
-    &.upload-wrapper {
-      width: 100%;
-      padding-top: 98.42%;
-      position: relative;
-      .upload-icon {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background-color: transparent;
-      }
-    }
     cursor: pointer;
     position: relative;
     .figure {
