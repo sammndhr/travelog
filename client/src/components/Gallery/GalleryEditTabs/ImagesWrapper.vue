@@ -31,7 +31,7 @@
         ref="fileInput"
         id="upload-images"
         type="file"
-        accept="image/*, image/heic"
+        accept="image/*"
         multiple="{true}"
         @change="handleChange"
       />
