@@ -19,6 +19,7 @@
 		"node-sass": "^4.13.1",
 		"vue": "^2.6.10",
 		"vue-gallery": "^2.0.1",
+		"vue-gtag": "^1.6.2",
 		"vue-mapbox": "^0.4.1",
 		"vue-masonry-css": "^1.0.3",
 		"vue-router": "^3.1.6",
