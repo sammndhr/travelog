@@ -52,11 +52,10 @@
           >
             {{ warning }}
           </v-alert>
-
           <TabItem
             :edit="tab.edit"
             :title="title"
-            :galleryId="`gallery-${tab.title}`"
+            :galleryId="`${tab.title}-${galleryMapId}`"
           >
             <slot />
           </TabItem>
@@ -74,6 +73,12 @@
     name: 'GalleryEditTabs',
     components: {
       TabItem
+    },
+    props: {
+      galleryMapId: {
+        type: String,
+        default: ''
+      }
     },
     data() {
       return {

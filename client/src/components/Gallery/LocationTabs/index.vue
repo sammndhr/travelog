@@ -30,7 +30,7 @@
             :value="`${i}`"
             class="secondary tab-item lighten-2"
           >
-            <TabItem />
+            <TabItem :galleryMapId="item.title" />
           </v-tab-item>
         </v-tabs-items>
       </v-tabs>
