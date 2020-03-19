@@ -43,13 +43,13 @@
       EditControls
     },
     computed: {
-      ...mapGetters('data', ['noLocationCount']),
+      ...mapGetters('data', ['unmappedCount']),
       ...mapState(['mainHeight']),
       ...mapState('data', ['currImages'])
     },
     methods: {
       ...mapActions('data', [
-        'updateHasLocation',
+        'updateMapped',
         'updateCurrImages',
         'updateSelectionCount'
       ]),

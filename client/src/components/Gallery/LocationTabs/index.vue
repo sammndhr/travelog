@@ -55,13 +55,13 @@
             title: 'mapped',
             text: 'Mapped',
             icon: 'mdi-map-marker',
-            hasLocation: true
+            mapped: true
           },
           {
             title: 'unmapped',
             text: 'Unmapped',
             icon: 'mdi-map-marker-off',
-            hasLocation: false
+            mapped: false
           }
         ],
 
@@ -71,11 +71,11 @@
 
     watch: {
       tab(val) {
-        this.updateHasLocation(this.items[val].hasLocation)
+        this.updateMapped(this.items[val].mapped)
       },
 
       filteredImages(newImages) {
-        if (this.hasLocation) {
+        if (this.mapped) {
           this.updateCurrImages(newImages)
         }
       }
@@ -83,11 +83,11 @@
 
     computed: {
       ...mapState(['mainHeight']),
-      ...mapState('data', ['hasLocation', 'noLocationCount', 'filteredImages'])
+      ...mapState('data', ['mapped', 'unmappedCount', 'filteredImages'])
     },
 
     methods: {
-      ...mapActions('data', ['updateHasLocation', 'updateCurrImages'])
+      ...mapActions('data', ['updateMapped', 'updateCurrImages'])
     }
   }
 </script>

@@ -95,19 +95,19 @@
         ]
       }
     },
-    //RESET state to if hasLocation state changes so renders gallery view.
+    //RESET state to if mapped state changes so renders gallery view.
     watch: {
-      hasLocation(newValue, oldValue) {
+      mapped(newValue, oldValue) {
         if (newValue !== oldValue) this.tab = 0
       }
     },
 
     computed: {
-      ...mapGetters('data', ['noLocationCount']),
-      ...mapState('data', ['hasLocation', 'warning']),
+      ...mapGetters('data', ['unmappedCount']),
+      ...mapState('data', ['mapped', 'warning']),
       ...mapState(['mainHeight']),
       title() {
-        return this.hasLocation ? 'Mapped Images' : 'Unmapped Images'
+        return this.mapped ? 'Mapped Images' : 'Unmapped Images'
       }
     }
   }

@@ -83,15 +83,15 @@
     },
 
     computed: {
-      ...mapGetters('data', ['hasLocationGeoJson']),
-      ...mapState('data', ['hasLocation']),
+      ...mapGetters('data', ['mappedGeoJson']),
+      ...mapState('data', ['mapped']),
       ...mapState(['mainHeight']),
       geoJson() {
         const geoJsonEmpty = {
           type: 'FeatureCollection',
           features: []
         }
-        return this.hasLocation ? this.hasLocationGeoJson : geoJsonEmpty
+        return this.mapped ? this.mappedGeoJson : geoJsonEmpty
       }
     },
 

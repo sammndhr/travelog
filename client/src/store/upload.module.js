@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { createErrorMessage } from '@/utils'
 import { geoJsonToImages } from '@/utils/'
+import axios from 'axios'
 
 const state = {
   geoJson: {
@@ -15,7 +15,7 @@ const state = {
   status: {},
   currImages: { images: [], urls: [] },
   selectionCount: 0,
-  hasLocation: true,
+  mapped: true,
   warning: null,
   isEdit: false
 }
@@ -88,8 +88,8 @@ const mutations = {
     state.selectionCount = selectionCount
   },
 
-  UPDATE_HAS_LOCATION(state, hasLocation) {
-    state.hasLocation = hasLocation
+  UPDATE_HAS_LOCATION(state, mapped) {
+    state.mapped = mapped
   },
   UPDATE_WARNING_MESSAGE(state, message) {
     state.warning = message
@@ -100,7 +100,7 @@ const mutations = {
 }
 
 const getters = {
-  hasLocationGeoJson: state => {
+  mappedGeoJson: state => {
     const features = state.geoJson.features,
       geoJson = JSON.parse(JSON.stringify(state.geoJson))
 
@@ -112,32 +112,32 @@ const getters = {
     return geoJson
   },
 
-  noLocationGeoJson: state => {
+  unmappedGeoJson: state => {
     const features = state.geoJson.features,
       geoJson = JSON.parse(JSON.stringify(state.geoJson))
 
-    const noLocationFeatures = features.filter(feature => {
+    const unmappedFeatures = features.filter(feature => {
       return feature.geometry.coordinates.length < 1
     })
 
-    geoJson.features = noLocationFeatures
+    geoJson.features = unmappedFeatures
     return geoJson
   },
 
-  hasLocationImages: (state, getters) => {
-    const geoJson = getters.hasLocationGeoJson
+  mappedImages: (state, getters) => {
+    const geoJson = getters.mappedGeoJson
     const images = geoJsonToImages(geoJson)
     return images
   },
 
-  noLocationImages: (state, getters) => {
-    const geoJson = getters.noLocationGeoJson
+  unmappedImages: (state, getters) => {
+    const geoJson = getters.unmappedGeoJson
     const images = geoJsonToImages(geoJson)
     return images
   },
 
-  noLocationCount: (state, getters) => {
-    return getters.noLocationImages.images.length
+  unmappedCount: (state, getters) => {
+    return getters.unmappedImages.images.length
   },
 
   currImagesCount: state => {
@@ -235,9 +235,9 @@ const actions = {
         commit('GET_GEOSON_SUCCESS', geoJson)
         setTimeout(() => {
           dispatch('alert/success', 'Fetch successful', { root: true })
-          state.hasLocation
-            ? dispatch('updateCurrImages', getters.hasLocationImages)
-            : dispatch('updateCurrImages', getters.noLocationImages)
+          state.mapped
+            ? dispatch('updateCurrImages', getters.mappedImages)
+            : dispatch('updateCurrImages', getters.unmappedImages)
         })
       }
     } catch (error) {
@@ -275,11 +275,9 @@ const actions = {
     }
   },
 
-  updateHasLocation({ commit, state, getters, dispatch }, hasLocation) {
-    commit('UPDATE_HAS_LOCATION', hasLocation)
-    const images = state.hasLocation
-      ? getters.hasLocationImages
-      : getters.noLocationImages
+  updateMapped({ commit, state, getters, dispatch }, mapped) {
+    commit('UPDATE_HAS_LOCATION', mapped)
+    const images = state.mapped ? getters.mappedImages : getters.unmappedImages
 
     dispatch('updateCurrImages', images)
   },
