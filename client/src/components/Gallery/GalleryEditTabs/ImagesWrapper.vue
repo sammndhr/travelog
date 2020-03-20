@@ -1,53 +1,37 @@
 <template>
-  <!-- :style="{ height: $vuetify.breakpoint.xs ? '180px' : '100%' }" -->
-  <v-row
-    style="height: 100% !important;"
-    id="gallery"
-    :class="{ 'order-2': $vuetify.breakpoint.xs }"
-    class="gallery"
+  <v-col
+    class="overflow"
+    :class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
   >
-    <v-col
-      class="overflow"
-      :class="{ 'overflow-mobile': $vuetify.breakpoint.xs }"
-    >
-      <MobileImages
-        @uploadClicked="$refs.fileInput.click()"
-        @clicked="handleClickImage"
-        :edit="edit"
-        v-if="$vuetify.breakpoint.xs"
-        :images="currImages.images"
-      />
+    <MobileImages
+      @uploadClicked="$refs.fileInput.click()"
+      @clicked="handleClickImage"
+      :edit="edit"
+      v-if="$vuetify.breakpoint.xs"
+      :images="currImages.images"
+    />
 
-      <Images
-        @uploadClicked="$refs.fileInput.click()"
-        @clicked="handleClickImage"
-        :edit="edit"
-        v-else
-        :images="currImages.images"
-      />
+    <Images
+      @uploadClicked="$refs.fileInput.click()"
+      @clicked="handleClickImage"
+      :edit="edit"
+      v-else
+      :images="currImages.images"
+    />
 
-      <input
-        hidden
-        ref="fileInput"
-        id="upload-images"
-        type="file"
-        accept="image/*"
-        multiple="{true}"
-        @change="handleChange"
-      />
-      <VueGallery
-        :id="galleryId"
-        v-if="!edit"
-        :images="currImages.urls"
-        :index="index"
-        @close="index = null"
-      />
-    </v-col>
-  </v-row>
+    <input
+      hidden
+      ref="fileInput"
+      id="upload-images"
+      type="file"
+      accept="image/*"
+      multiple="{true}"
+      @change="handleChange"
+    />
+  </v-col>
 </template>
 
 <script>
-  import VueGallery from 'vue-gallery'
   import { mapActions, mapState } from 'vuex'
   import MobileImages from './MobileImages'
   import Images from './Images'
@@ -56,24 +40,18 @@
   export default {
     name: 'ImagesWrapper',
     components: {
-      VueGallery,
       MobileImages,
       Images
     },
 
-    data() {
-      return {
-        index: null
-      }
-    },
-
     props: {
       edit: { default: false, required: true, type: Boolean },
-      galleryId: { default: '', required: false, type: String }
+      galleryId: { default: '', required: false, type: String },
+      currImages: { default: () => ({}), required: true, type: Object }
     },
 
     computed: {
-      ...mapState('data', ['currImages', 'isEdit'])
+      ...mapState('data', ['isEdit', 'mapped'])
     },
 
     methods: {
@@ -101,11 +79,12 @@
       },
 
       handleClickImage({ i, key }) {
-        if (!this.edit) this.index = i
+        if (!this.edit) this.$emit('indexChanged', i)
         else {
           this.toggleSelect({ i, key })
         }
       },
+
       async handleChange(e) {
         if (!supportsFileReader()) {
           console.log(
@@ -123,18 +102,13 @@
 </script>
 
 <style lang="scss" scoped>
-  .gallery {
-    overflow: hidden;
-    flex-grow: 1;
-    position: relative;
-    .overflow {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      overflow: auto;
-    }
+  .overflow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
 
     /* mobile styles */
     &.overflow-mobile {

@@ -109,6 +109,7 @@
     cursor: pointer;
     position: relative;
     .figure {
+      border: none;
       &.selected {
         border: 8px solid rgba(255, 255, 255, 0.4);
       }

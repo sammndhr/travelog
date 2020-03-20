@@ -13,7 +13,8 @@ const state = {
   },
   filteredImages: { images: [], urls: [] },
   status: {},
-  currImages: { images: [], urls: [] },
+  currMappedImages: { images: [], urls: [] },
+  currUnmappedImages: { images: [], urls: [] },
   selectionCount: 0,
   mapped: true,
   warning: null,
@@ -68,8 +69,12 @@ const mutations = {
     state.filteredImages = filteredImages
   },
 
-  UPDATE_CURR_IMAGES(state, currImages) {
-    state.currImages = currImages
+  UPDATE_CURR_MAPPED_IMAGES(state, currMappedImages) {
+    state.currMappedImages = currMappedImages
+  },
+
+  UPDATE_CURR_UNMAPPED_IMAGES(state, currUnmappedImages) {
+    state.currUnmappedImages = currUnmappedImages
   },
 
   INCREMENT_SELECTION_COUNT(state) {
@@ -88,7 +93,7 @@ const mutations = {
     state.selectionCount = selectionCount
   },
 
-  UPDATE_HAS_LOCATION(state, mapped) {
+  UPDATE_MAPPED(state, mapped) {
     state.mapped = mapped
   },
   UPDATE_WARNING_MESSAGE(state, message) {
@@ -140,8 +145,14 @@ const getters = {
     return getters.unmappedImages.images.length
   },
 
+  currImages: state => {
+    return state.mapped ? state.currMappedImages : state.currUnmappedImages
+  },
+
   currImagesCount: state => {
-    return state.currImages.images.length
+    return state.mapped
+      ? state.currMappedImages.images.length
+      : state.currUnmappedImages.images.length
   }
 }
 
@@ -259,8 +270,13 @@ const actions = {
     dispatch('unselectAllItems')
   },
 
-  updateCurrImages({ commit }, currImages) {
-    commit('UPDATE_CURR_IMAGES', currImages)
+  updateCurrImages({ commit, state }, currImages) {
+    // console.log(state.mapped)
+    state.mapped
+      ? commit('UPDATE_CURR_MAPPED_IMAGES', currImages)
+      : commit('UPDATE_CURR_UNMAPPED_IMAGES', currImages)
+
+    // commit('UPDATE_CURR_IMAGES', currImages)
   },
 
   updateSelectionCount({ commit }, { type, count }) {
@@ -276,7 +292,7 @@ const actions = {
   },
 
   updateMapped({ commit, state, getters, dispatch }, mapped) {
-    commit('UPDATE_HAS_LOCATION', mapped)
+    commit('UPDATE_MAPPED', mapped)
     const images = state.mapped ? getters.mappedImages : getters.unmappedImages
 
     dispatch('updateCurrImages', images)
@@ -286,14 +302,16 @@ const actions = {
     commit('UPDATE_WARNING_MESSAGE', message)
   },
 
-  unselectAllItems({ state, dispatch }) {
-    const currImages = JSON.parse(JSON.stringify(state.currImages))
+  unselectAllItems({ dispatch, getters }) {
+    const images = getters.currImages
+    const currImages = JSON.parse(JSON.stringify(images))
     for (const image of currImages.images) {
       image.selected = false
     }
     dispatch('updateCurrImages', currImages)
     dispatch('updateSelectionCount', { type: 'reset' })
   },
+
   updateIsEdit({ commit }, isEdit) {
     commit('UPDATE_IS_EDIT', isEdit)
   }

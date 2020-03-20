@@ -43,8 +43,8 @@
     },
 
     computed: {
-      ...mapState('data', ['selectionCount', 'currImages']),
-      ...mapGetters('data', ['currImagesCount'])
+      ...mapState('data', ['selectionCount']),
+      ...mapGetters('data', ['currImagesCount', 'currImages'])
     },
 
     methods: {

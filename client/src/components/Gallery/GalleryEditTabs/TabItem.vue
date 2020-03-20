@@ -4,17 +4,40 @@
     style="flex-grow:1 !important; flex-shrink: 0 !important;"
   >
     <EditControls v-if="edit" />
-    <ImagesWrapper
-      :edit="edit"
-      :galleryId="galleryId"
-      :currImages="currImages"
-      @selectToggled="toggleSelect"
-    />
+    <v-row
+      style="height: 100% !important;"
+      id="gallery"
+      :class="{ 'order-2': $vuetify.breakpoint.xs }"
+      class="gallery"
+    >
+      <ImagesWrapper
+        v-show="mapped"
+        :edit="edit"
+        :galleryId="galleryId"
+        :currImages="currMappedImages"
+        @indexChanged="indexChanged"
+      />
+      <ImagesWrapper
+        v-show="!mapped"
+        :edit="edit"
+        :galleryId="galleryId"
+        :currImages="currUnmappedImages"
+        @indexChanged="indexChanged"
+      />
+      <VueGallery
+        :id="galleryId"
+        v-if="!edit"
+        :images="currUrls"
+        :index="index"
+        @close="index = null"
+      />
+    </v-row>
   </v-container>
 </template>
 
 <script>
-  import { mapGetters, mapState, mapActions } from 'vuex'
+  import VueGallery from 'vue-gallery'
+  import { mapGetters, mapState } from 'vuex'
   import ImagesWrapper from './ImagesWrapper'
   import EditControls from './EditControls'
 
@@ -37,38 +60,30 @@
         required: false
       }
     },
-
+    data() {
+      return {
+        index: null
+      }
+    },
     components: {
+      VueGallery,
       ImagesWrapper,
       EditControls
     },
     computed: {
       ...mapGetters('data', ['unmappedCount']),
       ...mapState(['mainHeight']),
-      ...mapState('data', ['currImages'])
+      ...mapState('data', ['mapped', 'currUnmappedImages', 'currMappedImages']),
+      currUrls() {
+        return this.mapped
+          ? this.currMappedImages.urls
+          : this.currUnmappedImages.urls
+      }
     },
-    methods: {
-      ...mapActions('data', [
-        'updateMapped',
-        'updateCurrImages',
-        'updateSelectionCount'
-      ]),
 
-      toggleSelect({ i, key }) {
-        const images = JSON.parse(JSON.stringify(this.currImages))
-        const imagesArr = images.images,
-          selectedImage = imagesArr[i]
-        if (selectedImage.key === key) {
-          selectedImage.selected = !selectedImage.selected
-          if (selectedImage.selected) {
-            this.updateSelectionCount({ type: 'increment' })
-          } else {
-            {
-              this.updateSelectionCount({ type: 'decrement' })
-            }
-          }
-          this.updateCurrImages(images)
-        }
+    methods: {
+      indexChanged(i) {
+        this.index = i
       }
     }
   }
@@ -80,6 +95,11 @@
     flex-direction: column;
     height: 100%;
     min-height: 100%;
+    .gallery {
+      overflow: hidden;
+      flex-grow: 1;
+      position: relative;
+    }
     .row {
       flex-grow: unset;
       flex-shrink: unset;
