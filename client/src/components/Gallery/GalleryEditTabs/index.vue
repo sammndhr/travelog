@@ -118,6 +118,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    overflow: hidden;
 
     .row {
       flex-grow: unset;
@@ -125,6 +126,7 @@
     }
     .tabs-location {
       height: calc(100%);
+      overflow: hidden;
     }
     .edit-tabs {
       height: calc(100% - 48px);
