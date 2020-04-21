@@ -11,6 +11,9 @@
       </v-btn>
 
       <v-spacer></v-spacer>
+      <v-btn to="/support" text color="primary">
+        Support
+      </v-btn>
       <v-btn v-if="!status.loggedIn" to="/login" text color="primary">
         Login
       </v-btn>

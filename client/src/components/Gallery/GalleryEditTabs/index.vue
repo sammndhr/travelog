@@ -51,6 +51,12 @@
             transition="slide-y-transition"
           >
             {{ warning }}
+            <router-link
+              class="warning--text"
+              to="/support/missing-location-images"
+            >
+              More info.
+            </router-link>
           </v-alert>
           <TabItem
             :edit="tab.edit"
