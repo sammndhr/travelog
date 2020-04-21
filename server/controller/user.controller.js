@@ -4,12 +4,12 @@ const {
   hashPassword,
   comparePassword,
   isValidEmail,
-  generateToken
+  generateToken,
 } = require('../utils')
 
 const User = {
   async create(req, res, next) {
-    const email = req.body.email,
+    const email = req.body.email && req.body.email.toLowerCase(),
       password = req.body.password
     if (!email || !password) {
       return res.status(400).send({ message: 'Some values are missing' })
@@ -42,11 +42,13 @@ const User = {
   },
 
   async login(req, res) {
-    if (!req.body.email || !req.body.password) {
+    const email = req.body.email && req.body.email.toLowerCase(),
+      password = req.body.password
+    if (!email || !password) {
       return res.status(400).send({ message: 'Some values are missing' })
     }
 
-    if (!isValidEmail(req.body.email)) {
+    if (!isValidEmail(email)) {
       return res
         .status(400)
         .send({ message: 'Please enter a valid email address' })
@@ -55,13 +57,13 @@ const User = {
     const text = 'SELECT * FROM users WHERE email = $1'
 
     try {
-      const { rows } = await query(text, [req.body.email])
+      const { rows } = await query(text, [email])
       if (!rows[0]) {
         return res
           .status(400)
           .send({ message: 'The credentials you provided are incorrect.' })
       }
-      if (!comparePassword(rows[0].password, req.body.password)) {
+      if (!comparePassword(rows[0].password, password)) {
         return res
           .status(400)
           .send({ message: 'The credentials you provided are incorrect.' })
@@ -85,7 +87,7 @@ const User = {
     } catch (error) {
       return res.status(400).send(error)
     }
-  }
+  },
 }
 
 module.exports = User
