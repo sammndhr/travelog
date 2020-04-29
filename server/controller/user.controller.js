@@ -4,29 +4,31 @@ const {
   hashPassword,
   comparePassword,
   isValidEmail,
+  isValidUsername,
   generateToken,
 } = require('../utils')
 
 const User = {
   async create(req, res, next) {
     const email = req.body.email && req.body.email.toLowerCase(),
-      password = req.body.password
-    if (!email || !password) {
+      password = req.body.password,
+      username = req.body.username
+    if (!email || !password || !username) {
       return res.status(400).send({ message: 'Some values are missing' })
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(email) || !isValidUsername(username)) {
       return res
         .status(400)
         .send({ message: 'Please enter a valid email address' })
     }
 
     const createQuery = `INSERT INTO
-      users (email, password)
-			VALUES ($1, $2)
+      users (email, username, password)
+			VALUES ($1, $2, $3)
 			RETURNING *;`
     const hashedPassword = hashPassword(password),
-      values = [email, hashedPassword]
+      values = [email, username, hashedPassword]
 
     try {
       const results = await query(createQuery, values)

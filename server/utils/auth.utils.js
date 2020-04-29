@@ -13,13 +13,17 @@ const AuthHelper = {
   },
 
   isValidEmail(email) {
-    return /\S+@\S+\.\S+/.test(email)
+    return /.+@.+\..+/.test(email)
+  },
+
+  isValidUsername(username) {
+    return /^[a-z0-9_-]{3,15}$/.test(username)
   },
 
   generateToken(id) {
     const token = jwt.sign(
       {
-        userId: id
+        userId: id,
       },
       secret,
       { expiresIn: '7d' }
@@ -44,7 +48,7 @@ const AuthHelper = {
         .status(400)
         .send({ message: 'The token you provided is invalid.' })
     }
-  }
+  },
 }
 
 module.exports = AuthHelper

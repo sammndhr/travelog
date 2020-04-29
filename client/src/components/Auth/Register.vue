@@ -30,6 +30,14 @@
                 type="text"
               />
               <v-text-field
+                label="Username"
+                name="username"
+                v-model="username"
+                :rules="usernameRules"
+                prepend-icon="mdi-account"
+                type="text"
+              />
+              <v-text-field
                 id="password"
                 label="Password"
                 name="password"
@@ -70,12 +78,19 @@
       return {
         email: '',
         password: '',
+        username: '',
         submitted: false,
         valid: true,
         passwordRules: [v => !!v || 'Password is required'],
         emailRules: [
           v => !!v || 'E-mail is required',
           v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+        ],
+        usernameRules: [
+          v => !!v || 'Username is required',
+          v =>
+            /^[a-z0-9_-]{3,15}$/.test(v) ||
+            'Username must be 3-15 characters long and only contain letters, numbers, dashes and hyphens.'
         ]
       }
     },
@@ -106,8 +121,12 @@
       },
       handleSubmit() {
         this.submitted = true
-        const [email, password] = [this.email, this.password]
-        this.register({ email, password })
+        const [email, password, username] = [
+          this.email,
+          this.password,
+          this.username
+        ]
+        this.register({ email, password, username })
       }
     }
   }
